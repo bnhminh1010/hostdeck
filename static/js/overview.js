@@ -96,9 +96,9 @@ function createTrendChart(canvas) {
     data: {
       labels: [],
       datasets: [
-        { label: "CPU", data: [], borderColor: colors.accent, fill: false },
-        { label: "RAM", data: [], borderColor: colors.green, fill: false },
-        { label: "DISK", data: [], borderColor: colors.yellow, fill: false },
+        { label: "CPU", data: [], borderColor: colors.accent, fill: false, cubicInterpolationMode: "monotone", spanGaps: true },
+        { label: "RAM", data: [], borderColor: colors.green, fill: false, cubicInterpolationMode: "monotone", spanGaps: true },
+        { label: "DISK", data: [], borderColor: colors.yellow, fill: false, cubicInterpolationMode: "monotone", spanGaps: true },
       ],
     },
     options: {
@@ -115,7 +115,7 @@ function createTrendChart(canvas) {
         legend: { display: true, align: "end", labels: { color: colors.secondary, usePointStyle: true, boxWidth: 7, font: { family: "monospace", size: 10.5 } } },
         tooltip: { backgroundColor: colors.overlay, borderColor: colors.accentMuted, borderWidth: 1, titleColor: colors.primary, bodyColor: colors.secondary, callbacks: { label: (context) => `${context.dataset.label}: ${Number(context.raw).toFixed(1)}%` } },
       },
-      elements: { point: { radius: 0, hoverRadius: 3 }, line: { borderWidth: 3, tension: 0.18 } },
+      elements: { point: { radius: 0, hoverRadius: 3 }, line: { borderWidth: 3, tension: 0.18, borderCapStyle: "round", borderJoinStyle: "round" } },
     },
   });
 }
@@ -949,6 +949,31 @@ export function createOverviewController({ api, demo = false, toast, onNavigate,
         if (widgetVisible("overview-recent-changes")) loadEvents();
         loadWidgetContent(true);
       }
+    },
+    updateTheme() {
+      if (!chart) return;
+      const colors = {
+        accent: token("--accent"),
+        green: token("--green"),
+        yellow: token("--yellow"),
+        dim: token("--text-dim"),
+        secondary: token("--text-secondary"),
+        primary: token("--text-primary"),
+        overlay: token("--bg-overlay"),
+        border: token("--border-subtle"),
+        accentMuted: token("--accent-muted"),
+      };
+      chart.data.datasets[0].borderColor = colors.accent;
+      chart.data.datasets[1].borderColor = colors.green;
+      chart.data.datasets[2].borderColor = colors.yellow;
+      chart.options.scales.x.ticks.color = colors.dim;
+      chart.options.scales.y.ticks.color = colors.dim;
+      chart.options.plugins.legend.labels.color = colors.secondary;
+      chart.options.plugins.tooltip.backgroundColor = colors.overlay;
+      chart.options.plugins.tooltip.borderColor = colors.accentMuted;
+      chart.options.plugins.tooltip.titleColor = colors.primary;
+      chart.options.plugins.tooltip.bodyColor = colors.secondary;
+      chart.update("none");
     },
     setAdmin(value) {
       widgetMenuAuthenticated = Boolean(value);

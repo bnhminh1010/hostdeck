@@ -338,7 +338,7 @@ button:disabled { opacity: 0.48; cursor: not-allowed; }
 /* Overview carries a dedicated 24-hour chart, so its snapshot stays transactional rather than repeating sparklines. */
 .workspace-overview .sparkline { display: none !important; }
 
-@media (min-width: 1280px), (min-width: 560px) and (max-width: 899px) {
+@media (min-width: 1160px), (min-width: 560px) and (max-width: 899px) {
   .workspace-overview .system-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .workspace-overview .system-panel > .panel-header,
   .workspace-overview .system-panel > .system-footer { grid-column: 1 / -1; }
@@ -685,11 +685,11 @@ kbd { display: inline-flex; min-width: 22px; min-height: 22px; align-items: cent
   .sidebar-backdrop { position: fixed; z-index: 255; inset: 0; display: block; background: var(--shadow); opacity: 0.64; }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1160px) {
   .overview-layout { grid-template-columns: repeat(12, minmax(0, 1fr)); }
 }
 
-@media (max-width: 1279px) {
+@media (max-width: 1159px) {
   .overview-widget[data-widget-size="small"],
   .overview-widget[data-widget-size="medium"],
   .overview-widget[data-widget-size="full"] { grid-column: 1 / -1; }

@@ -221,6 +221,7 @@ function applyTheme(next, { persist = false } = {}) {
   }
   if (persist) storeValue(THEME_STORAGE_KEY, theme);
   charts.updateTheme?.();
+  overviewController.updateTheme?.();
   historyController.updateTheme?.();
   terminal.updateTheme?.();
 }

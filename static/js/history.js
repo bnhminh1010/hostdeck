@@ -64,9 +64,7 @@ function colorToken(name, fallback = "transparent") {
 function chartColors() {
   return {
     accent: colorToken("--accent"),
-    accentSoft: colorToken("--accent-soft"),
     green: colorToken("--green"),
-    greenSoft: colorToken("--green-soft"),
     dim: colorToken("--text-dim"),
     secondary: colorToken("--text-secondary"),
     primary: colorToken("--text-primary"),
@@ -82,8 +80,8 @@ function createChart(canvas) {
   return new globalThis.Chart(canvas.getContext("2d"), {
     type: "line",
     data: { labels: [], datasets: [
-      { label: "CPU", data: [], borderColor: colors.accent, backgroundColor: colors.accentSoft, fill: true },
-      { label: "RAM", data: [], borderColor: colors.green, backgroundColor: colors.greenSoft, fill: false },
+      { label: "CPU", data: [], borderColor: colors.accent, fill: false, cubicInterpolationMode: "monotone", spanGaps: true },
+      { label: "RAM", data: [], borderColor: colors.green, fill: false, cubicInterpolationMode: "monotone", spanGaps: true },
     ] },
     options: {
       responsive: true,
@@ -99,7 +97,7 @@ function createChart(canvas) {
         legend: { display: true, align: "end", labels: { color: colors.secondary, usePointStyle: true, boxWidth: 7, font: { family: "monospace", size: 10.5 } } },
         tooltip: { backgroundColor: colors.overlay, borderColor: colors.tooltipBorder, borderWidth: 1, titleColor: colors.primary, bodyColor: colors.secondary, callbacks: { label: (context) => `${context.dataset.label}: ${Number(context.raw).toFixed(1)}%` } },
       },
-      elements: { point: { radius: 0, hoverRadius: 3 }, line: { borderWidth: 3, tension: 0.18 } },
+      elements: { point: { radius: 0, hoverRadius: 3 }, line: { borderWidth: 3, tension: 0.18, borderCapStyle: "round", borderJoinStyle: "round" } },
     },
   });
 }
@@ -325,9 +323,7 @@ export function createHistoryController({ api, demo = false, toast, onRangeChang
     if (!chart) return;
     const colors = chartColors();
     chart.data.datasets[0].borderColor = colors.accent;
-    chart.data.datasets[0].backgroundColor = colors.accentSoft;
     chart.data.datasets[1].borderColor = colors.green;
-    chart.data.datasets[1].backgroundColor = colors.greenSoft;
     chart.options.scales.x.ticks.color = colors.dim;
     chart.options.scales.y.grid.color = colors.grid;
     chart.options.scales.y.ticks.color = colors.dim;
