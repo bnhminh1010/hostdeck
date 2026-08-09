@@ -5,10 +5,10 @@
 <p align="center"><code>Go</code> · <code>SQLite</code> · <code>Podman</code> · <code>Tailscale</code> · <code>WebSocket</code> · <code>Vanilla JS</code></p>
 
 <p align="center">
-  <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/bnhminh1010/homelab-dashboard?color=blue"></a>
-  <a href="https://github.com/bnhminh1010/homelab-dashboard/releases"><img alt="Release" src="https://img.shields.io/github/v/release/bnhminh1010/homelab-dashboard?include_prereleases&label=release"></a>
-  <a href="https://github.com/bnhminh1010/homelab-dashboard/actions"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/bnhminh1010/homelab-dashboard/ci.yml?label=CI"></a>
-  <a href="https://github.com/bnhminh1010/homelab-dashboard"><img alt="Stars" src="https://img.shields.io/github/stars/bnhminh1010/homelab-dashboard?style=social"></a>
+  <a href="https://github.com/bnhminh1010/hostdeck/blob/main/LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/bnhminh1010/hostdeck?color=blue"></a>
+  <a href="https://github.com/bnhminh1010/hostdeck/releases"><img alt="Release" src="https://img.shields.io/github/v/release/bnhminh1010/hostdeck?include_prereleases&label=release"></a>
+  <a href="https://github.com/bnhminh1010/hostdeck/actions"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/bnhminh1010/hostdeck/ci.yml?label=CI"></a>
+  <a href="https://github.com/bnhminh1010/hostdeck"><img alt="Stars" src="https://img.shields.io/github/stars/bnhminh1010/hostdeck?style=social"></a>
 </p>
 
 <p align="center"><sub>Three static Go binaries. No Node.js. No npm. No CDN runtime dependencies.</sub></p>

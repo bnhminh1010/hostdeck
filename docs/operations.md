@@ -59,7 +59,7 @@ Podman:
 
 ```bash
 git clone https://github.com/bnhminh1010/hostdeck.git homelab-dashboard
-cd homelab-dashboard
+cd hostdeck
 # Replace vX.Y.Z with an available container-enabled GitHub Release tag.
 export RELEASE_TAG=vX.Y.Z
 git checkout "$RELEASE_TAG"
