@@ -258,8 +258,8 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
   scroll-padding-inline: 24px;
   padding: 4px;
   scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
 }
 .shots-track::-webkit-scrollbar { display: none; }
 .shot-card {
