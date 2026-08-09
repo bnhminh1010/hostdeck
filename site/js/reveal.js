@@ -169,7 +169,10 @@
     copyBtn.addEventListener("click", copy);
   }
 
-  // ── screenshot filmstrip: prev/next scroll the snap track ──
+  // ── screenshot filmstrip: auto-advance loop, pause on hover/focus ──
+  // Scrolls left→right continuously. The loop pauses while the pointer or
+  // keyboard focus is on the track, after a button click, and whenever the
+  // tab is hidden. Respects prefers-reduced-motion (static, no auto-scroll).
   const track = document.getElementById("shots-track");
   const prevBtn = document.getElementById("shots-prev");
   const nextBtn = document.getElementById("shots-next");
@@ -178,8 +181,55 @@
       const card = track.querySelector(".shot-card");
       return card ? card.getBoundingClientRect().width + 22 : track.clientWidth * 0.8;
     };
-    prevBtn.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: reduced ? "auto" : "smooth" }));
-    nextBtn.addEventListener("click", () => track.scrollBy({ left: step(), behavior: reduced ? "auto" : "smooth" }));
+    const clickStep = (dir) => {
+      track.scrollBy({ left: dir * step(), behavior: reduced ? "auto" : "smooth" });
+      hold();
+    };
+    prevBtn.addEventListener("click", () => clickStep(-1));
+    nextBtn.addEventListener("click", () => clickStep(1));
+
+    const SPEED = 70; // px per second
+    const HOLD_MS = 3500; // pause after a manual button click
+    let raf = null, last = 0, paused = false, holdUntil = 0;
+
+    function tick(ts) {
+      if (!reduced && !paused && ts >= holdUntil && document.visibilityState === "visible") {
+        const dt = last ? (ts - last) / 1000 : 0;
+        const max = track.scrollWidth - track.clientWidth;
+        track.scrollLeft = Math.min(track.scrollLeft + SPEED * dt, max);
+        if (track.scrollLeft >= max - 0.5) track.scrollLeft = 0; // loop back
+      }
+      last = ts;
+      raf = requestAnimationFrame(tick);
+    }
+
+    // While auto-scrolling, disable snap so the motion stays smooth; while
+    // paused, re-enable it so the focused card settles centered.
+    const pause = () => {
+      paused = true;
+      track.style.scrollSnapType = "x mandatory";
+    };
+    const resume = () => {
+      paused = false;
+      track.style.scrollSnapType = "none";
+    };
+    const hold = () => { holdUntil = performance.now() + HOLD_MS; };
+
+    track.addEventListener("mouseenter", pause);
+    track.addEventListener("mouseleave", resume);
+    track.addEventListener("focusin", pause);
+    track.addEventListener("focusout", resume);
+    track.addEventListener("touchstart", pause, { passive: true });
+    track.addEventListener("touchend", resume, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) pause();
+      else resume();
+    });
+
+    if (!reduced) {
+      track.style.scrollSnapType = "none"; // auto-loop runs smooth from the start
+      raf = requestAnimationFrame(tick);
+    }
   }
 
   // ── demo iframe: hide the inner scrollbar (wheel scrolling still works) ──
