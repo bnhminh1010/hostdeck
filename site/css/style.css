@@ -251,7 +251,7 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
 
 /* ─── SCREENSHOTS (filmstrip: focus one, edge fade, scroll-snap) ─── */
 .shots { padding: 104px 24px; }
-.shots-carousel { position: relative; max-width: var(--maxw); margin: 0 auto; }
+.shots-carousel { position: relative; max-width: var(--maxw); margin: 0 auto; perspective: 1600px; }
 .shots-track {
   display: flex; gap: 22px;
   overflow-x: auto; scroll-snap-type: x mandatory;
@@ -267,7 +267,9 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
   scroll-snap-align: center;
   border: 1px solid var(--line-soft); border-radius: var(--radius);
   overflow: hidden; background: var(--bg-card);
-  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  transition: border-color var(--dur) var(--ease);
 }
 .shot-card:hover { border-color: var(--line); }
 .shot-card img { width: 100%; height: auto; border-bottom: 1px solid var(--line-soft); }

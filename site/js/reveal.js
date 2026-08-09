@@ -192,6 +192,32 @@
     const HOLD_MS = 3500; // pause after a manual button click
     let raf = null, last = 0, paused = false, holdUntil = 0;
 
+    // Coverflow depth: the centered card scales to 1.0, stays fully
+    // opaque and casts the strongest shadow; cards further out shrink,
+    // dim and tilt slightly toward the viewer (rotateY), reading as a
+    // carousel seen from straight ahead. Under reduced motion the tilt
+    // is dropped; only the scroll-linked scale/fade remains.
+    const applyDepth = () => {
+      const tr = track.getBoundingClientRect();
+      const center = tr.left + tr.width / 2;
+      for (const card of track.children) {
+        const r = card.getBoundingClientRect();
+        // Use layout width (offsetWidth) as the distance denominator;
+        // getBoundingClientRect().width is already scaled by the
+        // coverflow transform and would skew the ratio.
+        const half = card.offsetWidth / 2;
+        const dist = (r.left + half - center) / half;
+        const abs = Math.min(Math.abs(dist), 3);
+        const scale = 1 - abs * 0.09;
+        const opacity = Math.max(0.4, 1 - abs * 0.18);
+        const rot = reduced ? 0 : Math.max(-10, Math.min(10, -dist * 3.5));
+        card.style.transform = "scale(" + scale.toFixed(3) + ") rotateY(" + rot.toFixed(1) + "deg)";
+        card.style.opacity = opacity.toFixed(3);
+        card.style.zIndex = String(Math.round(10 - abs * 4));
+        card.style.boxShadow = "0 24px 56px -14px rgba(0,0,0," + Math.max(0.2, 0.72 - abs * 0.18).toFixed(2) + ")";
+      }
+    };
+
     function tick(ts) {
       if (!reduced && !paused && ts >= holdUntil && document.visibilityState === "visible") {
         const dt = last ? (ts - last) / 1000 : 0;
@@ -200,6 +226,7 @@
         if (track.scrollLeft >= max - 0.5) track.scrollLeft = 0; // loop back
       }
       last = ts;
+      if (!reduced) applyDepth();
       raf = requestAnimationFrame(tick);
     }
 
@@ -238,6 +265,9 @@
     track.addEventListener("focusout", resume);
     track.addEventListener("touchstart", pause, { passive: true });
     track.addEventListener("touchend", resume, { passive: true });
+    // Under reduced motion there is no rAF-driven loop, so manual
+    // scrolling still needs the depth pass via the scroll event.
+    track.addEventListener("scroll", () => { if (reduced) applyDepth(); }, { passive: true });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) pause();
       else resume();
