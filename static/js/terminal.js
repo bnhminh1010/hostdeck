@@ -74,7 +74,6 @@ export function createTerminalController({ api, demo = false, toast }) {
   const toggle = document.getElementById("terminal-toggle");
   const toggleLabel = toggle.querySelector("span");
   const clear = document.getElementById("terminal-clear");
-  const bell = document.getElementById("terminal-bell");
   const hostShellButton = document.getElementById("terminal-host-shell");
   const disconnectButton = document.getElementById("terminal-disconnect");
   const sessionLabel = document.getElementById("terminal-session-label");
@@ -1000,7 +999,6 @@ export function createTerminalController({ api, demo = false, toast }) {
       updateActiveState();
     } else terminal.clear();
   });
-  bell.addEventListener("click", () => terminal.write("\x07"));
   logSearch.addEventListener("input", () => {
     logQuery = logSearch.value.toLocaleLowerCase();
     applyLogSearch();

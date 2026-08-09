@@ -559,7 +559,6 @@
         <div class="terminal-tools">
           <button id="terminal-host-shell" class="terminal-button terminal-host-button" type="button" title="Open a Bash shell on the homelab host" hidden>HOST SHELL</button>
           <button id="terminal-clear" class="terminal-button" type="button">CLEAR</button>
-          <button id="terminal-bell" class="terminal-button" type="button">BELL</button>
           <button id="terminal-disconnect" class="terminal-button" type="button" hidden>DISCONNECT</button>
           <button id="terminal-toggle" class="terminal-button terminal-toggle" type="button" aria-expanded="false" aria-controls="terminal-body" aria-label="Expand terminal workbench" title="Expand terminal workbench"><span>EXPAND</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg></button>
         </div>
@@ -854,7 +853,7 @@
           <h3>How data gets in</h3>
           <p>Containers and their live logs are pulled automatically from the Podman socket by the node agent. No configuration needed.</p>
           <p>Services are the only thing you register by hand, through <b>+ ADD SERVICE</b>.</p>
-          <p>Historical metrics, alert state, and service probes are kept in the dashboard's own SQLite file; you never query or edit it.</p>
+          <p>Historical metrics, alert state, and service probes are kept in the dashboard's own SQLite file.</p>
           <p>Central log search is an optional Loki + Vector overlay. Everything else runs from the dashboard binary alone.</p>
         </section>
       </div>
