@@ -194,14 +194,16 @@
     clonesB.forEach((c) => track.appendChild(c));
     track.scrollLeft = LOOP; // start at the original set
     const norm = () => {
-      // Keep scrollLeft inside the ORIGINAL set [LOOP, 2*LOOP). Wrapping
-      // subtracts one set width; the mirrored cards are pixel-identical
-      // clones so the swap is invisible. The [0, LOOP) range is the
-      // leading mirror used when stepping backwards.
+      // Keep scrollLeft inside [0, 2*LOOP) so there is always a full
+      // mirrored set on either side. Wrapping subtracts one set width;
+      // the mirrored cards are pixel-identical clones so the swap is
+      // invisible. IMPORTANT: do NOT push scrollLeft back up to LOOP —
+      // centering the FIRST card of the original set legitimately lands
+      // below LOOP, and forcing it up would make the auto-loop visibly
+      // jump a full set on resume (the flicker we hunted for v3).
       let s = track.scrollLeft;
       while (s >= LOOP * 2) s -= LOOP;
-      while (s < LOOP) s += LOOP;
-      track.scrollLeft = s;
+      track.scrollLeft = Math.max(0, s);
     };
     const clickStep = (dir) => {
       track.scrollBy({ left: dir * step(), behavior: reduced ? "auto" : "smooth" });
@@ -223,8 +225,12 @@
     const applyDepth = () => {
       const tr = track.getBoundingClientRect();
       const center = tr.left + tr.width / 2;
+      // Only style cards near the viewport (plus one on each side); the
+      // rest are invisible and updating them every frame is wasted work.
+      const lo = tr.left - 700, hi = tr.right + 700;
       for (const card of track.children) {
         const r = card.getBoundingClientRect();
+        if (r.right < lo || r.left > hi) continue;
         // Use layout width (offsetWidth) as the distance denominator;
         // getBoundingClientRect().width is already scaled by the
         // coverflow transform and would skew the ratio.
@@ -236,13 +242,13 @@
         const rot = reduced ? 0 : Math.max(-10, Math.min(10, -dist * 3.5));
         card.style.transform = "scale(" + scale.toFixed(3) + ") rotateY(" + rot.toFixed(1) + "deg)";
         card.style.opacity = opacity.toFixed(3);
-        // Quantize z-index and shadow so they only change when a card
-        // crosses a depth threshold — per-frame paint changes here cause
-        // visible repaint flicker while the loop scrolls.
+        // Quantize z-index so it only changes when a card crosses a
+        // depth threshold — per-frame paint changes here cause visible
+        // repaint flicker while the loop scrolls. The depth glow is a
+        // pseudo-element whose opacity we drive via a CSS custom property
+        // (compositor-only, no repaint).
         card.style.zIndex = String(Math.round(10 - Math.floor(abs * 2) * 2));
-        card.style.boxShadow = abs < 0.55
-          ? "0 24px 56px -14px rgba(0,0,0,0.72)"
-          : "0 10px 24px -14px rgba(0,0,0,0.35)";
+        card.style.setProperty("--glow", abs < 0.55 ? "1" : "0");
       }
     };
 
@@ -275,10 +281,28 @@
         track.scrollTo({ left: target, behavior: reduced ? "auto" : "smooth" });
       }
     };
+    // Per-card hover: the card under the pointer eases to center. Because
+    // the track is mirrored, the hovered card exists 3×; pick the mirror
+    // whose centering scroll is closest to the current position so the
+    // motion is always the shortest step (never a long rewind).
+    const centerCard = (card) => {
+      const tr = track.getBoundingClientRect();
+      const r = card.getBoundingClientRect();
+      const center = tr.left + tr.width / 2;
+      const raw = track.scrollLeft + (r.left + r.width / 2 - center);
+      const max = track.scrollWidth - track.clientWidth;
+      let best = raw, bestDist = Math.abs(raw - track.scrollLeft);
+      for (const cand of [raw - LOOP, raw + LOOP]) {
+        if (cand >= 0 && cand <= max) {
+          const d = Math.abs(cand - track.scrollLeft);
+          if (d < bestDist) { bestDist = d; best = cand; }
+        }
+      }
+      track.scrollTo({ left: best, behavior: reduced ? "auto" : "smooth" });
+    };
     const pause = () => {
       paused = true;
       track.style.scrollSnapType = "none"; // prevent instant snap jump
-      alignNearest();
     };
     const resume = () => {
       paused = false;
@@ -286,11 +310,26 @@
     };
     const hold = () => { holdUntil = performance.now() + HOLD_MS; };
 
+    let hoverCard = null;
     track.addEventListener("mouseenter", pause);
-    track.addEventListener("mouseleave", resume);
-    track.addEventListener("focusin", pause);
+    track.addEventListener("mouseleave", () => { hoverCard = null; resume(); });
+    // Per-card hover via mousemove, NOT mouseover: mouseover fires when the
+    // scroll animation drags a different card under a stationary pointer,
+    // which would cascade the centering endlessly. mousemove only fires on
+    // real pointer travel, so the hovered card is always user-chosen. The
+    // card !== hoverCard check already limits work to actual card changes,
+    // so no extra throttle (it would drop fast pointer travel).
+    track.addEventListener("mousemove", (e) => {
+      if (!paused) return;
+      const card = e.target.closest ? e.target.closest(".shot-card") : null;
+      if (card && card !== hoverCard) {
+        hoverCard = card;
+        centerCard(card);
+      }
+    });
+    track.addEventListener("focusin", () => { pause(); alignNearest(); });
     track.addEventListener("focusout", resume);
-    track.addEventListener("touchstart", pause, { passive: true });
+    track.addEventListener("touchstart", () => { pause(); alignNearest(); }, { passive: true });
     track.addEventListener("touchend", resume, { passive: true });
     // Under reduced motion there is no rAF-driven loop, so manual
     // scrolling still needs the depth pass via the scroll event.
