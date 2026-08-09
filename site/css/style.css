@@ -94,7 +94,7 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
   border: 1px solid var(--line);
   border-radius: 12px;
   box-shadow: 0 10px 34px rgba(0, 0, 0, .45);
-  transition: padding var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: box-shadow var(--dur) var(--ease);
 }
 .nav.is-scrolled {
   padding: 0 18px; min-height: 46px;
