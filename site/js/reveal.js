@@ -240,15 +240,27 @@
         const scale = 1 - abs * 0.09;
         const opacity = Math.max(0.4, 1 - abs * 0.18);
         const rot = reduced ? 0 : Math.max(-10, Math.min(10, -dist * 3.5));
-        card.style.transform = "scale(" + scale.toFixed(3) + ") rotateY(" + rot.toFixed(1) + "deg)";
-        card.style.opacity = opacity.toFixed(3);
+        // Quantize every animated value so the style string only changes
+        // when a card actually crosses a depth step — writing transform
+        // on every frame (even sub-pixel identical values) triggers style
+        // recalc + repaint every frame, which is the flicker on iGPUs.
+        // The card is scrolling underneath anyway, so 0.01-scale steps
+        // are imperceptible.
+        const qScale = (Math.round(scale * 100) / 100).toFixed(2);
+        const qOp = (Math.round(opacity * 100) / 100).toFixed(2);
+        const qRot = (Math.round(rot * 2) / 2).toFixed(1);
+        const t = "scale(" + qScale + ") rotateY(" + qRot + "deg)";
+        const o = qOp;
+        if (card.style.transform !== t) card.style.transform = t;
+        if (card.style.opacity !== o) card.style.opacity = o;
         // Quantize z-index so it only changes when a card crosses a
         // depth threshold — per-frame paint changes here cause visible
         // repaint flicker while the loop scrolls. The depth glow is a
         // pseudo-element whose opacity we drive via a CSS custom property
         // (compositor-only, no repaint).
         card.style.zIndex = String(Math.round(10 - Math.floor(abs * 2) * 2));
-        card.style.setProperty("--glow", abs < 0.55 ? "1" : "0");
+        const glow = abs < 0.55 ? "1" : "0";
+        if (card.style.getPropertyValue("--glow") !== glow) card.style.setProperty("--glow", glow);
       }
     };
 
