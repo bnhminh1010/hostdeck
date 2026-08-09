@@ -269,7 +269,7 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
   overflow: hidden; background: var(--bg-card);
   transform-origin: center center;
   will-change: transform, opacity;
-  transition: border-color var(--dur) var(--ease);
+  transition: border-color var(--dur) var(--ease), box-shadow 300ms var(--ease);
 }
 .shot-card:hover { border-color: var(--line); }
 .shot-card img { width: 100%; height: auto; border-bottom: 1px solid var(--line-soft); }

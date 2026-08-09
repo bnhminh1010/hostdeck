@@ -177,13 +177,36 @@
   const prevBtn = document.getElementById("shots-prev");
   const nextBtn = document.getElementById("shots-next");
   if (track && prevBtn && nextBtn) {
+    // Seamless loop: mirror the 8 cards on both sides of the track and
+    // start at the original set. The loop wraps by subtracting one set
+    // width whenever scrollLeft crosses it — visually identical because
+    // the mirrored cards are exact clones, so there is no jump.
+    const cards = [...track.children];
+    const gap = 22;
     const step = () => {
       const card = track.querySelector(".shot-card");
-      return card ? card.getBoundingClientRect().width + 22 : track.clientWidth * 0.8;
+      return card ? card.offsetWidth + gap : track.clientWidth * 0.8;
+    };
+    const LOOP = step() * 8; // width of one 8-card set
+    const clonesA = cards.map((c) => c.cloneNode(true));
+    const clonesB = cards.map((c) => c.cloneNode(true));
+    clonesA.forEach((c) => track.prepend(c));
+    clonesB.forEach((c) => track.appendChild(c));
+    track.scrollLeft = LOOP; // start at the original set
+    const norm = () => {
+      // Keep scrollLeft inside the ORIGINAL set [LOOP, 2*LOOP). Wrapping
+      // subtracts one set width; the mirrored cards are pixel-identical
+      // clones so the swap is invisible. The [0, LOOP) range is the
+      // leading mirror used when stepping backwards.
+      let s = track.scrollLeft;
+      while (s >= LOOP * 2) s -= LOOP;
+      while (s < LOOP) s += LOOP;
+      track.scrollLeft = s;
     };
     const clickStep = (dir) => {
       track.scrollBy({ left: dir * step(), behavior: reduced ? "auto" : "smooth" });
       hold();
+      window.setTimeout(norm, 700); // re-normalize once smooth scroll settles
     };
     prevBtn.addEventListener("click", () => clickStep(-1));
     nextBtn.addEventListener("click", () => clickStep(1));
@@ -213,17 +236,21 @@
         const rot = reduced ? 0 : Math.max(-10, Math.min(10, -dist * 3.5));
         card.style.transform = "scale(" + scale.toFixed(3) + ") rotateY(" + rot.toFixed(1) + "deg)";
         card.style.opacity = opacity.toFixed(3);
-        card.style.zIndex = String(Math.round(10 - abs * 4));
-        card.style.boxShadow = "0 24px 56px -14px rgba(0,0,0," + Math.max(0.2, 0.72 - abs * 0.18).toFixed(2) + ")";
+        // Quantize z-index and shadow so they only change when a card
+        // crosses a depth threshold — per-frame paint changes here cause
+        // visible repaint flicker while the loop scrolls.
+        card.style.zIndex = String(Math.round(10 - Math.floor(abs * 2) * 2));
+        card.style.boxShadow = abs < 0.55
+          ? "0 24px 56px -14px rgba(0,0,0,0.72)"
+          : "0 10px 24px -14px rgba(0,0,0,0.35)";
       }
     };
 
     function tick(ts) {
       if (!reduced && !paused && ts >= holdUntil && document.visibilityState === "visible") {
         const dt = last ? (ts - last) / 1000 : 0;
-        const max = track.scrollWidth - track.clientWidth;
-        track.scrollLeft = Math.min(track.scrollLeft + SPEED * dt, max);
-        if (track.scrollLeft >= max - 0.5) track.scrollLeft = 0; // loop back
+        track.scrollLeft = Math.min(track.scrollLeft + SPEED * dt, LOOP * 2);
+        norm(); // seamless wrap at the set boundary — no visual jump
       }
       last = ts;
       if (!reduced) applyDepth();
