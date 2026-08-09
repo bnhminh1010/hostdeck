@@ -203,11 +203,28 @@
       raf = requestAnimationFrame(tick);
     }
 
-    // While auto-scrolling, disable snap so the motion stays smooth; while
-    // paused, re-enable it so the focused card settles centered.
+    // On pause (hover/focus/touch), smoothly scroll the nearest card to
+    // center instead of letting scroll-snap jump instantly. While
+    // auto-scrolling, snap stays off so the motion is smooth.
+    const alignNearest = () => {
+      const tr = track.getBoundingClientRect();
+      const center = tr.left + tr.width / 2;
+      let best = null, bestDist = Infinity;
+      for (const card of track.children) {
+        const r = card.getBoundingClientRect();
+        const dist = Math.abs(r.left + r.width / 2 - center);
+        if (dist < bestDist) { bestDist = dist; best = card; }
+      }
+      if (best) {
+        const r = best.getBoundingClientRect();
+        const target = track.scrollLeft + (r.left + r.width / 2 - center);
+        track.scrollTo({ left: target, behavior: reduced ? "auto" : "smooth" });
+      }
+    };
     const pause = () => {
       paused = true;
-      track.style.scrollSnapType = "x mandatory";
+      track.style.scrollSnapType = "none"; // prevent instant snap jump
+      alignNearest();
     };
     const resume = () => {
       paused = false;
