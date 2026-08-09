@@ -19,7 +19,7 @@
 |---|---|---|---|
 | **G1** | **README + docs vẫn "HomeLab Dashboard"** — rebrand HostDeck chưa phủ hết | README dòng 1 title, 22 alt, 35 alt; `docs/comparison.md` 4 chỗ, `migration.md` 1, `operations.md` 1 | **P0** — visitor GitHub thấy tên cũ lệch với landing |
 | **G2** | **GitHub description chưa rebrand + homepage trống** | API: description `"HomeLab DevOps Dashboard — Real-time monitoring..."`, homepage `""` | **P0** — hiện trong search + SEO |
-| **G3** | **README demo link trỏ Pages cũ** | dòng 20: `bnhminh1010.github.io/HomeLab-Dashboard/` — giờ có custom domain | P1 |
+| **G3** | **README demo link trỏ Pages cũ** | dòng 20: `bnhminh1010.github.io/hostdeck/` — giờ có custom domain | P1 |
 | **G4** | **Số liệu Wedge 2 sai benchmark** | GTM strategy nói "30MB RAM" + "6 containers 2GB" — benchmark thật: dashboard 40.9MB + agent 8.6MB ≈ 50MB RSS; "6 containers 2GB" không nguồn | P1 — anti-slop, dùng số đo được |
 | **G5** | **GitHub Discussions chưa bật** | API: `has_discussions: False` — strategy yêu cầu community hub | P1 |
 | **G6** | **Demo GIF chưa verify IP leak** | `site/screenshots/demo.gif` (411KB) — chưa extract frame kiểm tra theo 4f skill (đã verify Task 2.1: 3 frame sạch IP) | ✅ xong |

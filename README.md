@@ -17,7 +17,7 @@
   <a href="#quick-start-with-podman-compose">Quick start</a> · <a href="#packages">Packages</a> · <a href="#architecture-and-data-lifecycle">Architecture</a> · <a href="#security-boundary">Security</a> · <a href="#development-and-verification">Development</a> · <a href="docs/operations.md">Operations</a> · <a href="docs/adr.md">ADR</a> · <a href="docs/comparison.md">Comparison</a> · <a href="docs/migration.md">Migration</a> · <a href="docs/benchmarks.md">Benchmarks</a>
 </p>
 
-<p align="center"><a href="https://hostdeck.thinkai.id.vn/app/?demo=1">Open the public demo</a> · <a href="https://github.com/bnhminh1010/HomeLab-Dashboard/releases">Download a release</a></p>
+<p align="center"><a href="https://hostdeck.thinkai.id.vn/app/?demo=1">Open the public demo</a> · <a href="https://github.com/bnhminh1010/hostdeck/releases">Download a release</a></p>
 
 <p align="center"><img alt="HostDeck live demo" src="site/screenshots/demo.gif" width="820"></p>
 
@@ -166,7 +166,7 @@ provider, and a tailnet with MagicDNS and HTTPS certificates enabled. Run the
 installer as the unprivileged Podman account (never as root):
 
 ```bash
-curl -fsSL https://github.com/bnhminh1010/HomeLab-Dashboard/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash
 ```
 
 The installer preserves an existing `.env`, enables the rootless Podman socket,
@@ -192,8 +192,8 @@ Tailscale Serve.
 ## Packages
 
 <p>
-  <a href="https://github.com/bnhminh1010/HomeLab-Dashboard/releases/latest"><img src="https://img.shields.io/github/v/release/bnhminh1010/HomeLab-Dashboard?display_name=tag&sort=semver" alt="Latest release"></a>
-  <a href="https://github.com/bnhminh1010/HomeLab-Dashboard/blob/main/LICENSE"><img src="https://img.shields.io/github/license/bnhminh1010/HomeLab-Dashboard" alt="License"></a>
+  <a href="https://github.com/bnhminh1010/hostdeck/releases/latest"><img src="https://img.shields.io/github/v/release/bnhminh1010/hostdeck?display_name=tag&sort=semver" alt="Latest release"></a>
+  <a href="https://github.com/bnhminh1010/hostdeck/blob/main/LICENSE"><img src="https://img.shields.io/github/license/bnhminh1010/hostdeck" alt="License"></a>
   <a href="https://ghcr.io/bnhminh1010/homelab-dashboard"><img src="https://img.shields.io/badge/GHCR-ghcr.io%2Fbnhminh1010%2Fhomelab--dashboard-181717?logo=github" alt="GHCR image"></a>
   <a href="https://hub.docker.com/r/minhtuyetvoi/homelab-dashboard"><img src="https://img.shields.io/badge/Docker%20Hub-minhtuyetvoi%2Fhomelab--dashboard-2496ED?logo=docker&logoColor=white" alt="Docker Hub image"></a>
 </p>

@@ -34,7 +34,7 @@ socket, installs the host agent, and starts Compose. Run it as the unprivileged
 Podman account (never as root):
 
 ```bash
-curl -fsSL https://github.com/bnhminh1010/HomeLab-Dashboard/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash
 ```
 
 The installer prompts for `TS_AUTHKEY` and `ADMIN_USERS` when they are not
@@ -58,7 +58,7 @@ socket, and make sure the runtime directory belongs to the account that owns
 Podman:
 
 ```bash
-git clone https://github.com/bnhminh1010/HomeLab-Dashboard.git homelab-dashboard
+git clone https://github.com/bnhminh1010/hostdeck.git homelab-dashboard
 cd homelab-dashboard
 # Replace vX.Y.Z with an available container-enabled GitHub Release tag.
 export RELEASE_TAG=vX.Y.Z
