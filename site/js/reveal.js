@@ -98,17 +98,19 @@
         .join("<br>");
     } else {
       let li = 0, ci = 0, phase = "type";
+      let typerVisible = false;
       const typeIo = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            typeIo.disconnect();
-            tick();
-          }
-        }
-      }, { threshold: 0.3 });
+        for (const e of entries) typerVisible = e.isIntersecting;
+      }, { threshold: 0.1 });
       typeIo.observe(typer);
+      tick(); // loop self-schedules; the gate below holds it until visible
 
       function tick() {
+        // Off-screen the loop is pure waste: every keystroke rewrites
+        // innerHTML = page-wide style recalc even though nothing is
+        // visible. Gate it on the IntersectionObserver flag instead of
+        // disconnecting — so it resumes when the user scrolls back.
+        if (!typerVisible) { setTimeout(tick, 250); return; }
         if (phase === "type") {
           const line = lines[li];
           const cur = line.t.slice(0, ++ci);
@@ -169,192 +171,293 @@
     copyBtn.addEventListener("click", copy);
   }
 
-  // ── screenshot filmstrip: auto-advance loop, pause on hover/focus ──
-  // Scrolls left→right continuously. The loop pauses while the pointer or
-  // keyboard focus is on the track, after a button click, and whenever the
-  // tab is hidden. Respects prefers-reduced-motion (static, no auto-scroll).
+  // ── screenshot filmstrip: transform-driven coverflow carousel ──
+  // No scroll container: the JS auto-loop drives translateX on the track,
+  // which is compositor-only (scrollLeft on a big track was the iGPU jank
+  // source). The loop pauses while the pointer or keyboard focus is on the
+  // track, after a button click, and whenever the tab is hidden. All
+  // centering goes through a self-written rAF tween — the browser's
+  // smooth scrollTo drops frames on integrated GPUs, which made the
+  // prev/next buttons land off-center on real hardware.
   const track = document.getElementById("shots-track");
   const prevBtn = document.getElementById("shots-prev");
   const nextBtn = document.getElementById("shots-next");
-  if (track && prevBtn && nextBtn) {
-    // Seamless loop: mirror the 8 cards on both sides of the track and
-    // start at the original set. The loop wraps by subtracting one set
-    // width whenever scrollLeft crosses it — visually identical because
-    // the mirrored cards are exact clones, so there is no jump.
-    const cards = [...track.children];
+  const carousel = track ? track.parentElement : null;
+  if (track && prevBtn && nextBtn && carousel) {
     const gap = 22;
-    const step = () => {
-      const card = track.querySelector(".shot-card");
-      return card ? card.offsetWidth + gap : track.clientWidth * 0.8;
-    };
-    const LOOP = step() * 8; // width of one 8-card set
+    const SPEED = 90; // px per second (70 felt too slow to idle on a card)
+    const HOLD_MS = 3500; // pause after a manual button click
+    const TWEEN_MS = 250; // centering tween duration
+    const SET_N = 8; // original set size
+
+    // Seamless loop: mirror the 8 cards on both sides (clone A + originals
+    // + clone B = 24 cards). Wrap subtracts one set width; the swap is
+    // invisible because the clones are pixel-identical, and both tween
+    // directions always find a real card.
+    const cards = [...track.children];
     const clonesA = cards.map((c) => c.cloneNode(true));
     const clonesB = cards.map((c) => c.cloneNode(true));
-    clonesA.forEach((c) => track.prepend(c));
+    // prepend() puts each node FIRST, so iterating forward would REVERSE
+    // the clone-A block (Terminal…Services) and break the index%SET_N
+    // mapping used by the counter/announcer. Prepend in reverse order so
+    // the mirror reads Services…Terminal like the originals.
+    [...clonesA].reverse().forEach((c) => track.prepend(c));
     clonesB.forEach((c) => track.appendChild(c));
-    track.scrollLeft = LOOP; // start at the original set
-    const norm = () => {
-      // Keep scrollLeft inside [0, 2*LOOP) so there is always a full
-      // mirrored set on either side. Wrapping subtracts one set width;
-      // the mirrored cards are pixel-identical clones so the swap is
-      // invisible. IMPORTANT: do NOT push scrollLeft back up to LOOP —
-      // centering the FIRST card of the original set legitimately lands
-      // below LOOP, and forcing it up would make the auto-loop visibly
-      // jump a full set on resume (the flicker we hunted for v3).
-      let s = track.scrollLeft;
-      while (s >= LOOP * 2) s -= LOOP;
-      track.scrollLeft = Math.max(0, s);
-    };
-    const clickStep = (dir) => {
-      track.scrollBy({ left: dir * step(), behavior: reduced ? "auto" : "smooth" });
-      hold();
-      window.setTimeout(norm, 700); // re-normalize once smooth scroll settles
-    };
-    prevBtn.addEventListener("click", () => clickStep(-1));
-    nextBtn.addEventListener("click", () => clickStep(1));
+    const cardsAll = [...track.children]; // 24
 
-    const SPEED = 70; // px per second
-    const HOLD_MS = 3500; // pause after a manual button click
-    let raf = null, last = 0, paused = false, holdUntil = 0;
+    let cardW = 620, trackLeft = 4, step = 642, SET = 5136, maxOffset = 0;
+    const measure = () => {
+      const card = track.querySelector(".shot-card");
+      cardW = card ? card.offsetWidth : 620; // layout width — NOT the rect width (already scaled by coverflow)
+      step = cardW + gap;
+      SET = step * SET_N;
+      trackLeft = track.offsetLeft + 4; // 4px track padding
+      maxOffset = Math.max(0, track.scrollWidth - carousel.clientWidth);
+    };
+    // (i+0.5)*step counts half the gap twice (11px systematic error) —
+    // this form is exact. NOTE: positions are relative to the carousel
+    // (trackLeft is track.offsetLeft-based), so the target is
+    // clientWidth/2 — NOT the absolute viewCenter(), which would add the
+    // carousel's own offset (margin:auto) to every measurement.
+    const centerOffset = (i) => trackLeft + i * step + cardW / 2 - carousel.clientWidth / 2;
+
+    let offset = 0, raf = null, last = 0, lastOffset = NaN;
+    let paused = false, holdUntil = 0, tween = null, drag = null;
+    let visible = false; // carousel inside the viewport (IntersectionObserver)
+
+    const render = () => {
+      track.style.transform = "translate3d(" + (-offset).toFixed(2) + "px,0,0)";
+    };
+
+    const wrapOffset = () => {
+      while (offset >= SET * 2) offset -= SET;
+      while (offset < 0) offset += SET;
+      offset = Math.max(0, Math.min(offset, maxOffset));
+    };
 
     // Coverflow depth: the centered card scales to 1.0, stays fully
     // opaque and casts the strongest shadow; cards further out shrink,
     // dim and tilt slightly toward the viewer (rotateY), reading as a
-    // carousel seen from straight ahead. Under reduced motion the tilt
-    // is dropped; only the scroll-linked scale/fade remains.
+    // carousel seen from straight ahead. Distances come from the offset
+    // math (no getBoundingClientRect reads per card).
+    // DEPTH IS SMOOTH, not quantized: step-quantized values (scale steps
+    // of 0.01 ≈ 6.2px on a 620px card, rotateY steps of 0.5°) make the
+    // coverflow ratchet past discrete steps while the track itself moves
+    // smoothly — the visible "jitter" on real hardware. Transform and
+    // opacity are compositor-only, so per-frame writes cost a cheap style
+    // recalc, never a paint; the writes are still cache-compared so
+    // unchanged cards (paused, off-screen, tween finished) write nothing.
     const applyDepth = () => {
-      const tr = track.getBoundingClientRect();
-      const center = tr.left + tr.width / 2;
-      // Only style cards near the viewport (plus one on each side); the
-      // rest are invisible and updating them every frame is wasted work.
-      const lo = tr.left - 700, hi = tr.right + 700;
-      for (const card of track.children) {
-        const r = card.getBoundingClientRect();
-        if (r.right < lo || r.left > hi) continue;
-        // Use layout width (offsetWidth) as the distance denominator;
-        // getBoundingClientRect().width is already scaled by the
-        // coverflow transform and would skew the ratio.
-        const half = card.offsetWidth / 2;
-        const dist = (r.left + half - center) / half;
+      const vc = carousel.clientWidth / 2;
+      const half = cardW / 2;
+      for (let i = 0; i < cardsAll.length; i++) {
+        const pos = trackLeft + i * step + half - offset;
+        if (Math.abs(pos - vc) > 700) continue; // only cards near the viewport
+        const dist = (pos - vc) / half;
         const abs = Math.min(Math.abs(dist), 3);
-        const scale = 1 - abs * 0.09;
+        // Real 3D depth via translateZ (the track has preserve-3d, so the
+        // carousel's perspective reaches the cards): the browser orders
+        // the cards by their Z position, smoothly, every frame — no
+        // z-index stepping, no stacking-context pop. With perspective
+        // 1400px, z=-150 renders ≈ scale(0.90): same feel as the old
+        // scale, but the side card can never jump "onto" the focused one.
+        const z = -abs * 150;
         const opacity = Math.max(0.4, 1 - abs * 0.18);
-        const rot = reduced ? 0 : Math.max(-10, Math.min(10, -dist * 3.5));
-        // Quantize every animated value so the style string only changes
-        // when a card actually crosses a depth step — writing transform
-        // on every frame (even sub-pixel identical values) triggers style
-        // recalc + repaint every frame, which is the flicker on iGPUs.
-        // The card is scrolling underneath anyway, so 0.01-scale steps
-        // are imperceptible.
-        const qScale = (Math.round(scale * 100) / 100).toFixed(2);
-        const qOp = (Math.round(opacity * 100) / 100).toFixed(2);
-        const qRot = (Math.round(rot * 2) / 2).toFixed(1);
-        const t = "scale(" + qScale + ") rotateY(" + qRot + "deg)";
-        const o = qOp;
+        // rotateY bends the coverflow into a cylinder (7°/unit, clamp
+        // ±20°): the side cards visibly turn away, the centered card pops.
+        const rot = reduced ? 0 : Math.max(-20, Math.min(20, -dist * 7));
+        const card = cardsAll[i];
+        const t = "translateZ(" + z.toFixed(1) + "px) rotateY(" + rot.toFixed(2) + "deg)";
         if (card.style.transform !== t) card.style.transform = t;
+        const o = opacity.toFixed(3);
         if (card.style.opacity !== o) card.style.opacity = o;
-        // Quantize z-index so it only changes when a card crosses a
-        // depth threshold — per-frame paint changes here cause visible
-        // repaint flicker while the loop scrolls. The depth glow is a
-        // pseudo-element whose opacity we drive via a CSS custom property
-        // (compositor-only, no repaint).
-        card.style.zIndex = String(Math.round(10 - Math.floor(abs * 2) * 2));
         const glow = abs < 0.55 ? "1" : "0";
         if (card.style.getPropertyValue("--glow") !== glow) card.style.setProperty("--glow", glow);
       }
+      paintCounter();
+    };
+
+    // rAF tween with mirror-aware target picking: the tween always goes to
+    // the target's clone nearest the current offset, so stepping past the
+    // end of the track (card 23 → 0) looks like a normal single step.
+    const startTween = (target, ms) => {
+      let best = target, bd = Infinity;
+      for (let k = -1; k <= 1; k++) {
+        const c = target + k * SET;
+        const d = Math.abs(c - offset);
+        if (d < bd) { bd = d; best = c; }
+      }
+      const from = offset;
+      const dur = reduced ? 0 : (ms || TWEEN_MS);
+      paused = true;
+      holdUntil = performance.now() + HOLD_MS;
+      if (dur === 0) { offset = best; render(); applyDepth(); return; }
+      // A tween requested while the tick is parked (carousel scrolled out,
+      // IO not re-fired yet) must still run: restart the loop here instead
+      // of waiting for the observer.
+      if (!raf) raf = requestAnimationFrame(tick);
+      tween = { from, to: best, t0: performance.now(), dur };
     };
 
     function tick(ts) {
-      if (!reduced && !paused && ts >= holdUntil && document.visibilityState === "visible") {
-        const dt = last ? (ts - last) / 1000 : 0;
-        track.scrollLeft = Math.min(track.scrollLeft + SPEED * dt, LOOP * 2);
-        norm(); // seamless wrap at the set boundary — no visual jump
-      }
+      // Carousel off-screen: stop scheduling entirely. (The paused flag is
+      // for USER interaction — hover/focus/touch — and must not be touched
+      // here, or a scroll-into-view would override an active hover pause.)
+      if (!visible) { raf = null; return; }
+      const dt = last ? Math.min((ts - last) / 1000, 0.05) : 0;
       last = ts;
-      if (!reduced) applyDepth();
+      if (tween) {
+        const p = Math.min(1, (ts - tween.t0) / tween.dur);
+        const e = 1 - Math.pow(1 - p, 3); // easeOutCubic
+        offset = tween.from + (tween.to - tween.from) * e;
+        if (p >= 1) { offset = tween.to; tween = null; }
+      } else if (!reduced && !paused && ts >= holdUntil && document.visibilityState === "visible") {
+        offset = Math.min(offset + SPEED * dt, maxOffset);
+        if (offset >= SET * 1.5) offset -= SET; // invisible mirror swap
+      }
+      render();
+      // Depth is a function of the offset: skip the 24-card pass entirely
+      // when nothing moved (paused / tween finished).
+      if (offset !== lastOffset) { lastOffset = offset; applyDepth(); }
       raf = requestAnimationFrame(tick);
     }
 
-    // On pause (hover/focus/touch), smoothly scroll the nearest card to
-    // center instead of letting scroll-snap jump instantly. While
-    // auto-scrolling, snap stays off so the motion is smooth.
-    const alignNearest = () => {
-      const tr = track.getBoundingClientRect();
-      const center = tr.left + tr.width / 2;
-      let best = null, bestDist = Infinity;
-      for (const card of track.children) {
-        const r = card.getBoundingClientRect();
-        const dist = Math.abs(r.left + r.width / 2 - center);
-        if (dist < bestDist) { bestDist = dist; best = card; }
+    const nearestCardIndex = () => {
+      const vc = carousel.clientWidth / 2;
+      let best = 0, bd = Infinity;
+      for (let i = 0; i < cardsAll.length; i++) {
+        const pos = trackLeft + i * step + cardW / 2 - offset;
+        const d = Math.abs(pos - vc);
+        if (d < bd) { bd = d; best = i; }
       }
-      if (best) {
-        const r = best.getBoundingClientRect();
-        const target = track.scrollLeft + (r.left + r.width / 2 - center);
-        track.scrollTo({ left: target, behavior: reduced ? "auto" : "smooth" });
-      }
+      return best;
     };
-    // Per-card hover: the card under the pointer eases to center. Because
-    // the track is mirrored, the hovered card exists 3×; pick the mirror
-    // whose centering scroll is closest to the current position so the
-    // motion is always the shortest step (never a long rewind).
-    const centerCard = (card) => {
-      const tr = track.getBoundingClientRect();
-      const r = card.getBoundingClientRect();
-      const center = tr.left + tr.width / 2;
-      const raw = track.scrollLeft + (r.left + r.width / 2 - center);
-      const max = track.scrollWidth - track.clientWidth;
-      let best = raw, bestDist = Math.abs(raw - track.scrollLeft);
-      for (const cand of [raw - LOOP, raw + LOOP]) {
-        if (cand >= 0 && cand <= max) {
-          const d = Math.abs(cand - track.scrollLeft);
-          if (d < bestDist) { bestDist = d; best = cand; }
-        }
-      }
-      track.scrollTo({ left: best, behavior: reduced ? "auto" : "smooth" });
-    };
-    const pause = () => {
-      paused = true;
-      track.style.scrollSnapType = "none"; // prevent instant snap jump
-    };
-    const resume = () => {
-      paused = false;
-      track.style.scrollSnapType = "none";
-    };
-    const hold = () => { holdUntil = performance.now() + HOLD_MS; };
 
-    let hoverCard = null;
-    track.addEventListener("mouseenter", pause);
-    track.addEventListener("mouseleave", () => { hoverCard = null; resume(); });
-    // Per-card hover via mousemove, NOT mouseover: mouseover fires when the
-    // scroll animation drags a different card under a stationary pointer,
-    // which would cascade the centering endlessly. mousemove only fires on
-    // real pointer travel, so the hovered card is always user-chosen. The
-    // card !== hoverCard check already limits work to actual card changes,
-    // so no extra throttle (it would drop fast pointer travel).
-    track.addEventListener("mousemove", (e) => {
+    // Prev/next: snap to the card nearest center FIRST, then step one
+    // card. Stepping from the raw current position drifts when the loop
+    // is mid-card; snap-first always lands exactly on a card.
+    const clickStep = (dir) => {
+      const next = (nearestCardIndex() + dir + cardsAll.length) % cardsAll.length;
+      startTween(centerOffset(next));
+      return next;
+    };
+    prevBtn.addEventListener("click", () => clickStep(-1));
+    nextBtn.addEventListener("click", () => clickStep(1));
+
+    const pause = () => { paused = true; };
+    const resume = () => { paused = false; };
+
+    let hoverCard = null, hx = 0, hy = 0;
+    carousel.addEventListener("mousemove", (e) => {
       if (!paused) return;
+      // Jitter guard: a stationary pointer (or sub-pixel sensor noise)
+      // must never re-trigger. Without it, the track moving during a
+      // tween slides a DIFFERENT card under the resting pointer and the
+      // next jitter re-centers it — the endless focus flip at the edge.
+      if (Math.abs(e.clientX - hx) + Math.abs(e.clientY - hy) < 8) return;
+      hx = e.clientX; hy = e.clientY;
       const card = e.target.closest ? e.target.closest(".shot-card") : null;
       if (card && card !== hoverCard) {
         hoverCard = card;
-        centerCard(card);
+        startTween(centerOffset(cardsAll.indexOf(card)));
       }
     });
-    track.addEventListener("focusin", () => { pause(); alignNearest(); });
+    track.addEventListener("mouseenter", pause);
+    track.addEventListener("mouseleave", () => { hoverCard = null; resume(); });
+    track.addEventListener("focusin", () => { pause(); startTween(centerOffset(nearestCardIndex())); });
     track.addEventListener("focusout", resume);
-    track.addEventListener("touchstart", () => { pause(); alignNearest(); }, { passive: true });
+    track.addEventListener("touchstart", () => { pause(); startTween(centerOffset(nearestCardIndex())); }, { passive: true });
     track.addEventListener("touchend", resume, { passive: true });
-    // Under reduced motion there is no rAF-driven loop, so manual
-    // scrolling still needs the depth pass via the scroll event.
-    track.addEventListener("scroll", () => { if (reduced) applyDepth(); }, { passive: true });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) pause();
       else resume();
     });
 
-    if (!reduced) {
-      track.style.scrollSnapType = "none"; // auto-loop runs smooth from the start
-      raf = requestAnimationFrame(tick);
-    }
+    // ── keyboard: ←/→ step · Space pause/resume · Home/End jump ──
+    // Keyboard-first (hallmark): every pointer affordance needs a keyboard
+    // equivalent. Handled ONLY while focus lives inside the carousel (the
+    // user Tabbed there) — Space must not steal page scroll, and the
+    // arrows must not fight inputs elsewhere on the page. Hold-to-repeat
+    // is throttled to the 80–120ms instant-feedback window.
+    const live = document.getElementById("shots-live");
+    const counter = document.getElementById("shots-count");
+    const cardTitle = (i) => {
+      const fig = cardsAll[i] && cardsAll[i].querySelector("figcaption b");
+      return fig ? fig.textContent : "";
+    };
+    const announceIndex = (i) => { if (live) live.textContent = "Showing " + cardTitle(i % SET_N); };
+    let lastCount = -1;
+    const paintCounter = () => {
+      const n = (nearestCardIndex() % SET_N) + 1;
+      if (counter && n !== lastCount) { lastCount = n; counter.textContent = n + " / " + SET_N; }
+    };
+    let lastKeyAt = 0;
+    const KEY_REPEAT = 120;
+    document.addEventListener("keydown", (e) => {
+      if (!carousel.contains(document.activeElement)) return;
+      if (e.key === " " && document.activeElement.tagName === "BUTTON") return; // let the focused nav button handle Space
+      const now = performance.now();
+      if (e.repeat && now - lastKeyAt < KEY_REPEAT) return;
+      lastKeyAt = now;
+      switch (e.key) {
+        case "ArrowLeft": e.preventDefault(); announceIndex(clickStep(-1)); break;
+        case "ArrowRight": e.preventDefault(); announceIndex(clickStep(1)); break;
+        case "Home": e.preventDefault(); startTween(centerOffset(SET_N)); announceIndex(SET_N); break;
+        case "End": e.preventDefault(); startTween(centerOffset(2 * SET_N - 1)); announceIndex(2 * SET_N - 1); break;
+        case " ": e.preventDefault(); paused = !paused; if (!paused) holdUntil = 0; break; // resume must not wait out a stale holdUntil
+      }
+    });
+
+    // Drag to scrub: pointerdown starts a drag (cancelling any in-flight
+    // centering tween — otherwise tick's tween branch overwrites the
+    // dragged offset every frame). Move/up listen on document because
+    // pointer capture is unreliable; the drag gate replaces it.
+    track.addEventListener("pointerdown", (e) => {
+      pause();
+      tween = null;
+      drag = { x: e.clientX, from: offset };
+      try { track.setPointerCapture(e.pointerId); } catch (err) { /* best-effort */ }
+    }, { passive: true });
+    document.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      offset = Math.max(0, Math.min(maxOffset, drag.from + (drag.x - e.clientX)));
+      render();
+      if (offset !== lastOffset) { lastOffset = offset; applyDepth(); }
+    }, { passive: true });
+    const endDrag = () => {
+      if (!drag) return;
+      drag = null;
+      startTween(centerOffset(nearestCardIndex()));
+    };
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+
+    // Observe the CAROUSEL, never the track: the translated track sits
+    // outside the viewport, so observing it reports "off-screen" and the
+    // callback would cancel the tick — auto-loop and tweens die silently.
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        visible = e.isIntersecting;
+        if (visible && !reduced && !raf) raf = requestAnimationFrame(tick);
+      }
+    }, { threshold: 0.1 });
+    io.observe(carousel);
+
+    // Init: measure after layout settles (double rAF), then again once
+    // images finish so cardW is authoritative. Start with card 8 — the
+    // first card of the original set — centered.
+    const boot = () => {
+      measure();
+      offset = centerOffset(8);
+      render();
+      applyDepth();
+    };
+    requestAnimationFrame(() => requestAnimationFrame(boot));
+    window.addEventListener("load", boot);
+    window.addEventListener("resize", () => { measure(); wrapOffset(); render(); applyDepth(); });
+
+    if (!reduced) raf = requestAnimationFrame(tick);
+    else applyDepth();
   }
 
   // ── demo iframe: hide the inner scrollbar (wheel scrolling still works) ──

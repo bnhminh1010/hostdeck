@@ -187,7 +187,8 @@
     <h2>Eight workspaces. One loop: see → understand → act.</h2>
     <p class="section-sub">Everything an operator runs on a 1–5 node lab, in one interface, no tab sprawl between metrics, logs and shells.</p>
   </div>
-  <div class="shots-carousel">
+  <div class="shots-viewport">
+  <div class="shots-carousel" role="region" aria-label="Product screenshots" tabindex="0">
     <div class="shots-track" id="shots-track">
       <figure class="shot-card"><img src="screenshots/services.png" alt="Services workspace with per-service SLO error budgets" loading="eager" width="2880" height="1800"><figcaption><b>Services</b><span>SLO error budgets · 7/30/90-day windows</span></figcaption></figure>
       <figure class="shot-card"><img src="screenshots/topology.png" alt="Service topology showing curated dependencies" loading="eager" width="2880" height="1800"><figcaption><b>Topology</b><span>Curated dependency map · blast radius</span></figcaption></figure>
@@ -200,6 +201,10 @@
     </div>
     <button class="shots-nav shots-prev" id="shots-prev" type="button" aria-label="Previous screenshot"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
     <button class="shots-nav shots-next" id="shots-next" type="button" aria-label="Next screenshot"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <p class="shots-hint" aria-hidden="true"><kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>Space</kbd> pause · <kbd>Home</kbd>/<kbd>End</kbd> jump</p>
+    <span class="shots-count" id="shots-count" aria-hidden="true">1 / 8</span>
+    <span class="sr-only" id="shots-live" aria-live="polite"></span>
+  </div>
   </div>
 </section>
 

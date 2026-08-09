@@ -251,31 +251,50 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
 
 /* ─── SCREENSHOTS (filmstrip: focus one, edge fade, scroll-snap) ─── */
 .shots { padding: 104px 24px; }
-.shots-carousel { position: relative; max-width: var(--maxw); margin: 0 auto; perspective: 1600px; }
+.shots-viewport {
+  /* Clip wrapper OUTSIDE the 3D context: overflow:hidden on the carousel
+     itself would flatten the preserve-3d chain (grouping property), so
+     the perspective would never reach the cards. The viewport clips the
+     wide track instead. */
+  max-width: var(--maxw); margin: 0 auto; overflow: hidden;
+}
+.shots-carousel {
+  position: relative;
+  /* Perspective lives here, on the element whose children (via the
+     preserve-3d track) rotate: the cards get REAL depth, not the
+     orthographic squash that made them visibly narrow and then snap
+     open as they crossed center. */
+  perspective: 1400px;
+}
 .shots-track {
   display: flex; gap: 22px;
-  overflow-x: auto; scroll-snap-type: x mandatory;
-  scroll-padding-inline: 24px;
   padding: 4px;
-  scrollbar-width: none;
-  /* Promote the scroller to its own compositor layer: the JS-driven
-     auto-loop moves scrollLeft every frame, and a non-composited
-     scroll repaints the whole track each frame (hundreds of Paint
-     events per second = the flicker seen on integrated GPUs). */
-  will-change: scroll-position;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  /* The JS auto-loop drives translateX on this track — compositor-only.
+     No scroll container: overflow/scroll-snap/scrollbar are all gone. */
+  will-change: transform;
+  /* Carry the carousel's perspective down to the cards. */
+  transform-style: preserve-3d;
 }
-.shots-track::-webkit-scrollbar { display: none; }
+/* Edge fade via overlay gradients (was a mask on the track — a mask on a
+   composited layer can block promotion and force a software path; these
+   pseudo-elements are pointer-events:none so cards stay interactive). */
+.shots-carousel::before,
+.shots-carousel::after {
+  content: ""; position: absolute; top: 0; bottom: 0;
+  width: min(46px, 12vw); z-index: 12; pointer-events: none;
+}
+.shots-carousel::before { left: 0; background: linear-gradient(90deg, var(--bg-deep), transparent); }
+.shots-carousel::after { right: 0; background: linear-gradient(-90deg, var(--bg-deep), transparent); }
 .shot-card {
   position: relative;
   flex: 0 0 min(620px, 76vw);
-  scroll-snap-align: center;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
   overflow: hidden; background: var(--bg-card);
   transform-origin: center center;
-  will-change: transform, opacity;
+  /* No will-change here: the cards carry a 3D rotateY under perspective,
+     which Chromium promotes to its own layer anyway — a will-change hint
+     on every card would explode the layer count on integrated GPUs. */
   transition: border-color var(--dur) var(--ease);
 }
 .shot-card:hover { border-color: var(--line); }
@@ -300,7 +319,7 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
 .shot-card figcaption span { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); }
 .shots-nav {
   position: absolute; top: 44%;
-  z-index: 2;
+  z-index: 20; /* above the depth pass (cards reach z-index 10) and the fade overlay (12) */
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-mono); font-size: 17px;
@@ -315,6 +334,36 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
 .shots-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .shots-prev { left: 4px; }
 .shots-next { right: 4px; }
+
+/* Keyboard-first (hallmark): the carousel is a focusable region; the ring
+   appears instantly — never animate a focus ring's arrival. */
+.shots-carousel:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 12px; }
+.shots-hint {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim);
+  background: color-mix(in srgb, var(--bg-deep) 72%, transparent);
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px;
+  opacity: 0; transition: opacity var(--dur) var(--ease);
+  pointer-events: none; white-space: nowrap; z-index: 21;
+}
+.shots-carousel:focus-within .shots-hint { opacity: 1; }
+.shots-hint kbd {
+  font-family: var(--font-mono); font-size: 9.5px; color: var(--text-secondary);
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px;
+  padding: 1px 4px; background: var(--bg-raise); line-height: 1.4;
+}
+.shots-count {
+  position: absolute; top: 12px; right: 52px;
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim);
+  background: color-mix(in srgb, var(--bg-deep) 72%, transparent);
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px;
+  pointer-events: none; z-index: 21;
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 /* ─── FEATURES (asymmetric bento, icon inline) ─── */
 .features { padding: 96px 24px; }
@@ -398,6 +447,7 @@ code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-
   .nav-drawer-backdrop, .nav-drawer-panel { transition: none; }
   .shot-card { transition: none; }
   .shots-nav { transition: none; }
+  .shots-hint { transition: none; }
 }
 
 /* ─── Cross-document view transitions (progressive enhancement) ───
