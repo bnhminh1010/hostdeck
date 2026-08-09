@@ -91,41 +91,48 @@
       { p: "$", t: "podman compose up -d" },
       { p: "→", t: "https://homelab-dashboard.tailnet.ts.net" },
     ];
-    let li = 0, ci = 0, phase = "type";
-    const typeIo = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          typeIo.disconnect();
-          tick();
+    // Reduced motion: render the three commands statically, no typing.
+    if (reduced) {
+      typer.innerHTML = lines
+        .map((l) => '<span class="c-prompt">' + l.p + "</span> <span class=\"c-cmd\">" + esc(l.t) + "</span>")
+        .join("<br>");
+    } else {
+      let li = 0, ci = 0, phase = "type";
+      const typeIo = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            typeIo.disconnect();
+            tick();
+          }
         }
-      }
-    }, { threshold: 0.3 });
-    typeIo.observe(typer);
+      }, { threshold: 0.3 });
+      typeIo.observe(typer);
 
-    function tick() {
-      if (phase === "type") {
-        const line = lines[li];
-        const cur = line.t.slice(0, ++ci);
-        typer.innerHTML =
-          '<span class="c-prompt">' + line.p + "</span> " +
-          '<span class="c-cmd">' + esc(cur) + "</span><span class=\"c-cursor\"></span>";
-        if (ci >= line.t.length) { phase = "pause"; setTimeout(tick, 650); }
-        else setTimeout(tick, 18 + Math.random() * 30);
-      } else if (phase === "pause") {
-        phase = "erase";
-        setTimeout(tick, 60);
-      } else if (phase === "erase") {
-        const line = lines[li];
-        ci = Math.max(0, ci - 3);
-        const cur = line.t.slice(0, ci);
-        typer.innerHTML =
-          '<span class="c-prompt">' + line.p + "</span> " +
-          '<span class="c-cmd">' + esc(cur) + "</span><span class=\"c-cursor\"></span>";
-        if (ci <= 0) {
-          li = (li + 1) % lines.length;
-          phase = "type";
+      function tick() {
+        if (phase === "type") {
+          const line = lines[li];
+          const cur = line.t.slice(0, ++ci);
+          typer.innerHTML =
+            '<span class="c-prompt">' + line.p + "</span> " +
+            '<span class="c-cmd">' + esc(cur) + "</span><span class=\"c-cursor\"></span>";
+          if (ci >= line.t.length) { phase = "pause"; setTimeout(tick, 650); }
+          else setTimeout(tick, 18 + Math.random() * 30);
+        } else if (phase === "pause") {
+          phase = "erase";
+          setTimeout(tick, 60);
+        } else if (phase === "erase") {
+          const line = lines[li];
+          ci = Math.max(0, ci - 3);
+          const cur = line.t.slice(0, ci);
+          typer.innerHTML =
+            '<span class="c-prompt">' + line.p + "</span> " +
+            '<span class="c-cmd">' + esc(cur) + "</span><span class=\"c-cursor\"></span>";
+          if (ci <= 0) {
+            li = (li + 1) % lines.length;
+            phase = "type";
+          }
+          setTimeout(tick, 16);
         }
-        setTimeout(tick, 16);
       }
     }
 
@@ -160,6 +167,19 @@
       }, 1800);
     };
     copyBtn.addEventListener("click", copy);
+  }
+
+  // ── screenshot filmstrip: prev/next scroll the snap track ──
+  const track = document.getElementById("shots-track");
+  const prevBtn = document.getElementById("shots-prev");
+  const nextBtn = document.getElementById("shots-next");
+  if (track && prevBtn && nextBtn) {
+    const step = () => {
+      const card = track.querySelector(".shot-card");
+      return card ? card.getBoundingClientRect().width + 22 : track.clientWidth * 0.8;
+    };
+    prevBtn.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: reduced ? "auto" : "smooth" }));
+    nextBtn.addEventListener("click", () => track.scrollBy({ left: step(), behavior: reduced ? "auto" : "smooth" }));
   }
 
   // ── demo iframe: hide the inner scrollbar (wheel scrolling still works) ──

@@ -13,10 +13,12 @@
   <link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
+<noscript><p class="noscript">JavaScript is disabled — the interactive demo, typing animation and mobile menu need it. Everything else works without JS.</p></noscript>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav" id="nav">
-  <a class="nav-brand" href="#top">
+  <a class="nav-brand" href="#main">
     <svg class="nav-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="4" fill="none" stroke="#37332d"/><rect x="6" y="6" width="6" height="6" rx="1" fill="#d99a3d"/><rect x="14" y="6" width="12" height="6" rx="1" fill="#37332d"/><rect x="6" y="14" width="12" height="6" rx="1" fill="#37332d"/><rect x="20" y="14" width="6" height="6" rx="1" fill="#55bf78"/><rect x="6" y="22" width="6" height="4" rx="1" fill="#37332d"/><rect x="14" y="22" width="12" height="4" rx="1" fill="#37332d"/></svg>
     <span class="nav-word">HOSTDECK</span>
   </a>
@@ -26,6 +28,7 @@
     <a href="#demo">Demo</a>
     <a href="#security">Security</a>
     <a href="docs.html">Docs</a>
+    <a href="changelog.html">Changelog</a>
     <a class="nav-gh" href="https://github.com/bnhminh1010/homelab-dashboard" target="_blank" rel="noopener">GitHub ↗</a>
   </div>
   <button class="nav-burger" id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
@@ -41,18 +44,19 @@
     <a href="#demo">Demo</a>
     <a href="#security">Security</a>
     <a href="docs.html">Docs</a>
+    <a href="changelog.html">Changelog</a>
     <a class="nav-gh" href="https://github.com/bnhminh1010/homelab-dashboard" target="_blank" rel="noopener">GitHub ↗</a>
   </div>
 </div>
 
 <!-- ══════════════ HERO ══════════════ -->
-<header class="hero" id="top">
+<header class="hero" id="main">
   <canvas class="hero-wave" id="wave" aria-hidden="true"></canvas>
   <div class="hero-grid">
     <div class="hero-inner">
       <p class="hero-badge"><span class="pulse"></span> Tailscale-only · Zero inbound ports · No Node.js</p>
       <h1 class="hero-title">Your homelab,<br><span class="hero-accent">one console.</span></h1>
-      <p class="hero-sub">Observe services, SLOs, backup freshness and container health across up to five rootless Podman nodes — then open the correct container or host shell without exposing a single admin port.</p>
+      <p class="hero-sub">Observe services, SLOs, backup freshness and container health across up to five rootless Podman nodes, then open the correct container or host shell without exposing a single admin port.</p>
       <div class="hero-term" aria-hidden="true"><span class="t-prompt">$</span> podman compose up -d<span class="t-cursor"></span></div>
       <div class="hero-cta">
         <a class="btn btn-solid" href="#demo">Try the live demo</a>
@@ -62,7 +66,7 @@
     </div>
     <div class="hero-shot">
       <img src="screenshots/overview.png" alt="HostDeck overview — live health, host metrics and 24-hour trend" loading="eager" width="2880" height="1800">
-      <div class="shot-label"><span class="dot-ok"></span>LIVE · overview · admin@tailnet</div>
+      <div class="shot-label"><span class="dot-ok"></span>PREVIEW · overview · admin@tailnet</div>
     </div>
   </div>
 </header>
@@ -70,10 +74,10 @@
 <!-- ══════════════ KPI STRIP ══════════════ -->
 <section class="kpi" id="kpi">
   <div class="kpi-grid">
-    <div class="kpi-cell"><span class="kpi-num" data-count="8">0</span><span class="kpi-label">workspaces</span></div>
-    <div class="kpi-cell"><span class="kpi-num" data-count="3">0</span><span class="kpi-label">static binaries</span></div>
+    <div class="kpi-cell"><span class="kpi-num" data-count="8">8</span><span class="kpi-label">workspaces</span></div>
+    <div class="kpi-cell"><span class="kpi-num" data-count="3">3</span><span class="kpi-label">static binaries</span></div>
     <div class="kpi-cell"><span class="kpi-num" data-count="0">0</span><span class="kpi-label">inbound ports</span></div>
-    <div class="kpi-cell"><span class="kpi-num" data-count="50" data-suffix=" MB">0</span><span class="kpi-label">RSS per node</span></div>
+    <div class="kpi-cell"><span class="kpi-num" data-count="50" data-suffix=" MB">50 MB</span><span class="kpi-label">console RSS, dashboard + agent</span></div>
   </div>
 </section>
 
@@ -81,13 +85,13 @@
 <section class="features" id="features">
   <div class="section-head">
     <h2>Observe. Act. Retain. Trust.</h2>
-    <p class="section-sub">The four commitments of an operations console — each one implemented in code, not slides.</p>
+    <p class="section-sub">The four commitments of an operations console, each one implemented in code, not slides.</p>
   </div>
   <div class="feat-grid">
     <article class="feat-card feat-wide">
       <svg class="feat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
       <div><h3>Observe</h3>
-      <p>Host CPU, memory, disk, network, load and temperature; container health and resource usage; TLS certificate observations; service uptime and <b>backup freshness</b> — live and as 90-day history.</p></div>
+      <p>Host CPU, memory, disk, network, load and temperature; container health and resource usage; TLS certificate observations; service uptime and <b>backup freshness</b>, live and as 90-day history.</p></div>
     </article>
     <article class="feat-card">
       <svg class="feat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17l6-6-6-6M12 19h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -122,7 +126,7 @@
 <section class="how" id="how">
   <div class="section-head">
     <h2>Three binaries. One SQLite file. Zero ports to open.</h2>
-    <p class="section-sub">No Node.js, no reverse proxy, no metrics exporters — the whole console is two processes talking over a Unix socket, plus one outbound-only agent per remote node.</p>
+    <p class="section-sub">No Node.js, no reverse proxy, no metrics exporters. The whole console is two processes talking over a Unix socket, plus one outbound-only agent per remote node.</p>
   </div>
   <div class="how-grid">
     <article class="how-card">
@@ -169,7 +173,7 @@
 <section class="demo" id="demo">
   <div class="section-head">
     <h2>Run it in your browser. No account, no install.</h2>
-    <p class="section-sub">The full operator workflow with deterministic mock data — try regex log search, open a container shell, toggle the light theme.</p>
+    <p class="section-sub">The full operator workflow with deterministic mock data: try regex log search, open a container shell, toggle the light theme.</p>
   </div>
   <div class="demo-frame">
     <div class="demo-bar"><span class="demo-live"><span class="dot-ok"></span>LIVE · no login</span><span class="demo-url">hostdeck › demo</span></div>
@@ -181,13 +185,21 @@
 <section class="shots" id="screenshots">
   <div class="section-head">
     <h2>Eight workspaces. One loop: see → understand → act.</h2>
-    <p class="section-sub">Everything an operator runs on a 1–5 node lab, in one interface — no tab sprawl between metrics, logs and shells.</p>
+    <p class="section-sub">Everything an operator runs on a 1–5 node lab, in one interface, no tab sprawl between metrics, logs and shells.</p>
   </div>
-  <div class="shots-grid">
-    <figure class="shot-card"><img src="screenshots/services.png" alt="Services workspace with per-service SLO error budgets" loading="lazy" width="2880" height="1800"><figcaption><b>Services</b><span>SLO error budgets · 7/30/90-day windows</span></figcaption></figure>
-    <figure class="shot-card"><img src="screenshots/topology.png" alt="Service topology showing curated dependencies" loading="lazy" width="2880" height="1800"><figcaption><b>Topology</b><span>Curated dependency map · blast radius</span></figcaption></figure>
-    <figure class="shot-card"><img src="screenshots/logs-regex.png" alt="Logs workspace with regex search" loading="lazy" width="2880" height="1800"><figcaption><b>Logs</b><span>Follow · pause · regex search</span></figcaption></figure>
-    <figure class="shot-card"><img src="screenshots/terminal.png" alt="Terminal workbench with an interactive host shell" loading="lazy" width="2880" height="1800"><figcaption><b>Terminal</b><span>Container shells · host Bash</span></figcaption></figure>
+  <div class="shots-carousel">
+    <div class="shots-track" id="shots-track">
+      <figure class="shot-card"><img src="screenshots/services.png" alt="Services workspace with per-service SLO error budgets" loading="lazy" width="2880" height="1800"><figcaption><b>Services</b><span>SLO error budgets · 7/30/90-day windows</span></figcaption></figure>
+      <figure class="shot-card"><img src="screenshots/topology.png" alt="Service topology showing curated dependencies" loading="lazy" width="2880" height="1800"><figcaption><b>Topology</b><span>Curated dependency map · blast radius</span></figcaption></figure>
+      <figure class="shot-card"><img src="screenshots/containers.png" alt="Containers workspace with health and resource usage" loading="lazy" width="2880" height="1800"><figcaption><b>Containers</b><span>Health · resources · per-container actions</span></figcaption></figure>
+      <figure class="shot-card"><img src="screenshots/history.png" alt="History workspace with multi-node trends" loading="lazy" width="2880" height="1800"><figcaption><b>History</b><span>Multi-node trends · 10s / 1m / 15m rollups</span></figcaption></figure>
+      <figure class="shot-card"><img src="screenshots/logs-regex.png" alt="Logs workspace with regex search" loading="lazy" width="2880" height="1800"><figcaption><b>Logs</b><span>Follow · pause · regex search</span></figcaption></figure>
+      <figure class="shot-card"><img src="screenshots/alerts.png" alt="Alerts workspace with delivery channels" loading="lazy" width="2880" height="1800"><figcaption><b>Alerts</b><span>ntfy push · HMAC webhook · ack rules</span></figcaption></figure>
+      <figure class="shot-card"><img src="screenshots/nodes.png" alt="Nodes workspace with per-node status" loading="lazy" width="2880" height="1800"><figcaption><b>Nodes</b><span>Per-node status · agent connectivity</span></figcaption></figure>
+      <figure class="shot-card"><img src="screenshots/terminal.png" alt="Terminal workbench with an interactive host shell" loading="lazy" width="2880" height="1800"><figcaption><b>Terminal</b><span>Container shells · host Bash</span></figcaption></figure>
+    </div>
+    <button class="shots-nav shots-prev" id="shots-prev" type="button" aria-label="Previous screenshot">←</button>
+    <button class="shots-nav shots-next" id="shots-next" type="button" aria-label="Next screenshot">→</button>
   </div>
 </section>
 
@@ -200,7 +212,7 @@
   <div class="cmp-wrap">
     <table class="cmp-table">
       <thead>
-        <tr><th>Feature</th><th class="cmp-own">HostDeck</th><th>Start pages</th><th>Uptime Kuma</th><th>Beszel / Netdata</th><th>Grafana stack</th></tr>
+        <tr><th scope="col">Feature</th><th scope="col" class="cmp-own">HostDeck</th><th scope="col">Homepage</th><th scope="col">Uptime Kuma</th><th scope="col">Beszel / Netdata</th><th scope="col">Grafana stack</th></tr>
       </thead>
       <tbody>
         <tr><td>Zero inbound ports</td><td class="cmp-own">Native</td><td>—</td><td>—</td><td>Partial · outbound WS</td><td>—</td></tr>
@@ -220,7 +232,7 @@
   <div class="alerts-inner">
     <div class="alerts-head">
       <h2>Alerts reach you — not just a badge.</h2>
-      <p class="section-sub">Two native delivery channels, no vendor SDKs: ntfy push and an HMAC-signed generic webhook. Point the webhook at anything that speaks HTTP — a Telegram bot, Discord, Slack, Home Assistant, n8n — and alerts land where you already look.</p>
+      <p class="section-sub">Two native delivery channels, no vendor SDKs: ntfy push and an HMAC-signed generic webhook. Point the webhook at anything that speaks HTTP: a Telegram bot, Discord, Slack, Home Assistant, n8n — and alerts land where you already look.</p>
     </div>
     <div class="alerts-ch">
       <span class="alerts-chip">ntfy push</span>
@@ -266,11 +278,11 @@
   </div>
   <div class="faq-list">
     <details class="faq-item"><summary>Do I need Tailscale?</summary><p>Yes — your tailnet identity is the auth plane, so there is no password database to secure. Tailscale's free tier covers a personal tailnet with 100 devices.</p></details>
-    <details class="faq-item"><summary>How much does it cost?</summary><p>Nothing. Apache-2.0, one static Go binary, one SQLite file. No SaaS, no licence keys, no telemetry.</p></details>
+    <details class="faq-item"><summary>How much does it cost?</summary><p>Nothing. Apache-2.0, three static Go binaries and one SQLite file. No SaaS, no licence keys, no telemetry.</p></details>
     <details class="faq-item"><summary>Does it work with Docker, or only Podman?</summary><p>Container health, stats, logs and shells are built against the rootless Podman socket. If you run Docker, the container workspaces won't have a socket to talk to.</p></details>
-    <details class="faq-item"><summary>How is this different from Grafana, Beszel or Uptime Kuma?</summary><p>Those are point tools — metrics, monitoring or availability. This console closes the loop: see the alert, open the right log, drop into the right shell, all in one place, with zero inbound ports. See the <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/comparison.md" target="_blank" rel="noopener">full comparison</a>.</p></details>
+    <details class="faq-item"><summary>How is this different from Grafana, Beszel or Uptime Kuma?</summary><p>Those are point tools: metrics, monitoring or availability. This console closes the loop: see the alert, open the right log, drop into the right shell, all in one place, with zero inbound ports. See the <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/comparison.md" target="_blank" rel="noopener">full comparison</a>.</p></details>
     <details class="faq-item"><summary>Can I get alerts on Telegram, Discord or Slack?</summary><p>Yes — via the HMAC-signed webhook channel. The dashboard POSTs a versioned JSON payload to any HTTPS endpoint, so you forward it to your own bot, n8n flow or Home Assistant automation. Native ntfy push is also built in; we deliberately ship two channels instead of fifty SDKs.</p></details>
-    <details class="faq-item"><summary>Where does my data live?</summary><p>One SQLite file on the dashboard host. History is rolled up in three tiers — 10s samples for 48h, 1-minute for 30 days, 15-minute for 90 days — with a configurable quota.</p></details>
+    <details class="faq-item"><summary>Where does my data live?</summary><p>One SQLite file on the dashboard host. History is rolled up in three tiers: 10s samples for 48h, 1-minute for 30 days, 15-minute for 90 days — with a configurable quota.</p></details>
   </div>
 </section>
 
@@ -318,7 +330,7 @@
 <section class="cta">
   <div class="section-head">
     <h2>Your homelab, one console.</h2>
-    <p class="section-sub">Not a bookmark grid, not a Grafana stack, not a container manager — the loop between them. Compare feature-by-feature against Homepage, Uptime Kuma, Beszel, Portainer and more.</p>
+    <p class="section-sub">Not a bookmark grid, not a Grafana stack, not a container manager — the loop between them. Compare feature-by-feature against Homepage, Uptime Kuma, Beszel, Grafana and more.</p>
   </div>
   <div class="cta-actions">
     <a class="btn btn-solid" href="#demo">Try the live demo</a>
@@ -332,9 +344,9 @@
   <div class="footer-inner">
     <span class="footer-brand">HOSTDECK</span>
     <span class="footer-links">
-      <a href="https://github.com/bnhminh1010/homelab-dashboard" target="_blank" rel="noopener">GitHub</a>
       <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/operations.md" target="_blank" rel="noopener">Docs</a>
       <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a>
+      <a href="https://github.com/bnhminh1010/homelab-dashboard" target="_blank" rel="noopener">GitHub</a>
       <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0</a>
     </span>
     <span class="footer-note">Built with Go — no Node, no npm, no CDN.</span>

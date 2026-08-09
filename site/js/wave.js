@@ -97,19 +97,26 @@
   function onLeave() { mouse.active = false; mouse.x = -9999; mouse.y = -9999; }
 
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  function start() {
+  function drawOnce() {
     resize();
+    frame();
+    cancelAnimationFrame(raf);
+  }
+  function start() {
     if (mq.matches) {
       // static: draw one frame, no loop
-      frame();
-      cancelAnimationFrame(raf);
+      drawOnce();
     } else {
+      resize();
       frame();
     }
   }
   function stop() { cancelAnimationFrame(raf); }
 
-  window.addEventListener("resize", resize);
+  window.addEventListener("resize", () => {
+    if (mq.matches) drawOnce();
+    else resize();
+  });
   window.addEventListener("mousemove", onMove, { passive: true });
   window.addEventListener("mouseleave", onLeave);
   mq.addEventListener("change", start);
