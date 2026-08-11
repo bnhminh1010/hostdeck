@@ -92,7 +92,7 @@ button:disabled { opacity: 0.48; cursor: not-allowed; }
 .node-switcher-dot { width: 6px; height: 6px; flex-basis: 6px; color: var(--green); }
 .node-switcher[data-online="false"] .node-switcher-dot { color: var(--red); }
 .node-switcher[data-online="unknown"] .node-switcher-dot { color: var(--gray); }
-.node-switcher select { max-width: 138px; border: 0; color: var(--text-secondary); background: transparent; outline: 0; font: 11.5px/1.2 var(--font-mono); letter-spacing: 0.04em; cursor: pointer; }
+.node-switcher select { max-width: 176px; padding-right: 16px; border: 0; color: var(--text-secondary); background: transparent; outline: 0; font: 11.5px/1.2 var(--font-mono); letter-spacing: 0.04em; cursor: pointer; }
 .node-switcher select option { color: var(--text-primary); background: var(--bg-surface); }
 
 .connection-chip, .badge, .count-badge { display: inline-flex; min-height: 24px; align-items: center; justify-content: center; gap: 6px; padding: 3px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--surface-muted); font: 11.5px/1.2 var(--font-mono); letter-spacing: 0.05em; }
