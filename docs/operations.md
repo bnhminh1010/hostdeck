@@ -125,6 +125,12 @@ The Compose project publishes no host port. Open
 `TS_HOSTNAME`) from a device in the same tailnet. Tailscale Serve terminates
 HTTPS/WSS and supplies the identity headers used by the dashboard.
 
+> [!NOTE]
+> Headscale compatibility: HostDeck only consumes `tailscaled` client features
+> (Serve identity headers, the SOCKS5 listener, MagicDNS), so the same setup
+> works against a self-hosted Headscale control plane without code changes.
+> This path is not covered by CI yet — test it on a scratch node first.
+
 Service probe URLs may use RFC1918, CGNAT/Tailnet or ULA addresses from the
 configured allowlist. With userspace Tailscale, validated Tailnet IPs are
 routed through the local SOCKS5 listener. A MagicDNS probe hostname must also

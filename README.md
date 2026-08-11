@@ -70,7 +70,10 @@ Key differentiators, each implemented in code (see `internal/`):
   or reverse proxy to secure on any node.
 - **Tailscale identity is the auth plane.** Viewer/admin roles come from Tailnet
   identity, sessions and mutations are CSRF/`SameSite` guarded, and identity
-  headers are trusted only from loopback.
+  headers are trusted only from loopback. Everything runs on `tailscaled`
+  client features (Serve identity headers, SOCKS5), so the mesh works with the
+  hosted Tailscale control plane **or a self-hosted Headscale** — no dependency
+  on Tailscale's cloud.
 - **Operate, not just observe.** Container shells and an explicitly confirmed
   host Bash login are context-linked to the alert, log or metric that sent you
   there.
