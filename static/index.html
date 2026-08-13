@@ -535,7 +535,11 @@
           </header>
           <p class="topology-hint">Arrows run from the dependent service to the service it needs. Relationships are curated; no traffic is inferred.</p>
           <p id="topology-scroll-hint" class="topology-scroll-hint">Scroll horizontally to inspect the map.</p>
-          <div id="topology-canvas" class="topology-canvas" role="region" aria-label="Manual service dependency topology" aria-describedby="topology-scroll-hint"></div>
+          <div id="topology-visual-layout" class="topology-visual-layout">
+            <div id="topology-canvas" class="topology-canvas" role="region" aria-label="Manual service dependency topology" aria-describedby="topology-scroll-hint"></div>
+            <aside id="topology-dependency-tree" class="topology-dependency-tree" aria-label="Service dependency tree"></aside>
+          </div>
+          <div id="topology-tooltip" class="topology-tooltip" role="status" hidden></div>
           <div id="topology-edge-list" class="topology-edge-list" aria-label="Curated dependency relationships" hidden></div>
           <form id="topology-form" class="topology-form admin-only" autocomplete="off">
             <label><span>DEPENDENT</span><select id="topology-dependent" required></select></label>
@@ -871,6 +875,7 @@
   <div id="dashboard-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <script src="./lib/chart.umd.min.js"></script>
+  <script src="./js/vendor/dagre.min.js"></script>
   <script type="module" src="./js/app.js"></script>
 </body>
 </html>

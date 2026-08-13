@@ -96,7 +96,9 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
   const topologyZoomIn = document.getElementById("topology-zoom-in");
   const topologyZoomLevel = document.getElementById("topology-zoom-level");
   const topologyResetLayout = document.getElementById("topology-reset-layout");
-  const TOPOLOGY_POSITIONS_KEY = "homelab.topology.positions.v1";
+  const topologyDependencyTree = document.getElementById("topology-dependency-tree");
+  const topologyTooltip = document.getElementById("topology-tooltip");
+  const TOPOLOGY_POSITIONS_KEY = "homelab.topology.positions.v2";
   let services = [];
   let localSnapshot = null;
   let selectedNode = "local";
@@ -130,19 +132,13 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
 
   function topologyPosition(id, fallback, width, height) {
     const saved = topologyPositions[selectedNode]?.[id];
-    if (Number.isFinite(saved?.nx) && Number.isFinite(saved?.ny)) {
-      return { ...fallback, x: saved.nx * width, y: saved.ny * height };
-    }
     return Number.isFinite(saved?.x) && Number.isFinite(saved?.y) ? { ...fallback, x: saved.x, y: saved.y } : fallback;
   }
 
   function persistTopologyPositions() {
     const nodePositions = {};
-    const viewBox = topologySvg?.viewBox?.baseVal;
-    const width = Number(viewBox?.width) || 1;
-    const height = Number(viewBox?.height) || 1;
     for (const [id, position] of topologyPositionMap) {
-      nodePositions[id] = { nx: Math.max(0, Math.min(1, position.x / width)), ny: Math.max(0, Math.min(1, position.y / height)) };
+      nodePositions[id] = { x: position.x, y: position.y };
     }
     topologyPositions[selectedNode] = nodePositions;
     saveTopologyPositions();
@@ -193,6 +189,78 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
 
   function serviceName(id) {
     return services.find((service) => String(service.id || service.ID) === String(id))?.name || id || "Unknown service";
+  }
+
+  let topologyFocusId = null;
+
+  function topologyNeighbors(id) {
+    const neighbors = new Set();
+    for (const edge of topology) {
+      if (String(edge.dependentServiceId) === String(id)) neighbors.add(String(edge.dependencyServiceId));
+      if (String(edge.dependencyServiceId) === String(id)) neighbors.add(String(edge.dependentServiceId));
+    }
+    return neighbors;
+  }
+
+  function renderTopologyDependencyTree() {
+    if (!topologyDependencyTree) return;
+    topologyDependencyTree.replaceChildren();
+    const heading = document.createElement("h3"); heading.textContent = "DEPENDENCY TREE"; topologyDependencyTree.append(heading);
+    for (const service of services.slice(0, 100)) {
+      const id = String(service.id || service.ID);
+      const details = document.createElement("details"); details.open = id === topologyFocusId;
+      const summary = document.createElement("summary");
+      summary.innerHTML = `<span class="topology-tree-caret">▸</span><span class="topology-health-dot" data-level="${healthLevel(statusOf(service))}"></span><span>${service.name || id}</span>`;
+      const body = document.createElement("div"); body.className = "topology-tree-children";
+      const deps = topology.filter((edge) => String(edge.dependentServiceId) === id).map((edge) => String(edge.dependencyServiceId));
+      const dependents = topology.filter((edge) => String(edge.dependencyServiceId) === id).map((edge) => String(edge.dependentServiceId));
+      const addGroup = (label, ids) => {
+        if (!ids.length) return;
+        const groupLabel = document.createElement("small"); groupLabel.textContent = label; body.append(groupLabel);
+        for (const relatedId of ids) {
+          const row = document.createElement("button"); row.type = "button"; row.className = "topology-tree-row";
+          const related = services.find((item) => String(item.id || item.ID) === relatedId);
+          row.innerHTML = `<span class="topology-health-dot" data-level="${healthLevel(statusOf(related))}"></span><b>${serviceName(relatedId)}</b>`;
+          row.addEventListener("click", (event) => { event.stopPropagation(); focusTopology(relatedId); });
+          body.append(row);
+        }
+      };
+      addGroup("DEPENDS ON", deps); addGroup("DEPENDED BY", dependents);
+      if (!deps.length && !dependents.length) { const empty = document.createElement("small"); empty.textContent = "NO CONNECTIONS"; body.append(empty); }
+      details.append(summary, body); topologyDependencyTree.append(details);
+    }
+  }
+
+  function focusTopology(id) {
+    topologyFocusId = id == null ? null : (topologyFocusId === String(id) ? null : String(id));
+    const neighbors = topologyFocusId ? topologyNeighbors(topologyFocusId) : new Set();
+    for (const position of topologyPositionMap.values()) {
+      const node = position.group;
+      if (!node) continue;
+      const active = !topologyFocusId || String(position.service.id || position.service.ID) === topologyFocusId || neighbors.has(String(position.service.id || position.service.ID));
+      node.classList.toggle("neighbors", Boolean(topologyFocusId && active));
+      node.classList.toggle("dimmed", Boolean(topologyFocusId && !active));
+    }
+    for (const edge of topologyEdgeRefs) {
+      const active = !topologyFocusId || edge.from === topologyFocusId || edge.to === topologyFocusId;
+      edge.path.classList.toggle("neighbors", Boolean(topologyFocusId && active));
+      edge.path.classList.toggle("dimmed", Boolean(topologyFocusId && !active));
+    }
+    renderTopologyDependencyTree();
+  }
+
+  function hideTopologyTooltip() { if (topologyTooltip) topologyTooltip.hidden = true; }
+
+  function showTopologyTooltip(service, group) {
+    if (!topologyTooltip || !service || !group) return;
+    const id = String(service.id || service.ID);
+    const rect = group.getBoundingClientRect();
+    const dependsOn = topology.filter((edge) => String(edge.dependentServiceId) === id).length;
+    const dependedBy = topology.filter((edge) => String(edge.dependencyServiceId) === id).length;
+    topologyTooltip.innerHTML = `<strong>${service.name || id}</strong><span>STATUS <b data-level="${healthLevel(statusOf(service))}">${statusOf(service)}</b></span><span>DEPENDS ON <b>${dependsOn}</b></span><span>DEPENDED BY <b>${dependedBy}</b></span>`;
+    topologyTooltip.style.left = `${Math.min(rect.right + 12, window.innerWidth - 190)}px`;
+    topologyTooltip.style.top = `${Math.max(8, rect.top - 8)}px`;
+    topologyTooltip.hidden = false;
   }
 
   function renderSLO(items) {
@@ -497,6 +565,8 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
   }
 
   function renderTopology() {
+    topologyFocusId = null;
+    hideTopologyTooltip();
     canvas.replaceChildren();
     topologyCount.textContent = String(topology.length);
     renderTopologyEdgeList();
@@ -507,40 +577,137 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
       canvas.textContent = "Add services before drawing their dependencies.";
       return;
     }
-    const width = Math.max(360, canvas.clientWidth || 640); const height = Math.max(260, Math.ceil(visible.length / 5) * 116);
+    let width = Math.max(360, canvas.clientWidth || 640); let height = Math.max(260, Math.ceil(visible.length / 5) * 116);
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("viewBox", `0 0 ${width} ${height}`); svg.setAttribute("role", "group"); svg.setAttribute("aria-label", "Manual service dependencies");
     topologySvg = svg;
     canvas.dataset.arrange = String(topologyArrange);
     setTopologyZoom(topologyZoom);
     const defs = document.createElementNS(svg.namespaceURI, "defs"); const marker = document.createElementNS(svg.namespaceURI, "marker"); marker.setAttribute("id", "topology-arrow"); marker.setAttribute("viewBox", "0 0 10 10"); marker.setAttribute("refX", "8"); marker.setAttribute("refY", "5"); marker.setAttribute("markerWidth", "6"); marker.setAttribute("markerHeight", "6"); marker.setAttribute("orient", "auto-start-reverse"); const path = document.createElementNS(svg.namespaceURI, "path"); path.setAttribute("d", "M 0 0 L 10 5 L 0 10 z"); marker.append(path); defs.append(marker); svg.append(defs);
-    const positions = new Map(); const columns = Math.min(5, Math.max(1, visible.length));
-    visible.forEach((service, index) => {
-      const id = String(service.id || service.ID);
-      const fallback = { x: columns === 1 ? width / 2 : 80 + (index % columns) * ((width - 160) / Math.max(1, columns - 1)), y: 64 + Math.floor(index / columns) * 110, service };
-      const saved = topologyPosition(id, fallback, width, height);
-      saved.x = Math.max(70, Math.min(width - 70, saved.x));
-      saved.y = Math.max(30, Math.min(height - 30, saved.y));
-      positions.set(id, saved);
-    });
+    const positions = new Map();
+    let dagreGraph = null;
+    if (typeof dagre !== "undefined" && dagre.graphlib) {
+      dagreGraph = new dagre.graphlib.Graph();
+      dagreGraph.setGraph({ rankdir: "LR", nodesep: 44, ranksep: 96, marginx: 80, marginy: 56 });
+      dagreGraph.setDefaultEdgeLabel(() => ({}));
+      for (const service of visible) dagreGraph.setNode(String(service.id || service.ID), { width: 124, height: 48 });
+      for (const edge of topology) {
+        const dependent = String(edge.dependentServiceId); const dependency = String(edge.dependencyServiceId);
+        if (dagreGraph.hasNode(dependent) && dagreGraph.hasNode(dependency)) dagreGraph.setEdge(dependent, dependency);
+      }
+      dagre.layout(dagreGraph);
+      const tierXs = [...new Set(visible.map((service) => Math.round(dagreGraph.node(String(service.id || service.ID)).x)))].sort((a, b) => a - b);
+      const tierByX = new Map(tierXs.map((x, index) => [x, index]));
+      for (const service of visible) {
+        const id = String(service.id || service.ID);
+        const node = dagreGraph.node(id);
+        positions.set(id, { x: node.x, y: node.y, rank: tierByX.get(Math.round(node.x)) || 0, service });
+      }
+      const savedNodePositions = topologyPositions[selectedNode] || {};
+      for (const [id, pos] of Object.entries(savedNodePositions)) {
+        const target = positions.get(id);
+        if (target && Number.isFinite(pos?.x) && Number.isFinite(pos?.y)) { target.x = pos.x; target.y = pos.y; }
+      }
+      const renderedTierXs = [...new Set([...positions.values()].map((position) => Math.round(position.x)))].sort((a, b) => a - b);
+      const renderedTierByX = new Map(renderedTierXs.map((x, index) => [x, index]));
+      for (const position of positions.values()) position.rank = renderedTierByX.get(Math.round(position.x)) || 0;
+      width = Math.ceil(dagreGraph.graph().width); height = Math.ceil(dagreGraph.graph().height);
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    } else {
+      const columns = Math.min(5, Math.max(1, visible.length));
+      visible.forEach((service, index) => {
+        const id = String(service.id || service.ID);
+        const fallback = { x: columns === 1 ? width / 2 : 80 + (index % columns) * ((width - 160) / Math.max(1, columns - 1)), y: 64 + Math.floor(index / columns) * 110, service };
+        const saved = topologyPosition(id, fallback, width, height);
+        saved.x = Math.max(70, Math.min(width - 70, saved.x));
+        saved.y = Math.max(30, Math.min(height - 30, saved.y));
+        positions.set(id, saved);
+      });
+    }
     topologyPositionMap = positions;
-    persistTopologyPositions();
+    const tierBounds = new Map();
+    for (const position of positions.values()) {
+      const tier = tierBounds.get(position.rank || 0) || { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity };
+      tier.minX = Math.min(tier.minX, position.x - 82); tier.maxX = Math.max(tier.maxX, position.x + 82);
+      tier.minY = Math.min(tier.minY, position.y - 40); tier.maxY = Math.max(tier.maxY, position.y + 40);
+      tierBounds.set(position.rank || 0, tier);
+    }
+    const tierNames = ["SOURCE", "APP", "DATA", "STORAGE"];
+    const bands = document.createElementNS(svg.namespaceURI, "g"); bands.setAttribute("class", "topology-tier-bands");
+    for (const [rank, bounds] of [...tierBounds.entries()].sort((a, b) => a[0] - b[0])) {
+      const band = document.createElementNS(svg.namespaceURI, "rect"); band.setAttribute("class", "topology-tier-band");
+      band.setAttribute("x", bounds.minX); band.setAttribute("y", bounds.minY); band.setAttribute("width", bounds.maxX - bounds.minX); band.setAttribute("height", bounds.maxY - bounds.minY); bands.append(band);
+      const label = document.createElementNS(svg.namespaceURI, "text"); label.setAttribute("class", "topology-tier-label"); label.setAttribute("x", bounds.minX + 12); label.setAttribute("y", bounds.minY + 15); label.textContent = `TIER ${rank} · ${tierNames[Math.min(rank, tierNames.length - 1)]}`; bands.append(label);
+    }
+    svg.append(bands);
+    if (!dagreGraph) persistTopologyPositions();
     topologyEdgeRefs = [];
+    const EDGE_HALF_W = 62 + 8, EDGE_HALF_H = 24 + 8;
+    const segmentHitsRect = (x1, y1, x2, y2, rx, ry, hw, hh) => {
+      const dx = x2 - x1, dy = y2 - y1;
+      const p = [-dx, dx, -dy, dy];
+      const q = [x1 - (rx - hw), (rx + hw) - x1, y1 - (ry - hh), (ry + hh) - y1];
+      let t0 = 0, t1 = 1;
+      for (let i = 0; i < 4; i++) {
+        if (p[i] === 0) { if (q[i] < 0) return false; }
+        else {
+          const t = q[i] / p[i];
+          if (p[i] < 0) { if (t > t1) return false; if (t > t0) t0 = t; }
+          else { if (t < t0) return false; if (t < t1) t1 = t; }
+        }
+      }
+      return t0 < t1 && t1 > 0.05 && t0 < 0.95;
+    };
+    const routeEdge = (x1, y1, x2, y2, blockers) => {
+      const points = [];
+      let cx = x1, cy = y1;
+      let side = "";
+      for (let i = 0; i < 6; i++) {
+        let blocked = null;
+        for (const b of blockers) {
+          if (Math.abs(x1 - b.x) < EDGE_HALF_W && Math.abs(y1 - b.y) < EDGE_HALF_H) continue;
+          if (segmentHitsRect(cx, cy, x2, y2, b.x, b.y, EDGE_HALF_W, EDGE_HALF_H)) { blocked = b; break; }
+        }
+        if (!blocked) break;
+        const above = blocked.y - EDGE_HALF_H - 18;
+        const below = blocked.y + EDGE_HALF_H + 18;
+        let wy;
+        if (side === "above") { wy = below; side = "below"; }
+        else if (side === "below") { wy = above; side = "above"; }
+        else { wy = y2 > blocked.y ? above : below; side = wy === above ? "above" : "below"; }
+        if (cx === blocked.x && cy === wy) break;
+        points.push({ x: blocked.x, y: wy });
+        cx = blocked.x; cy = wy;
+      }
+      return [{ x: x1, y: y1 }, ...points, { x: x2, y: y2 }];
+    };
     const updateGeometry = () => {
+      const blockers = [...positions.values()];
+      const dragging = topologyDrag !== null;
       for (const edge of topologyEdgeRefs) {
         const from = positions.get(edge.from); const to = positions.get(edge.to);
         if (!from || !to) continue;
-        edge.line.setAttribute("x1", from.x); edge.line.setAttribute("y1", from.y); edge.line.setAttribute("x2", to.x); edge.line.setAttribute("y2", to.y);
+        if (!dragging && edge.dagrePoints) continue;
+        const points = routeEdge(from.x, from.y, to.x, to.y, blockers.filter((p) => p !== from && p !== to));
+        edge.path.setAttribute("d", `M ${points.map((p) => `${p.x} ${p.y}`).join(" L ")}`);
       }
       for (const item of positions.values()) {
         item.group?.querySelector("rect")?.setAttribute("x", item.x - 62);
         item.group?.querySelector("rect")?.setAttribute("y", item.y - 24);
-        item.group?.querySelector("text")?.setAttribute("x", item.x);
+        item.group?.querySelector("circle")?.setAttribute("cx", item.x - 47);
+        item.group?.querySelector("circle")?.setAttribute("cy", item.y);
+        item.group?.querySelector("text")?.setAttribute("x", item.x + 2);
         item.group?.querySelector("text")?.setAttribute("y", item.y + 4);
       }
     };
     for (const edge of topology) {
       const from = positions.get(String(edge.dependentServiceId)); const to = positions.get(String(edge.dependencyServiceId)); if (!from || !to) continue;
-      const line = document.createElementNS(svg.namespaceURI, "line"); line.setAttribute("class", "topology-edge"); line.setAttribute("x1", from.x); line.setAttribute("y1", from.y); line.setAttribute("x2", to.x); line.setAttribute("y2", to.y); line.setAttribute("marker-end", "url(#topology-arrow)"); line.setAttribute("tabindex", admin ? "0" : "-1"); line.setAttribute("aria-label", `${serviceName(edge.dependentServiceId)} depends on ${serviceName(edge.dependencyServiceId)}${admin ? "; activate to remove" : ""}`);
+      const line = document.createElementNS(svg.namespaceURI, "path"); line.setAttribute("class", "topology-edge"); line.setAttribute("marker-end", "url(#topology-arrow)"); line.setAttribute("tabindex", admin ? "0" : "-1"); line.setAttribute("aria-label", `${serviceName(edge.dependentServiceId)} depends on ${serviceName(edge.dependencyServiceId)}${admin ? "; activate to remove" : ""}`);
+      let dagrePoints = null;
+      const dagreEdge = dagreGraph?.edge(String(edge.dependentServiceId), String(edge.dependencyServiceId));
+      if (dagreEdge?.points?.length) {
+        dagrePoints = dagreEdge.points;
+        line.setAttribute("d", `M ${dagrePoints.map((p) => `${p.x} ${p.y}`).join(" L ")}`);
+      }
       if (admin) {
         line.setAttribute("role", "button");
         line.setAttribute("aria-keyshortcuts", "Enter Space Delete");
@@ -552,15 +719,22 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
           }
         });
       }
-      topologyEdgeRefs.push({ line, from: String(edge.dependentServiceId), to: String(edge.dependencyServiceId) });
+      topologyEdgeRefs.push({ path: line, from: String(edge.dependentServiceId), to: String(edge.dependencyServiceId), dagrePoints });
       svg.append(line);
     }
     for (const position of positions.values()) {
       const group = document.createElementNS(svg.namespaceURI, "g"); group.setAttribute("class", "topology-node"); group.dataset.level = healthLevel(statusOf(position.service)); group.setAttribute("tabindex", "0"); group.setAttribute("role", "button"); group.setAttribute("aria-label", `Open service ${position.service.name}`); group.setAttribute("aria-keyshortcuts", "ArrowUp ArrowDown ArrowLeft ArrowRight");
       const rect = document.createElementNS(svg.namespaceURI, "rect"); rect.setAttribute("x", position.x - 62); rect.setAttribute("y", position.y - 24); rect.setAttribute("width", "124"); rect.setAttribute("height", "48"); rect.setAttribute("rx", "5");
-      const text = document.createElementNS(svg.namespaceURI, "text"); text.setAttribute("x", position.x); text.setAttribute("y", position.y + 4); text.setAttribute("text-anchor", "middle"); text.textContent = String(position.service.name || "service").slice(0, 20);
+      const dot = document.createElementNS(svg.namespaceURI, "circle"); dot.setAttribute("class", "topology-health-dot"); dot.setAttribute("cx", position.x - 47); dot.setAttribute("cy", position.y); dot.setAttribute("r", "5"); dot.dataset.level = healthLevel(statusOf(position.service));
+      const text = document.createElementNS(svg.namespaceURI, "text"); text.setAttribute("x", position.x + 2); text.setAttribute("y", position.y + 4); text.setAttribute("text-anchor", "middle"); text.textContent = String(position.service.name || "service").slice(0, 20);
       position.group = group;
-      group.append(rect, text);
+      group.append(rect, dot, text);
+      group.addEventListener("pointerenter", () => showTopologyTooltip(position.service, group));
+      group.addEventListener("pointerleave", hideTopologyTooltip);
+      group.addEventListener("click", (event) => {
+        if (Date.now() >= suppressTopologyClickUntil && !topologyArrange) { event.stopPropagation(); focusTopology(position.service.id || position.service.ID); }
+        if (Date.now() >= suppressTopologyClickUntil && topologyArrange) onOpenServices?.(position.service);
+      });
       group.addEventListener("pointerdown", (event) => {
         if (!topologyArrange || event.button !== 0) return;
         group.setPointerCapture?.(event.pointerId);
@@ -585,7 +759,6 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
       };
       group.addEventListener("pointerup", finishDrag);
       group.addEventListener("pointercancel", finishDrag);
-      group.addEventListener("click", () => { if (Date.now() >= suppressTopologyClickUntil) onOpenServices?.(position.service); });
       group.addEventListener("keydown", (event) => {
         if (topologyArrange && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
           event.preventDefault();
@@ -604,8 +777,10 @@ export function createOperationsController({ api, demo = false, toast, onSelectN
       });
       svg.append(group);
     }
+    svg.addEventListener("click", () => { focusTopology(null); hideTopologyTooltip(); });
     updateGeometry();
     canvas.append(svg);
+    renderTopologyDependencyTree();
   }
 
   async function refreshTopology() {
