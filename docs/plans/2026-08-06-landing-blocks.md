@@ -91,7 +91,7 @@
 <section class="compare" id="compare">
   <div class="section-head">
     <h2>How it stacks against the usual homelab stack.</h2>
-    <p class="section-sub">The full feature matrix with honest "we don't do this" notes lives in <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/comparison.md" target="_blank" rel="noopener">docs/comparison.md</a>.</p>
+    <p class="section-sub">The full feature matrix with honest "we don't do this" notes lives in <a href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/comparison.md" target="_blank" rel="noopener">docs/comparison.md</a>.</p>
   </div>
   <div class="cmp-wrap">
     <table class="cmp-table">
@@ -129,7 +129,7 @@
     <details class="faq-item"><summary>Do I need Tailscale?</summary><p>Yes — your tailnet identity is the auth plane, so there is no password database to secure. Tailscale's free tier covers a personal tailnet with 100 devices.</p></details>
     <details class="faq-item"><summary>How much does it cost?</summary><p>Nothing. Apache-2.0, one static Go binary, one SQLite file. No SaaS, no licence keys, no telemetry.</p></details>
     <details class="faq-item"><summary>Does it work with Docker, or only Podman?</summary><p>Container health, stats, logs and shells are built against the rootless Podman socket. If you run Docker, the container workspaces won't have a socket to talk to.</p></details>
-    <details class="faq-item"><summary>How is this different from Grafana, Beszel or Uptime Kuma?</summary><p>Those are point tools — metrics, monitoring or availability. This console closes the loop: see the alert, open the right log, drop into the right shell, all in one place, with zero inbound ports. See the <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/comparison.md" target="_blank" rel="noopener">full comparison</a>.</p></details>
+    <details class="faq-item"><summary>How is this different from Grafana, Beszel or Uptime Kuma?</summary><p>Those are point tools — metrics, monitoring or availability. This console closes the loop: see the alert, open the right log, drop into the right shell, all in one place, with zero inbound ports. See the <a href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/comparison.md" target="_blank" rel="noopener">full comparison</a>.</p></details>
     <details class="faq-item"><summary>Where does my data live?</summary><p>One SQLite file on the dashboard host. History is rolled up in three tiers — 10s samples for 48h, 1-minute for 30 days, 15-minute for 90 days — with a configurable quota.</p></details>
   </div>
 </section>
