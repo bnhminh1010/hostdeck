@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#101010">
+  <meta name="theme-color" content="#0d1616">
   <meta name="description" content="Private Tailscale operations console for host metrics, services, containers, and container terminals.">
   <title>HostDeck · Homelab</title>
   <script>
@@ -14,7 +14,7 @@
         const media = window.matchMedia?.("(prefers-color-scheme: dark)");
         const dark = saved === "dark" || (saved !== "light" && (media?.matches ?? true));
         document.documentElement.classList.add(dark ? "theme-dark" : "theme-light");
-        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#101010" : "#f6f5f3");
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#0d1616" : "#f2f7f7");
       } catch { document.documentElement.classList.add("theme-dark"); }
     })();
   </script>

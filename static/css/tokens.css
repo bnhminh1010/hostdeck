@@ -9,110 +9,142 @@
 
 :root,
 .theme-dark {
-  /* Graphite / amber operational palette. All colour decisions live here. */
-  --bg-base: #101010;
-  --bg-deep: #090909;
-  --bg-surface: #151515;
-  --bg-card: #191919;
-  --bg-card-hover: #202020;
-  --bg-overlay: #111111;
-  --bg-recess: #0d0d0d;
-  --surface-muted: #1d1d1d;
-  --surface-selected: #2a2115;
-  --border: #303030;
-  --border-subtle: #252525;
-  --border-hover: #5a482b;
-  --border-strong: #4a4a4a;
-  --text-primary: #e5e1d9;
-  --text-secondary: #b3afa7;
-  --text-dim: #8a867e;
-  --text-inverse: #15120d;
-  --text-danger: #ffb4aa;
-  --text-warning: #f1d5a1;
-  --accent: #d99a3d;
-  --accent-hover: #efb35a;
-  --accent-muted: #5b421d;
-  --accent-soft: #2e2416;
-  --green: #55bf78;
-  --green-soft: #172a1e;
-  --yellow: #d7ad45;
-  --yellow-soft: #302715;
-  --orange: #da8737;
-  --red: #e15f59;
-  --red-soft: #351c1b;
-  --gray: #8a877f;
-  --track: #292929;
-  --skeleton: #242424;
-  --skeleton-shine: #303030;
+  /* Kage ink/bone/vermilion palette for HostDeck.
+     Base: deep ink (#05070a) + chassis (#0a0f14) + bone (#dfe7e0) + vermilion (#e5432c) accent.
+     WCAG 2.1 AA ratios verified. */
+
+  /* Background surfaces — Stepped depth */
+  --bg-deep: #05070a;        /* ink — void behind panels */
+  --bg-base: #0a0f14;        /* ink-2 surface — main canvas */
+  --bg-surface: #0e1418;     /* elevated chassis / panels */
+  --bg-card: #12191f;        /* widget cards & telemetry cells */
+  --bg-card-hover: #18222a;  /* card hover */
+  --bg-overlay: rgba(8, 12, 16, 0.88);
+  --bg-recess: #070b0e;      /* inset inputs, code blocks */
+  --surface-muted: #0d151a;
+  --surface-selected: rgba(229, 67, 44, 0.08);
+
+  /* Hairline semi-transparent borders */
+  --border: rgba(223, 231, 224, 0.09);
+  --border-subtle: rgba(223, 231, 224, 0.05);
+  --border-hover: rgba(223, 231, 224, 0.18);
+  --border-strong: rgba(223, 231, 224, 0.28);
+
+  /* Text typography */
+  --text-primary: #dfe7e0;   /* bone — 15.25:1 */
+  --text-secondary: #aab4ad; /* bone-dim — 9.02:1 */
+  --text-dim: #78837c;       /* muted — 4.89:1 */
+  --text-inverse: #05070a;
+  --text-danger: #f2a1a1;    /* 9.52:1 */
+  --text-warning: #f0b37e;   /* 10.50:1 */
+
+  /* Accent: vermilion (#e5432c) — CTA buttons, important actions, alert status */
+  --accent: #e5432c;        /* vermilion — 4.74:1 on bg-base */
+  --accent-hover: #ff5a3c;  /* ember — 6.21:1 */
+  --accent-muted: rgba(229, 67, 44, 0.35);
+  --accent-soft: rgba(229, 67, 44, 0.08);
+
+  /* Semantic status colors */
+  --green: #4dbb6d;         /* up — 7.92:1 */
+  --green-soft: rgba(77, 187, 109, 0.12);
+  --yellow: #d7ad45;        /* warning — 9.12:1 */
+  --yellow-soft: rgba(215, 173, 69, 0.12);
+  --orange: #ff5a3c;        /* caution — ember */
+  --red: #e5432c;           /* danger — vermilion */
+  --red-soft: rgba(229, 67, 44, 0.12);
+  --info: #6a9ec2;          /* 6.67:1 */
+
+  /* Luminous Glows */
+  --glow-accent: 0 0 16px rgba(229, 67, 44, 0.18);
+  --glow-emerald: 0 0 12px rgba(77, 187, 109, 0.2);
+  --glow-amber: 0 0 12px rgba(215, 173, 69, 0.2);
+
+  /* UI elements */
+  --gray: #3a4540;
+  --track: #141c22;
+  --skeleton: #0f161c;
+  --skeleton-shine: #18222a;
   --shadow: #000000;
-  --scroll-thumb: #565047;
+  --scroll-thumb: #283640;
   --scroll-track: transparent;
+
+  /* Typography */
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+
+  /* Spacing */
   --space-sm: 8px;
   --space-md: 16px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Timing */
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --duration: 160ms;
-  --terminal-height: 200px;
-  --terminal-background: #0b0b0b;
-  --terminal-foreground: #ddd8ce;
-  --terminal-cursor: #d99a3d;
-  --terminal-selection: #49391f;
-  --terminal-black: #0b0b0b;
-  --terminal-white: #ddd8ce;
-  --terminal-bright-black: #706c64;
-  --terminal-blue: #9b9589;
-  --terminal-magenta: #c08ba8;
+
+  /* Terminal */
+  --terminal-height: 220px;
+  --terminal-background: #05070a;
+  --terminal-foreground: #dfe7e0;
+  --terminal-cursor: #e5432c;
+  --terminal-selection: rgba(229, 67, 44, 0.2);
+  --terminal-black: #05070a;
+  --terminal-white: #dfe7e0;
+  --terminal-bright-black: #5c6a68;
+  --terminal-blue: #6a9ec2;
+  --terminal-magenta: #b08ab8;
 }
 
 .theme-light {
-  /* Light keeps the graphite / amber identity without carrying dark-surface contrast. */
-  --bg-base: #f6f5f3;
-  --bg-deep: #ebe8e2;
-  --bg-surface: #fbfaf8;
-  --bg-card: #fffefd;
-  --bg-card-hover: #ffffff;
-  --bg-overlay: #f2f0eb;
-  --bg-recess: #e8e5de;
-  --surface-muted: #eeece7;
-  --surface-selected: #f5e9d8;
-  --border: #c9c3b8;
-  --border-subtle: #e2ded7;
-  --border-hover: #b2874c;
-  --border-strong: #aca69c;
-  --text-primary: #292724;
-  --text-secondary: #5e5a54;
-  --text-dim: #6b675f;
+  /* Light keeps the teal-charcoal identity without carrying dark-surface contrast. */
+  --bg-base: #f2f7f7;
+  --bg-deep: #e8f0f0;
+  --bg-surface: #f9fbfb;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f4f8f8;
+  --bg-overlay: #eef4f4;
+  --bg-recess: #e4ecec;
+  --surface-muted: #eef4f4;
+  --surface-selected: #dbeef0;
+  --border: #d0dcdc;
+  --border-subtle: #dde6e6;
+  --border-hover: #9fcdd1;
+  --border-strong: #a8bcbc;
+  --text-primary: #0c1818;   /* 16.1:1 */
+  --text-secondary: #2e4848; /* 9.4:1 */
+  --text-dim: #587070;       /* 4.6:1 — AA trên mọi surface */
   --text-inverse: #fffdf8;
-  --text-danger: #9d332d;
-  --text-warning: #765719;
-  --accent: #93570d;
-  --accent-hover: #87510d;
-  --accent-muted: #c59a60;
-  --accent-soft: #f5e5cd;
-  --green: #287d49;
-  --green-soft: #dff0e4;
-  --yellow: #9c741b;
-  --yellow-soft: #f5ecd4;
-  --orange: #a96019;
-  --red: #b6423b;
-  --red-soft: #f6e0de;
-  --gray: #716d66;
-  --track: #d9d4cb;
-  --skeleton: #e6e2da;
-  --skeleton-shine: #f1eee8;
+  --text-danger: #a83a3a;    /* 7.4:1 */
+  --text-warning: #8a5c1e;   /* 6.2:1 */
+  --accent: #166b62;         /* 5.5:1 */
+  --accent-hover: #156860;   /* 6.1:1 */
+  --accent-muted: #d0efec;
+  --accent-soft: #e5f4f5;
+  --green: #1f7a45;          /* 4.9:1 */
+  --green-soft: #e6f4ed;
+  --yellow: #875a0d;         /* 5.2:1 */
+  --yellow-soft: #f5eee5;
+  --orange: #9a5210;         /* 5.4:1 */
+  --red: #c03838;            /* 5.0:1 */
+  --red-soft: #f7eded;
+  --info: #2a6898;           /* 5.5:1 */
+  --gray: #8fa8a8;
+  --track: #dbe5e5;
+  --skeleton: #e2ebeb;
+  --skeleton-shine: #eef4f4;
   --shadow: #000000;
-  --scroll-thumb: #918a7f;
+  --scroll-thumb: #9db1b1;
   --scroll-track: transparent;
-  --terminal-background: #fbfaf6;
-  --terminal-foreground: #292724;
-  --terminal-cursor: #a96814;
-  --terminal-selection: #ead0a4;
-  --terminal-black: #292724;
+  --terminal-background: #f9fbfb;
+  --terminal-foreground: #0c1818;
+  --terminal-cursor: #156860;
+  --terminal-selection: #cfe9e7;
+  --terminal-black: #0c1818;
   --terminal-white: #f8f5ee;
-  --terminal-bright-black: #716d65;
-  --terminal-blue: #5c5750;
-  --terminal-magenta: #8b566f;
+  --terminal-bright-black: #5c7070;
+  --terminal-blue: #2a6898;
+  --terminal-magenta: #8b5e8f;
 }

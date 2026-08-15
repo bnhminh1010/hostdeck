@@ -211,7 +211,7 @@ function applyTheme(next, { persist = false } = {}) {
   const theme = next === "light" ? "light" : "dark";
   document.documentElement.classList.toggle("theme-light", theme === "light");
   document.documentElement.classList.toggle("theme-dark", theme === "dark");
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "light" ? "#f6f5f3" : "#101010");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "light" ? "#f2f7f7" : "#0d1616");
   const toggle = document.getElementById("theme-toggle");
   if (toggle) {
     const toLight = theme === "dark";
@@ -1255,6 +1255,17 @@ window.addEventListener("beforeunload", () => {
   window.clearInterval(sessionKeepalive);
   window.clearTimeout(sessionRenewalTimer);
   window.clearTimeout(preferenceSaveTimer);
+});
+
+window.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SWITCH_WORKSPACE") {
+    const ws = event.data.workspace;
+    if (ws === "terminal") {
+      workspaceNavigation.focusTerminal();
+    } else if (WORKSPACES.has(ws)) {
+      workspaceNavigation.selectWorkspace(ws, { replace: false });
+    }
+  }
 });
 
 start();
