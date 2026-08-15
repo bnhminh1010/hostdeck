@@ -1,5 +1,5 @@
 /* ─── Dot-wave hero (prototype v3 spec, tuned) ───
-   Dots #e5e1d9, alpha 0.16–0.95, spacing 34px staggered,
+   Dots #ddeaea, alpha 0.16–0.95, spacing 34px staggered,
    magnetic repel ~150px with soft falloff, spring-back lerp,
    ambient wave 2.5px, fades out as the hero scrolls away.
    Tuning follows the reference style (X.com dot wave / Framer
@@ -15,7 +15,7 @@
   const PUSH = 12;           // max displacement at center (px)
   const LERP = 0.06;         // spring-back speed toward target
   const AMBIENT = 2.5;
-  const COLOR = "229,225,217"; // #e5e1d9
+  const COLOR = "221,234,234"; // #ddeaea
 
   let W = 0, H = 0, cols = 0, rows = 0;
   let dots = [];

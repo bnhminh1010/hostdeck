@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090909">
+  <meta name="theme-color" content="#05070a">
   <meta name="view-transition" content="same-origin">
   <meta name="description" content="HostDeck documentation — operations guide, architecture decision records, comparison matrix, migration guide and measured benchmarks for a Tailscale-only homelab console.">
   <meta property="og:type" content="website">
@@ -14,29 +14,41 @@
   <meta property="og:image" content="https://hostdeck.thinkai.id.vn/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <title>Documentation · HostDeck</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23101010'/%3E%3Crect x='6' y='6' width='6' height='6' rx='1' fill='%23d99a3d'/%3E%3Crect x='14' y='6' width='12' height='6' rx='1' fill='%2337332d'/%3E%3Crect x='6' y='14' width='12' height='6' rx='1' fill='%2337332d'/%3E%3Crect x='20' y='14' width='6' height='6' rx='1' fill='%2355bf78'/%3E%3Crect x='6' y='22' width='6' height='4' rx='1' fill='%2337332d'/%3E%3Crect x='14' y='22' width='12' height='4' rx='1' fill='%2337332d'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2305070a'/%3E%3Crect x='6' y='6' width='6' height='6' rx='1' fill='%23e5432c'/%3E%3Crect x='14' y='6' width='12' height='6' rx='1' fill='%232a3530'/%3E%3Crect x='6' y='14' width='12' height='6' rx='1' fill='%232a3530'/%3E%3Crect x='20' y='14' width='6' height='6' rx='1' fill='%234dbb6d'/%3E%3Crect x='6' y='22' width='6' height='4' rx='1' fill='%232a3530'/%3E%3Crect x='14' y='22' width='12' height='4' rx='1' fill='%232a3530'/%3E%3C/svg%3E">
+
   <link rel="stylesheet" href="css/style.css">
-  <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<noscript><p class="noscript">JavaScript is disabled — the mobile menu needs it. Everything else works without JS.</p></noscript>
 
-<!-- ══════════════ NAV ══════════════ -->
+<!-- ══════════════ AMBIENT THREE.JS CANVAS & OVERLAYS ══════════════ -->
+<canvas id="subpage-canvas" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- Custom Cursor -->
+<div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-ring" class="cursor-ring" aria-hidden="true"></div>
+
+<!-- ══════════════ FLOATING PILL NAVBAR ══════════════ -->
 <nav class="nav" id="nav">
   <a class="nav-brand" href="index.html">
-    <svg class="nav-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="4" fill="none" stroke="#37332d"/><rect x="6" y="6" width="6" height="6" rx="1" fill="#d99a3d"/><rect x="14" y="6" width="12" height="6" rx="1" fill="#37332d"/><rect x="6" y="14" width="12" height="6" rx="1" fill="#37332d"/><rect x="20" y="14" width="6" height="6" rx="1" fill="#55bf78"/><rect x="6" y="22" width="6" height="4" rx="1" fill="#37332d"/><rect x="14" y="22" width="12" height="4" rx="1" fill="#37332d"/></svg>
+    <svg class="nav-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="4" fill="none" stroke="rgba(223, 231, 224, 0.13)"/><rect x="6" y="6" width="6" height="6" rx="1" fill="#e5432c"/><rect x="14" y="6" width="12" height="6" rx="1" fill="rgba(223, 231, 224, 0.13)"/><rect x="6" y="14" width="12" height="6" rx="1" fill="rgba(223, 231, 224, 0.13)"/><rect x="20" y="14" width="6" height="6" rx="1" fill="#4dbb6d"/><rect x="6" y="22" width="6" height="4" rx="1" fill="rgba(223, 231, 224, 0.13)"/><rect x="14" y="22" width="12" height="4" rx="1" fill="rgba(223, 231, 224, 0.13)"/></svg>
     <span class="nav-word">HOSTDECK</span>
   </a>
   <div class="nav-links">
-    <a href="index.html#features">Features</a>
-    <a href="index.html#quickstart">Quick start</a>
-    <a href="index.html#demo">Demo</a>
-    <a href="index.html#security">Security</a>
+    <a href="index.html#ch-01">Features</a>
+    <a href="index.html#ch-01">Demo</a>
+    <a href="index.html#ch-03">Security</a>
     <a class="nav-active" href="docs.html" aria-current="page">Docs</a>
     <a href="changelog.html">Changelog</a>
-    <a class="nav-gh" href="https://github.com/bnhminh1010/homelab-dashboard" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="nav-cta-pill" href="https://github.com/bnhminh1010/hostdeck" target="_blank" rel="noopener">GitHub ↗</a>
   </div>
   <button class="nav-burger" id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
     <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
@@ -46,90 +58,309 @@
 <div class="nav-drawer" id="nav-drawer" aria-hidden="true">
   <div class="nav-drawer-backdrop" data-drawer-close></div>
   <div class="nav-drawer-panel" role="dialog" aria-modal="true" aria-label="Site menu">
-    <a href="index.html#features">Features</a>
-    <a href="index.html#quickstart">Quick start</a>
-    <a href="index.html#demo">Demo</a>
-    <a href="index.html#security">Security</a>
+    <a href="index.html#ch-01">Features</a>
+    <a href="index.html#ch-01">Demo</a>
+    <a href="index.html#ch-03">Security</a>
     <a class="nav-active" href="docs.html" aria-current="page">Docs</a>
     <a href="changelog.html">Changelog</a>
-    <a class="nav-gh" href="https://github.com/bnhminh1010/homelab-dashboard" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="nav-gh" href="https://github.com/bnhminh1010/hostdeck" target="_blank" rel="noopener">GitHub ↗</a>
   </div>
 </div>
 
 <!-- ══════════════ PAGE HERO ══════════════ -->
 <header class="page-hero" id="main">
   <div class="page-hero-inner">
-    <h1>Documentation</h1>
-    <p class="section-sub">Every decision, number and procedure behind the console — written for a human operator, not for marketing. All documents live in <code>docs/</code> in the repository.</p>
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      <span>Operations & Architecture · Measured not promised</span>
+    </div>
+    <h1>Every decision, <em>measured</em></h1>
+    <p class="section-sub">
+      Every architectural choice, benchmark number and operational procedure behind the console — written for a human operator, not for marketing. All canonical markdown documents live in <code>docs/</code> in the repository.
+    </p>
   </div>
 </header>
 
-<!-- ══════════════ DOCS GRID ══════════════ -->
-<section class="docs">
+<!-- ══════════════ DOCS GRID (DOC.01) ══════════════ -->
+<section class="docs" id="guides">
+  <div class="docs-section-head">
+    <span class="chapter-label">DOC.01 — CORE GUIDES & ARCHITECTURE</span>
+  </div>
   <div class="docs-grid">
-    <a class="doc-link" href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/operations.md" target="_blank" rel="noopener">
+    <a class="doc-link" href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/operations.md" target="_blank" rel="noopener">
+      <div class="doc-badge-pill">OPS-GUIDE</div>
       <span class="doc-title">Operations guide</span>
-      <span class="doc-desc">Quick start with a release image, one-command installer, configuration reference, backups and troubleshooting. The file the README links to.</span>
+      <span class="doc-desc">Quick start with release image, one-command curl installer, YAML configuration reference, automated backups and troubleshooting.</span>
       <span class="doc-arrow">→</span>
     </a>
-    <a class="doc-link" href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/adr.md" target="_blank" rel="noopener">
+    <a class="doc-link" href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/adr.md" target="_blank" rel="noopener">
+      <div class="doc-badge-pill">ADR-001..006</div>
       <span class="doc-title">Architecture decision records</span>
-      <span class="doc-desc">Six accepted ADRs: Tailscale as sole auth, SQLite 3-tier rollup over Prometheus, go:embed over npm, outbound-only agents, no public REST API, three binaries over a monolith.</span>
+      <span class="doc-desc">Six accepted ADRs: Tailscale as sole auth, SQLite 3-tier rollup over Prometheus, go:embed over npm, outbound-only agents, no public REST API, three binaries.</span>
       <span class="doc-arrow">→</span>
     </a>
-    <a class="doc-link" href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/comparison.md" target="_blank" rel="noopener">
+    <a class="doc-link" href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/comparison.md" target="_blank" rel="noopener">
+      <div class="doc-badge-pill">MATRIX</div>
       <span class="doc-title">Comparison matrix</span>
-      <span class="doc-desc">Feature-by-feature against Homepage, Uptime Kuma, Beszel, Netdata, Grafana and Portainer — including the honest "we don't do this" notes.</span>
+      <span class="doc-desc">Feature-by-feature comparison against Homepage, Uptime Kuma, Beszel, Netdata, Grafana and Portainer — including the honest "we don't do this" trade-offs.</span>
       <span class="doc-arrow">→</span>
     </a>
-    <a class="doc-link" href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/benchmarks.md" target="_blank" rel="noopener">
+    <a class="doc-link" href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/benchmarks.md" target="_blank" rel="noopener">
+      <div class="doc-badge-pill">METRICS</div>
       <span class="doc-title">Benchmarks</span>
-      <span class="doc-desc">Measured on a real deployment (Debian 13, 9 containers, 13 h uptime): memory, CPU and storage footprint with conditions and timestamps included.</span>
+      <span class="doc-desc">Measured on a real deployment (Debian 13, 9 containers, 13 h uptime): memory, CPU and storage footprint with timestamped reproducible conditions.</span>
       <span class="doc-arrow">→</span>
     </a>
-    <a class="doc-link" href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/migration.md" target="_blank" rel="noopener">
+    <a class="doc-link" href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/migration.md" target="_blank" rel="noopener">
+      <div class="doc-badge-pill">MIGRATION</div>
       <span class="doc-title">Migration guide</span>
-      <span class="doc-desc">Re-onboarding from a start page, an availability monitor or a Prometheus + Grafana stack. Honest about what does not transfer. ~15 minutes for a fresh lab.</span>
+      <span class="doc-desc">Re-onboarding from a start page, an availability monitor or a Prometheus + Grafana stack. Clear about what does not transfer. ~15 mins setup.</span>
       <span class="doc-arrow">→</span>
     </a>
     <a class="doc-link" href="changelog.html">
+      <div class="doc-badge-pill">RELEASES</div>
       <span class="doc-title">Changelog</span>
-      <span class="doc-desc">Every release since the first commit, in Keep a Changelog format. Also at the repository root as CHANGELOG.md.</span>
+      <span class="doc-desc">Every release since the first commit, in Keep a Changelog format. Also maintained at the repository root as CHANGELOG.md.</span>
       <span class="doc-arrow">→</span>
     </a>
   </div>
 </section>
 
-<!-- ══════════════ KEY FACTS ══════════════ -->
-<section class="facts">
-  <div class="section-head">
+<!-- ══════════════ KEY FACTS (DOC.02) ══════════════ -->
+<section class="facts" id="benchmarks">
+  <div class="docs-section-head">
+    <span class="chapter-label">DOC.02 — MEASURED SPECIFICATIONS</span>
     <h2>Key facts, measured not promised.</h2>
   </div>
   <div class="facts-grid">
-    <div class="fact-cell"><span class="fact-num">≈50 MB</span><span class="fact-label">Total steady-state RSS — dashboard + host agent</span></div>
-    <div class="fact-cell"><span class="fact-num">2.4%</span><span class="fact-label">Dashboard CPU average over a 13 h window</span></div>
-    <div class="fact-cell"><span class="fact-num">29.7 MB</span><span class="fact-label">SQLite file after 13 h, 2 GiB quota default</span></div>
-    <div class="fact-cell"><span class="fact-num">10s / 1m / 15m</span><span class="fact-label">3-tier rollup — 48 h raw, 30 d, 90 d retention</span></div>
-    <div class="fact-cell"><span class="fact-num">0</span><span class="fact-label">Inbound ports, inbound connections, password DB</span></div>
-    <div class="fact-cell"><span class="fact-num">3</span><span class="fact-label">Static Go binaries — dashboard, host agent, node agent</span></div>
+    <div class="fact-cell">
+      <span class="fact-tag">STEADY STATE</span>
+      <span class="fact-num">≈50 <span class="fact-unit">MB</span></span>
+      <span class="fact-label">Total RSS memory footprint (Dashboard + Host Agent)</span>
+    </div>
+    <div class="fact-cell">
+      <span class="fact-tag">CPU OVERHEAD</span>
+      <span class="fact-num">2.4<span class="fact-unit">%</span></span>
+      <span class="fact-label">Dashboard CPU average measured over a 13-hour window</span>
+    </div>
+    <div class="fact-cell">
+      <span class="fact-tag">SQLITE STORAGE</span>
+      <span class="fact-num">29.7 <span class="fact-unit">MB</span></span>
+      <span class="fact-label">Database size after 13 h (2 GiB automatic quota ceiling)</span>
+    </div>
+    <div class="fact-cell">
+      <span class="fact-tag">TIERED RETENTION</span>
+      <span class="fact-num">10s / 1m / 15m</span>
+      <span class="fact-label">3-tier rollups: 48 h high-res raw, 30 d 1m, 90 d retention</span>
+    </div>
+    <div class="fact-cell">
+      <span class="fact-tag">EXPOSED PORTS</span>
+      <span class="fact-num">0</span>
+      <span class="fact-label">Inbound WAN ports, inbound connections, password DB</span>
+    </div>
+    <div class="fact-cell">
+      <span class="fact-tag">DEPLOYMENT</span>
+      <span class="fact-num">3</span>
+      <span class="fact-label">Static Go binaries (Dashboard, Host Agent, Node Agent)</span>
+    </div>
   </div>
-  <p class="facts-note">Full measurement conditions in <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/docs/benchmarks.md" target="_blank" rel="noopener">docs/benchmarks.md</a>.</p>
+  <p class="facts-note">Full measurement conditions and logs available in <a href="https://github.com/bnhminh1010/hostdeck/blob/main/docs/benchmarks.md" target="_blank" rel="noopener">docs/benchmarks.md ↗</a>.</p>
 </section>
 
 <!-- ══════════════ FOOTER ══════════════ -->
 <footer class="footer">
   <div class="footer-inner">
-    <span class="footer-brand">HOSTDECK</span>
-    <span class="footer-links">
+    <div class="footer-brand-wrap">
+      <span class="footer-brand">HOSTDECK</span>
+      <span class="footer-tagline">Your homelab, one console.</span>
+    </div>
+    <div class="footer-links">
       <a href="index.html">Home</a>
+      <a href="docs.html">Docs</a>
       <a href="changelog.html">Changelog</a>
-      <a href="https://github.com/bnhminh1010/homelab-dashboard" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://github.com/bnhminh1010/homelab-dashboard/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0</a>
-    </span>
+      <a href="https://github.com/bnhminh1010/hostdeck" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/bnhminh1010/hostdeck/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0</a>
+    </div>
     <span class="footer-note">Built with Go — no Node, no npm, no CDN.</span>
   </div>
 </footer>
 
-<script src="js/reveal.js"></script>
+<!-- ══════════════ SUBPAGE AMBIENT 3D & MICRO-INTERACTION SCRIPT ══════════════ -->
+<script>
+  // ── Custom Interactive Cursor ──
+  const cursorDot = document.getElementById('cursor-dot');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let ringX = mouseX;
+  let ringY = mouseY;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (cursorDot) {
+      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+    }
+  });
+
+  function renderCursor() {
+    ringX += (mouseX - ringX) * 0.18;
+    ringY += (mouseY - ringY) * 0.18;
+    if (cursorRing) {
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+    }
+    requestAnimationFrame(renderCursor);
+  }
+  renderCursor();
+
+  // ── Mobile Nav Burger ──
+  const burger = document.getElementById('nav-burger');
+  const drawer = document.getElementById('nav-drawer');
+  if (burger && drawer) {
+    burger.addEventListener('click', () => {
+      const isOpen = drawer.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', String(isOpen));
+    });
+    drawer.addEventListener('click', (e) => {
+      if (e.target.closest('[data-drawer-close]') || e.target.closest('a')) {
+        drawer.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // ── Ambient Datacenter Three.js Background ──
+  (function initAmbientDatacenter() {
+    const canvas = document.getElementById('subpage-canvas');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 1.2, 10.5);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x05070a, 1);
+
+    scene.fog = new THREE.FogExp2(0x05070a, 0.022);
+
+    // Lights
+    const ambLight = new THREE.AmbientLight(0x182430, 0.9);
+    scene.add(ambLight);
+
+    const dirLight = new THREE.DirectionalLight(0x4080c0, 1.2);
+    dirLight.position.set(4, 6, 8);
+    scene.add(dirLight);
+
+    const aisleLight = new THREE.PointLight(0x3878b8, 1.4, 30);
+    aisleLight.position.set(0, 3.5, -4.0);
+    scene.add(aisleLight);
+
+    // Two Parallel Datacenter Rack Rows
+    const bgGrp = new THREE.Group();
+    const cabMat = new THREE.MeshStandardMaterial({ color: 0x121a24, roughness: 0.5, metalness: 0.8 });
+    const postMat = new THREE.MeshStandardMaterial({ color: 0x1c2836, roughness: 0.4, metalness: 0.9 });
+    const ledMatCyan = new THREE.MeshBasicMaterial({ color: 0x3399ff });
+    const ledMatGreen = new THREE.MeshBasicMaterial({ color: 0x33cc66 });
+    const ledMatAmber = new THREE.MeshBasicMaterial({ color: 0xff9933 });
+    const ledMatDim = new THREE.MeshBasicMaterial({ color: 0x081018 });
+
+    const leds = [];
+    const zList = [ 2.8, 0, -2.8, -5.6, -8.4, -11.2, -14.0 ];
+
+    // Row A (Right) & Row B (Left)
+    [-3.8, 3.8].forEach((rx, rowIdx) => {
+      zList.forEach((rz, zIdx) => {
+        const rack = new THREE.Group();
+        rack.position.set(rx, 0, rz);
+
+        const cab = new THREE.Mesh(new THREE.BoxGeometry(2.2, 9.6, 1.7), cabMat);
+        rack.add(cab);
+
+        // Posts
+        [[-1.05, 0.8], [1.05, 0.8], [-1.05, -0.8], [1.05, -0.8]].forEach(po => {
+          const p = new THREE.Mesh(new THREE.BoxGeometry(0.1, 9.6, 0.1), postMat);
+          p.position.set(po[0], 0, po[1]);
+          rack.add(p);
+        });
+
+        // Server blocks & blinking LEDs
+        for (let u = 0; u < 6; u++) {
+          const uy = 3.2 - u * 1.3;
+          for (let l = 0; l < 4; l++) {
+            const mat = (l + u + zIdx) % 3 === 0 ? ledMatAmber : ((l + u) % 2 === 0 ? ledMatCyan : ledMatGreen);
+            const led = new THREE.Mesh(new THREE.CircleGeometry(0.018, 6), mat);
+            led.position.set(-0.75 + l * 0.14, uy, 0.86);
+            rack.add(led);
+            leds.push({ mesh: led, baseMat: mat, rate: 3.0 + ((l * 4 + u * 6 + zIdx * 3) % 8), seed: l * 2 + u });
+          }
+        }
+        bgGrp.add(rack);
+      });
+    });
+
+    // Cable Ladders & Lighting Strips
+    const ladderMat = new THREE.MeshStandardMaterial({ color: 0x223244, metalness: 0.9, roughness: 0.3 });
+    [-3.8, 3.8].forEach(rx => {
+      const lad = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.08, 24), ladderMat);
+      lad.position.set(rx, 5.0, -6.0);
+      bgGrp.add(lad);
+    });
+
+    // Floor Grid
+    const floorGrid = new THREE.GridHelper(50, 50, 0x1f344a, 0x09111a);
+    floorGrid.position.set(0, -5.0, -5.0);
+    bgGrp.add(floorGrid);
+
+    // Dust particles
+    const dustCount = 200;
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPos = new Float32Array(dustCount * 3);
+    for (let i = 0; i < dustCount * 3; i += 3) {
+      dustPos[i] = (Math.random() - 0.5) * 20;
+      dustPos[i + 1] = (Math.random() - 0.5) * 16;
+      dustPos[i + 2] = (Math.random() - 0.5) * 20;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    const dustMat = new THREE.PointsMaterial({ color: 0x8898a8, size: 0.024, transparent: true, opacity: 0.28 });
+    const dustPoints = new THREE.Points(dustGeo, dustMat);
+    bgGrp.add(dustPoints);
+
+    scene.add(bgGrp);
+
+    let targetRotY = 0;
+    let targetRotX = 0;
+    window.addEventListener('mousemove', (e) => {
+      targetRotY = (e.clientX / window.innerWidth - 0.5) * 0.08;
+      targetRotX = -(e.clientY / window.innerHeight - 0.5) * 0.04;
+    });
+
+    function loop(now) {
+      requestAnimationFrame(loop);
+      const time = now * 0.001;
+
+      // Gentle camera mouse parallax
+      camera.position.x += (targetRotY * 10 - camera.position.x) * 0.04;
+      camera.position.y += (1.2 + targetRotX * 4 - camera.position.y) * 0.04;
+      camera.lookAt(0, 0.5, -4.0);
+
+      // Animate LEDs
+      leds.forEach(l => {
+        const blink = Math.sin(time * l.rate + l.seed);
+        l.mesh.material = blink > 0.15 ? l.baseMat : ledMatDim;
+      });
+
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(loop);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  })();
+</script>
 </body>
 </html>

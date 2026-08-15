@@ -87,9 +87,9 @@
   const typer = document.getElementById("typer");
   if (typer) {
     const lines = [
-      { p: "$", t: "curl -fsSL https://github.com/bnhminh1010/homelab-dashboard/releases/latest/download/install.sh | bash" },
+      { p: "$", t: "curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash" },
       { p: "$", t: "podman compose up -d" },
-      { p: "→", t: "https://homelab-dashboard.tailnet.ts.net" },
+      { p: "→", t: "https://hostdeck.tailnet.ts.net" },
     ];
     // Reduced motion: render the three commands statically, no typing.
     if (reduced) {
@@ -147,7 +147,7 @@
   const copyBtn = document.getElementById("qs-copy");
   if (copyBtn) {
     const INSTALL_CMD =
-      "curl -fsSL https://github.com/bnhminh1010/homelab-dashboard/releases/latest/download/install.sh | bash";
+      "curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash";
     const copy = async () => {
       try {
         await navigator.clipboard.writeText(INSTALL_CMD);
