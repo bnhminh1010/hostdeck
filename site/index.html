@@ -3858,7 +3858,13 @@
       // REAL HOSTDECK LIVE DEMO VIDEO TEXTURE (Actual software recording)
       // ═══════════════════════════════════════════════════════════════════════
       const demoVideo = document.createElement('video');
-      demoVideo.src = 'screenshots/demo.mp4';
+      // Prefer WebM (VP9 — open codec, decodes everywhere incl. headless)
+      // fall back to MP4 (H.264 — Safari 14-16 / older engines).
+      if (demoVideo.canPlayType('video/webm; codecs="vp9"')) {
+        demoVideo.src = 'screenshots/demo.webm';
+      } else {
+        demoVideo.src = 'screenshots/demo.mp4';
+      }
       demoVideo.crossOrigin = 'anonymous';
       demoVideo.loop = true;
       demoVideo.muted = true;
