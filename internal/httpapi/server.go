@@ -21,6 +21,7 @@ import (
 	"github.com/bnhminh1010/homelab-dashboard/internal/model"
 	"github.com/bnhminh1010/homelab-dashboard/internal/nodes"
 	"github.com/bnhminh1010/homelab-dashboard/internal/operations"
+	"github.com/bnhminh1010/homelab-dashboard/internal/podman"
 	"github.com/bnhminh1010/homelab-dashboard/internal/services"
 	"github.com/bnhminh1010/homelab-dashboard/internal/slo"
 	"github.com/bnhminh1010/homelab-dashboard/internal/store"
@@ -84,6 +85,7 @@ type CheckRepository interface {
 type ContainerLifecycle interface {
 	Restart(context.Context, string, string) error
 	Stop(context.Context, string, string) error
+	Inspect(context.Context, string, string) (podman.ContainerInspect, error)
 }
 
 type Options struct {
@@ -231,6 +233,7 @@ func (s *Server) routes() {
 	if s.options.ContainerLifecycle != nil {
 		authenticatedAPI.POST("/containers/:id/restart", s.restartContainer)
 		authenticatedAPI.POST("/containers/:id/stop", s.stopContainer)
+		authenticatedAPI.GET("/containers/:id/inspect", s.inspectContainer)
 	}
 	if s.options.Alerts != nil {
 		authenticatedAPI.GET("/alert-rules", s.listAlertRules)

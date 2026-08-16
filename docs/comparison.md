@@ -46,7 +46,9 @@ closest competitor capability, not marketing claims.
 | **Confirmed host Bash** (explicit allowlist + confirm) | ✅ **native** | — | — | — | ⚠️ Cockpit full sysadmin | — |
 | **Outbound-only agent, zero inbound port** | ✅ **native** | — | — | ⚠️ Beszel outbound WS | — | — |
 | **Tailscale identity as sole auth** | ✅ **native** | — | — | — | — | — |
-| Alerts + ack/silence + ntfy + HMAC webhooks | ✅ native | — | ✅ | ⚠️ | ✅ | ✅ Alertmanager (heavier) |
+| Alerts + ack/silence + ntfy + Telegram + Discord + HMAC webhooks | ✅ native | — | ✅ | ⚠️ | ✅ | ✅ Alertmanager (heavier) |
+| **Container Inspect (ports, mounts, masked env with reveal)** | ✅ **native** | — | — | — | ⚠️ | — |
+| **Mobile-optimized Terminal toolbar (ESC, TAB, Ctrl+C)** | ✅ **native** | — | — | — | — | — |
 | Config export/import + `If-Match` revision guard | ✅ native | — | — | — | ⚠️ | ⚠️ dashboards as JSON |
 | **Demo mode simulating edge cases** (restart loop, stale, partial) | ✅ **native** | ⚠️ static happy-path | — | — | — | — |
 | **PARTIAL snapshot degradation** (explicit chip) | ✅ **native** | — | — | — | — | — |

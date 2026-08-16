@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"os"
 	"os/exec"
@@ -100,6 +101,9 @@ type Server struct {
 	sem      chan struct{}
 	mu       sync.Mutex
 	listener *net.UnixListener
+
+	logMu   sync.Mutex
+	lastLog map[string]time.Time
 }
 
 func NewServer(options Options) (*Server, error) {
@@ -121,7 +125,10 @@ func NewServer(options Options) (*Server, error) {
 	if options.MaxConcurrency > 16 {
 		return nil, fmt.Errorf("smartagent: max concurrency must be at most 16")
 	}
-	return &Server{options: options, sem: make(chan struct{}, options.MaxConcurrency)}, nil
+	return &Server{
+		options: options, sem: make(chan struct{}, options.MaxConcurrency),
+		lastLog: make(map[string]time.Time),
+	}, nil
 }
 
 func (server *Server) Serve(ctx context.Context) error {
@@ -227,6 +234,12 @@ func (server *Server) run(parent context.Context, device string) Result {
 		return result
 	}
 	if err != nil {
+		server.logMu.Lock()
+		if time.Since(server.lastLog[device]) > time.Hour {
+			slog.Warn("smartctl check failed", "device", device, "error", err, "output", string(output))
+			server.lastLog[device] = time.Now()
+		}
+		server.logMu.Unlock()
 		return Result{Status: StatusUnavailable, Message: "smartctl unavailable"}
 	}
 	return result

@@ -143,6 +143,86 @@ func (c *Client) InspectContainer(ctx context.Context, containerID string) (Cont
 	}, nil
 }
 
+func (c *Client) InspectFull(ctx context.Context, containerID string) (ContainerInspect, error) {
+	if err := validateIdentifier(containerID); err != nil {
+		return ContainerInspect{}, err
+	}
+	var wire inspectWire
+	if err := c.doJSON(ctx, http.MethodGet, "/containers/"+url.PathEscape(containerID)+"/json", nil, nil, &wire); err != nil {
+		return ContainerInspect{}, err
+	}
+	labels := wire.Config.Labels
+	if labels == nil {
+		labels = wire.Labels
+	}
+
+	mounts := make([]MountInfo, 0, len(wire.Mounts))
+	for _, m := range wire.Mounts {
+		mounts = append(mounts, MountInfo{
+			Source:      m.Source,
+			Destination: m.Destination,
+			Mode:        m.Mode,
+			RW:          m.RW,
+		})
+	}
+
+	ip := wire.NetworkSettings.IPAddress
+	networkName := ""
+	for netName, netObj := range wire.NetworkSettings.Networks {
+		if networkName == "" {
+			networkName = netName
+		}
+		if ip == "" && netObj.IPAddress != "" {
+			ip = netObj.IPAddress
+		}
+	}
+
+	ports := make([]Port, 0)
+	for portKey, bindings := range wire.NetworkSettings.Ports {
+		parts := strings.Split(portKey, "/")
+		proto := "tcp"
+		if len(parts) > 1 {
+			proto = parts[1]
+		}
+		cPort, _ := strconv.ParseUint(parts[0], 10, 16)
+		for _, b := range bindings {
+			hPort, _ := strconv.ParseUint(b.HostPort, 10, 16)
+			ports = append(ports, Port{
+				HostIP:        b.HostIP,
+				HostPort:      uint16(hPort),
+				ContainerPort: uint16(cPort),
+				Protocol:      proto,
+			})
+		}
+	}
+
+	return ContainerInspect{
+		ContainerDetails: ContainerDetails{
+			Container: Container{
+				ID:        wire.ID,
+				Name:      strings.TrimPrefix(wire.Name, "/"),
+				Image:     wire.ImageName,
+				State:     wire.State.Status,
+				Labels:    labels,
+				Ports:     ports,
+				Protected: IsProtected(labels),
+			},
+			Running:      wire.State.Running,
+			Health:       wire.State.Health.Status,
+			RestartCount: wire.RestartCount,
+			StartedAt:    wire.State.StartedAt,
+		},
+		IPAddress:     ip,
+		NetworkName:   networkName,
+		Mounts:        mounts,
+		Env:           MaskSensitiveEnv(wire.Config.Env),
+		Cmd:           wire.Config.Cmd,
+		Entrypoint:    wire.Config.Entrypoint,
+		WorkingDir:    wire.Config.WorkingDir,
+		RestartPolicy: wire.HostConfig.RestartPolicy.Name,
+	}, nil
+}
+
 func (c *Client) Stats(ctx context.Context, all bool) ([]ContainerStats, error) {
 	query := url.Values{
 		"all":    {strconv.FormatBool(all)},
@@ -393,8 +473,33 @@ type inspectWire struct {
 	Labels       map[string]string `json:"Labels"`
 	RestartCount uint64            `json:"RestartCount"`
 	Config       struct {
-		Labels map[string]string `json:"Labels"`
+		Labels     map[string]string `json:"Labels"`
+		Env        []string          `json:"Env"`
+		Cmd        []string          `json:"Cmd"`
+		Entrypoint []string          `json:"Entrypoint"`
+		WorkingDir string            `json:"WorkingDir"`
 	} `json:"Config"`
+	HostConfig struct {
+		RestartPolicy struct {
+			Name string `json:"Name"`
+		} `json:"RestartPolicy"`
+	} `json:"HostConfig"`
+	Mounts []struct {
+		Source      string `json:"Source"`
+		Destination string `json:"Destination"`
+		Mode        string `json:"Mode"`
+		RW          bool   `json:"RW"`
+	} `json:"Mounts"`
+	NetworkSettings struct {
+		IPAddress string `json:"IPAddress"`
+		Networks  map[string]struct {
+			IPAddress string `json:"IPAddress"`
+		} `json:"Networks"`
+		Ports map[string][]struct {
+			HostIP   string `json:"HostIp"`
+			HostPort string `json:"HostPort"`
+		} `json:"Ports"`
+	} `json:"NetworkSettings"`
 	State struct {
 		Status    string    `json:"Status"`
 		Running   bool      `json:"Running"`

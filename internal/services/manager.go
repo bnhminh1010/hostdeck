@@ -219,8 +219,13 @@ func ValidateInput(input model.ServiceInput) error {
 
 func validateProbeURL(value string) error {
 	parsed, err := url.Parse(value)
-	if err == nil && strings.EqualFold(parsed.Scheme, "tcp") {
-		return validateTCPURL(value)
+	if err == nil {
+		if strings.EqualFold(parsed.Scheme, "tcp") {
+			return validateTCPURL(value)
+		}
+		if strings.EqualFold(parsed.Scheme, "dns") {
+			return validateDNSURL(parsed)
+		}
 	}
 	return validateHTTPURL(value)
 }

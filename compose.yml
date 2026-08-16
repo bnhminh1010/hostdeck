@@ -55,6 +55,8 @@ services:
       # A host-side backup job may atomically write its latest status JSON.
       # Keep the user-controlled host path out of the container environment.
       BACKUP_STATUS_FILE: ${BACKUP_STATUS_FILE:+/backup-status.json}
+      HOMELAB_MOUNT_POINTS: ${HOMELAB_MOUNT_POINTS:-}
+      SMART_AGENT_SOCKET: ${SMART_AGENT_SOCKET:+/run/smart-agent/agent.sock}
     volumes:
       - dashboard-data:/data
       - ${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}/podman/podman.sock:/run/podman/podman.sock
@@ -65,6 +67,7 @@ services:
       - ${NTFY_TOKEN_FILE:-/dev/null}:/run/secrets/ntfy-token:ro
       - ${WEBHOOK_SECRET_FILE:-/dev/null}:/run/secrets/webhook-secret:ro
       - ${BACKUP_STATUS_FILE:-/dev/null}:/backup-status.json:ro
+      - ${SMART_AGENT_SOCKET:-/dev/null}:/run/smart-agent/agent.sock:ro
     read_only: true
     tmpfs:
       - /tmp:rw,nosuid,nodev,noexec,size=16m

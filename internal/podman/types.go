@@ -114,3 +114,57 @@ func labelEnabled(value string) bool {
 		return false
 	}
 }
+
+type MountInfo struct {
+	Source      string `json:"source"`
+	Destination string `json:"destination"`
+	Mode        string `json:"mode,omitempty"`
+	RW          bool   `json:"rw"`
+}
+
+type EnvVar struct {
+	Key       string `json:"key"`
+	Value     string `json:"value"`
+	Sensitive bool   `json:"sensitive"`
+}
+
+type ContainerInspect struct {
+	ContainerDetails
+	IPAddress     string      `json:"ipAddress,omitempty"`
+	NetworkName   string      `json:"networkName,omitempty"`
+	Mounts        []MountInfo `json:"mounts,omitempty"`
+	Env           []EnvVar    `json:"env,omitempty"`
+	Cmd           []string    `json:"cmd,omitempty"`
+	Entrypoint    []string    `json:"entrypoint,omitempty"`
+	WorkingDir    string      `json:"workingDir,omitempty"`
+	RestartPolicy string      `json:"restartPolicy,omitempty"`
+}
+
+func MaskSensitiveEnv(rawEnv []string) []EnvVar {
+	sensitivePatterns := []string{
+		"PASS", "SECRET", "TOKEN", "KEY", "AUTH", "CREDENTIAL", "PRIVATE", "API_KEY", "JWT",
+	}
+	result := make([]EnvVar, 0, len(rawEnv))
+	for _, item := range rawEnv {
+		parts := strings.SplitN(item, "=", 2)
+		key := parts[0]
+		val := ""
+		if len(parts) > 1 {
+			val = parts[1]
+		}
+		isSensitive := false
+		upperKey := strings.ToUpper(key)
+		for _, pat := range sensitivePatterns {
+			if strings.Contains(upperKey, pat) {
+				isSensitive = true
+				break
+			}
+		}
+		result = append(result, EnvVar{
+			Key:       key,
+			Value:     val,
+			Sensitive: isSensitive,
+		})
+	}
+	return result
+}

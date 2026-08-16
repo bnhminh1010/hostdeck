@@ -35,6 +35,7 @@ import (
 	"github.com/bnhminh1010/homelab-dashboard/internal/podman"
 	"github.com/bnhminh1010/homelab-dashboard/internal/services"
 	"github.com/bnhminh1010/homelab-dashboard/internal/slo"
+	"github.com/bnhminh1010/homelab-dashboard/internal/smartagent"
 	"github.com/bnhminh1010/homelab-dashboard/internal/store"
 	"github.com/bnhminh1010/homelab-dashboard/internal/terminal"
 )
@@ -122,7 +123,8 @@ func run() error {
 	hostCollector, err := metrics.NewLinuxCollector(metrics.CollectorOptions{
 		ProcPath: cfg.HostProcPath, SysPath: cfg.HostSysPath, RootPath: cfg.HostRootPath,
 		NetworkInterface: cfg.NetworkInterface,
-		Mounts:           cfg.DiskMounts,
+		Mounts:           cfg.HomelabMountPoints,
+		SMART:            smartClientAdapter{client: smartagent.Client{SocketPath: cfg.SmartAgentSocket}},
 	})
 	if err != nil {
 		return fmt.Errorf("configure host metrics: %w", err)
@@ -242,6 +244,31 @@ func run() error {
 			return fmt.Errorf("configure webhook: %w", senderErr)
 		}
 		webhookNotificationSender = configuredSender
+		senders = append(senders, configuredSender)
+	}
+	if cfg.TelegramBotTokenFile != "" && cfg.TelegramChatID != "" {
+		token, tokenErr := loadSecretFile(cfg.TelegramBotTokenFile)
+		if tokenErr != nil {
+			return fmt.Errorf("load telegram bot token: %w", tokenErr)
+		}
+		if token != "" {
+			configuredSender, senderErr := alerts.NewTelegramSender(alerts.TelegramConfig{
+				BotToken: token,
+				ChatID:   cfg.TelegramChatID,
+			}, nil)
+			if senderErr != nil {
+				return fmt.Errorf("configure telegram: %w", senderErr)
+			}
+			senders = append(senders, configuredSender)
+		}
+	}
+	if cfg.DiscordWebhookURL != "" {
+		configuredSender, senderErr := alerts.NewDiscordSender(alerts.DiscordConfig{
+			WebhookURL: cfg.DiscordWebhookURL,
+		}, nil)
+		if senderErr != nil {
+			return fmt.Errorf("configure discord: %w", senderErr)
+		}
 		senders = append(senders, configuredSender)
 	}
 	if len(senders) > 0 {
@@ -682,6 +709,15 @@ func (adapter hostAgentAdapter) Open(ctx context.Context, size terminal.HostSize
 	return hostSessionAdapter{Session: session}, nil
 }
 
+type smartClientAdapter struct {
+	client smartagent.Client
+}
+
+func (a smartClientAdapter) Check(ctx context.Context, device string) (model.SMARTInfo, error) {
+	res, err := a.client.Check(ctx, device)
+	return model.SMARTInfo{Status: res.Status, TemperatureCelsius: res.TemperatureCelsius, Message: res.Message}, err
+}
+
 type hostSessionAdapter struct {
 	hostagent.Session
 }
@@ -709,6 +745,13 @@ func (adapter containerLifecycleAdapter) Stop(ctx context.Context, nodeID, conta
 	}
 	_, err := adapter.registry.Execute(ctx, nodeID, nodes.MessageContainerStop, nodes.ContainerAction{ContainerID: containerID})
 	return err
+}
+
+func (adapter containerLifecycleAdapter) Inspect(ctx context.Context, nodeID, containerID string) (podman.ContainerInspect, error) {
+	if nodeID == "local" {
+		return adapter.local.InspectFull(ctx, containerID)
+	}
+	return podman.ContainerInspect{}, errors.New("podman: remote inspect not supported")
 }
 
 func (adapter nodeTerminalAdapter) Probe(_ context.Context, nodeID string) error {

@@ -229,7 +229,7 @@ func (c *LinuxCollector) readDiskCounters(disks []model.DiskStats) (map[string]u
 	reads := map[string]uint64{}
 	writes := map[string]uint64{}
 	for _, disk := range disks {
-		r, w := readDiskCounters(filepath.Join(c.options.ProcPath, "diskstats"), disk.Device)
+		r, w := readDiskCounters(c.options.RootPath, filepath.Join(c.options.ProcPath, "diskstats"), disk.Device)
 		reads[disk.Device] = r
 		writes[disk.Device] = w
 	}
@@ -484,7 +484,13 @@ func hostRootDevice(procPath string) string {
 	return rootDevice(filepath.Join(procPath, "mounts"))
 }
 
-func readDiskCounters(path, device string) (readBytes, writeBytes uint64) {
+func readDiskCounters(rootPath, path, device string) (readBytes, writeBytes uint64) {
+	if strings.HasPrefix(device, "/dev/") {
+		hostDev := filepath.Join(rootPath, strings.TrimPrefix(device, "/"))
+		if resolved, err := filepath.EvalSymlinks(hostDev); err == nil {
+			device = resolved
+		}
+	}
 	name := filepath.Base(device)
 	file, err := os.Open(path)
 	if err != nil {

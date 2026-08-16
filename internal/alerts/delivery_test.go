@@ -270,3 +270,82 @@ func TestNTFYSenderValidationAndHTTPFailure(t *testing.T) {
 		t.Fatalf("unexpected ntfy error: len=%d err=%v", len(err.Error()), err)
 	}
 }
+
+func TestTelegramSenderSuccessAndValidation(t *testing.T) {
+	var gotURL, gotBody string
+	client := &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		gotURL = request.URL.String()
+		body, _ := io.ReadAll(request.Body)
+		gotBody = string(body)
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Status:     "200 OK",
+			Header:     make(http.Header),
+			Body:       io.NopCloser(strings.NewReader(`{"ok":true}`)),
+			Request:    request,
+		}, nil
+	})}
+
+	sender, err := NewTelegramSender(TelegramConfig{BotToken: "123456:ABC-DEF", ChatID: "-100123456", BaseURL: "https://api.telegram.example"}, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	delivery := Delivery{Title: "High Memory", Message: "Node 1 is at 92%", Severity: SeverityWarning}
+	if err := sender.Send(context.Background(), delivery); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(gotURL, "/bot123456:ABC-DEF/sendMessage") {
+		t.Fatalf("unexpected telegram URL: %s", gotURL)
+	}
+	if !strings.Contains(gotBody, "-100123456") || !strings.Contains(gotBody, "High Memory") {
+		t.Fatalf("unexpected telegram payload: %s", gotBody)
+	}
+
+	// Validation tests
+	if _, err := NewTelegramSender(TelegramConfig{BotToken: "", ChatID: "123"}, nil); err == nil {
+		t.Fatal("expected error on empty token")
+	}
+	if _, err := NewTelegramSender(TelegramConfig{BotToken: "tok", ChatID: ""}, nil); err == nil {
+		t.Fatal("expected error on empty chat ID")
+	}
+}
+
+func TestDiscordSenderSuccessAndValidation(t *testing.T) {
+	var gotURL, gotBody string
+	client := &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		gotURL = request.URL.String()
+		body, _ := io.ReadAll(request.Body)
+		gotBody = string(body)
+		return &http.Response{
+			StatusCode: http.StatusNoContent,
+			Status:     "204 No Content",
+			Header:     make(http.Header),
+			Body:       io.NopCloser(strings.NewReader("")),
+			Request:    request,
+		}, nil
+	})}
+
+	sender, err := NewDiscordSender(DiscordConfig{WebhookURL: "https://discord.com/api/webhooks/123/abc"}, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	delivery := Delivery{Title: "Redis Down", Message: "Container exited with code 1", Severity: SeverityCritical}
+	if err := sender.Send(context.Background(), delivery); err != nil {
+		t.Fatal(err)
+	}
+	if gotURL != "https://discord.com/api/webhooks/123/abc" {
+		t.Fatalf("unexpected discord URL: %s", gotURL)
+	}
+	if !strings.Contains(gotBody, "Redis Down") || !strings.Contains(gotBody, "14689052") {
+		t.Fatalf("unexpected discord payload: %s", gotBody)
+	}
+
+	// Validation tests
+	if _, err := NewDiscordSender(DiscordConfig{WebhookURL: ""}, nil); err == nil {
+		t.Fatal("expected error on empty webhook URL")
+	}
+	if _, err := NewDiscordSender(DiscordConfig{WebhookURL: "ftp://bad"}, nil); err == nil {
+		t.Fatal("expected error on invalid scheme")
+	}
+}
+

@@ -21,6 +21,17 @@ func main() {
 }
 
 func run(args []string) error {
+	if len(args) > 0 && args[0] == "healthcheck" {
+		flags := flag.NewFlagSet("healthcheck", flag.ContinueOnError)
+		socket := flags.String("socket", valueOr(os.Getenv("SMART_AGENT_SOCKET"), defaultSocket()), "absolute Unix socket path")
+		if err := flags.Parse(args[1:]); err != nil {
+			return err
+		}
+		client := smartagent.Client{SocketPath: *socket, Timeout: 2 * time.Second}
+		_, err := client.Check(context.Background(), "/dev/null")
+		return err
+	}
+
 	flags := flag.NewFlagSet("homelab-smart-agent", flag.ContinueOnError)
 	socket := flags.String("socket", valueOr(os.Getenv("SMART_AGENT_SOCKET"), defaultSocket()), "absolute Unix socket path")
 	mounts := flags.String("mounts", valueOr(os.Getenv("SMART_AGENT_MOUNTS"), "/proc/1/mounts"), "mount table path")

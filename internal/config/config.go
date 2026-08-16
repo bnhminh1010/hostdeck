@@ -25,13 +25,14 @@ type Config struct {
 	HostShellEnabled       bool
 	HostShellUsers         []string
 	HostAgentSocket        string
+	SmartAgentSocket       string
 	ProbeAllowCIDRs        []netip.Prefix
 	MetricsInterval        time.Duration
 	ProbeInterval          time.Duration
 	ProbeTimeout           time.Duration
 	ProbeConcurrency       int
 	NetworkInterface       string
-	DiskMounts             []string
+	HomelabMountPoints     []string
 	TailscaleSOCKS5Address string
 	TrustTailscaleHeaders  bool
 	HistoryQuotaBytes      int64
@@ -40,6 +41,9 @@ type Config struct {
 	NTFYTokenFile          string
 	WebhookURL             string
 	WebhookSecretFile      string
+	TelegramBotTokenFile   string
+	TelegramChatID         string
+	DiscordWebhookURL      string
 	BackupStatusFile       string
 	LogsBackend            string
 	LokiURL                string
@@ -60,12 +64,13 @@ func LoadFrom(getenv func(string) string) (Config, error) {
 		AdminUsers:             splitList(getenv("ADMIN_USERS")),
 		HostShellUsers:         splitList(getenv("HOST_SHELL_USERS")),
 		HostAgentSocket:        valueOr(getenv("HOST_AGENT_SOCKET"), "/run/host-agent/agent.sock"),
+		SmartAgentSocket:       valueOr(getenv("SMART_AGENT_SOCKET"), ""),
 		MetricsInterval:        2 * time.Second,
 		ProbeInterval:          15 * time.Second,
 		ProbeTimeout:           3 * time.Second,
 		ProbeConcurrency:       4,
 		NetworkInterface:       strings.TrimSpace(getenv("NETWORK_INTERFACE")),
-		DiskMounts:             splitList(getenv("DISK_MOUNTS")),
+		HomelabMountPoints:     splitList(getenv("HOMELAB_MOUNT_POINTS")),
 		TailscaleSOCKS5Address: strings.TrimSpace(getenv("TAILSCALE_SOCKS5_ADDR")),
 		TrustTailscaleHeaders:  true,
 		HistoryQuotaBytes:      2 << 30,
@@ -74,6 +79,9 @@ func LoadFrom(getenv func(string) string) (Config, error) {
 		NTFYTokenFile:          strings.TrimSpace(getenv("NTFY_TOKEN_FILE")),
 		WebhookURL:             strings.TrimSpace(getenv("WEBHOOK_URL")),
 		WebhookSecretFile:      strings.TrimSpace(getenv("WEBHOOK_SECRET_FILE")),
+		TelegramBotTokenFile:   strings.TrimSpace(getenv("TELEGRAM_BOT_TOKEN_FILE")),
+		TelegramChatID:         strings.TrimSpace(getenv("TELEGRAM_CHAT_ID")),
+		DiscordWebhookURL:      strings.TrimSpace(getenv("DISCORD_WEBHOOK_URL")),
 		BackupStatusFile:       strings.TrimSpace(getenv("BACKUP_STATUS_FILE")),
 		LogsBackend:            strings.ToLower(strings.TrimSpace(valueOr(getenv("LOGS_BACKEND"), logs.BackendDisabled))),
 		LokiURL:                strings.TrimSpace(getenv("LOKI_URL")),
@@ -143,6 +151,9 @@ func (c Config) Validate() error {
 	if c.WebhookSecretFile != "" && !filepath.IsAbs(c.WebhookSecretFile) {
 		return fmt.Errorf("WEBHOOK_SECRET_FILE must be an absolute path")
 	}
+	if c.TelegramBotTokenFile != "" && !filepath.IsAbs(c.TelegramBotTokenFile) {
+		return fmt.Errorf("TELEGRAM_BOT_TOKEN_FILE must be an absolute path")
+	}
 	if c.BackupStatusFile != "" && !filepath.IsAbs(c.BackupStatusFile) {
 		return fmt.Errorf("BACKUP_STATUS_FILE must be an absolute path")
 	}
@@ -168,6 +179,15 @@ func (c Config) Validate() error {
 		endpoint, err := url.Parse(c.WebhookURL)
 		if err != nil || endpoint.Host == "" || (endpoint.Scheme != "http" && endpoint.Scheme != "https") || endpoint.User != nil || endpoint.RawQuery != "" || endpoint.Fragment != "" {
 			return fmt.Errorf("WEBHOOK_URL must be an absolute HTTP or HTTPS URL without credentials, query, or fragment")
+		}
+	}
+	if (c.TelegramBotTokenFile == "") != (c.TelegramChatID == "") {
+		return fmt.Errorf("TELEGRAM_BOT_TOKEN_FILE and TELEGRAM_CHAT_ID must be configured together")
+	}
+	if c.DiscordWebhookURL != "" {
+		endpoint, err := url.Parse(c.DiscordWebhookURL)
+		if err != nil || endpoint.Host == "" || (endpoint.Scheme != "http" && endpoint.Scheme != "https") || endpoint.User != nil {
+			return fmt.Errorf("DISCORD_WEBHOOK_URL must be an absolute HTTP or HTTPS URL without credentials")
 		}
 	}
 	if c.HistoryQuotaBytes < 64<<20 || c.HistoryQuotaBytes > 16<<30 {

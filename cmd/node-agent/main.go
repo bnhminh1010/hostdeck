@@ -117,9 +117,10 @@ func run(args []string, stderr io.Writer) error {
 	sysPath := flags.String("sys-path", valueOr(os.Getenv("HOST_SYS_PATH"), "/sys"), "host sys path")
 	rootPath := flags.String("root-path", valueOr(os.Getenv("HOST_ROOT_PATH"), "/"), "host root path")
 	networkInterface := flags.String("network-interface", strings.TrimSpace(os.Getenv("NETWORK_INTERFACE")), "network interface override")
-	diskMounts := flags.String("disk-mounts", strings.TrimSpace(os.Getenv("DISK_MOUNTS")), "comma-separated mount points; empty discovers host mounts")
+	homelabMountPoints := flags.String("homelab-mount-points", strings.TrimSpace(os.Getenv("HOMELAB_MOUNT_POINTS")), "comma-separated mount points; empty discovers host mounts")
 	backupStatusFile := flags.String("backup-status-file", strings.TrimSpace(os.Getenv("BACKUP_STATUS_FILE")), "absolute backup status JSON path")
 	maxSessions := flags.Int("max-sessions", maxSessionsDefault, "maximum concurrent remote streams")
+	smartAgentSocket := flags.String("smart-agent-socket", strings.TrimSpace(os.Getenv("SMART_AGENT_SOCKET")), "absolute Unix socket path for SMART helper")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
@@ -131,8 +132,9 @@ func run(args []string, stderr io.Writer) error {
 	return nodeagent.Run(ctx, nodeagent.RunOptions{
 		StatePath: *statePath, PodmanSocket: *podmanSocket,
 		ProcPath: *procPath, SysPath: *sysPath, RootPath: *rootPath,
-		NetworkInterface: *networkInterface, DiskMounts: splitList(*diskMounts), MaxSessions: *maxSessions, AgentVersion: version,
+		NetworkInterface: *networkInterface, HomelabMountPoints: splitList(*homelabMountPoints), MaxSessions: *maxSessions, AgentVersion: version,
 		BackupStatusFile: *backupStatusFile,
+		SmartAgentSocket: *smartAgentSocket,
 	})
 }
 

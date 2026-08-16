@@ -20,6 +20,7 @@ import (
 	"github.com/bnhminh1010/homelab-dashboard/internal/model"
 	"github.com/bnhminh1010/homelab-dashboard/internal/nodes"
 	"github.com/bnhminh1010/homelab-dashboard/internal/podman"
+	"github.com/bnhminh1010/homelab-dashboard/internal/smartagent"
 	"github.com/gorilla/websocket"
 )
 
@@ -37,10 +38,11 @@ type RunOptions struct {
 	SysPath          string
 	RootPath         string
 	NetworkInterface string
-	DiskMounts       []string
+	HomelabMountPoints []string
 	BackupStatusFile string
 	MaxSessions      int
 	AgentVersion     string
+	SmartAgentSocket string
 }
 
 func Run(ctx context.Context, options RunOptions) error {
@@ -57,7 +59,8 @@ func Run(ctx context.Context, options RunOptions) error {
 	hostCollector, err := metrics.NewLinuxCollector(metrics.CollectorOptions{
 		ProcPath: options.ProcPath, SysPath: options.SysPath, RootPath: options.RootPath,
 		NetworkInterface: options.NetworkInterface,
-		Mounts:           options.DiskMounts,
+		Mounts:           options.HomelabMountPoints,
+		SMART:            smartClientAdapter{client: smartagent.Client{SocketPath: options.SmartAgentSocket}},
 	})
 	if err != nil {
 		return fmt.Errorf("node agent: configure host collector: %w", err)
@@ -455,4 +458,13 @@ func hostName() string {
 		return "unknown"
 	}
 	return hostname
+}
+
+type smartClientAdapter struct {
+	client smartagent.Client
+}
+
+func (a smartClientAdapter) Check(ctx context.Context, device string) (model.SMARTInfo, error) {
+	res, err := a.client.Check(ctx, device)
+	return model.SMARTInfo{Status: res.Status, TemperatureCelsius: res.TemperatureCelsius, Message: res.Message}, err
 }

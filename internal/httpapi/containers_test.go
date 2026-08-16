@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"testing/fstest"
 	"time"
@@ -34,6 +35,25 @@ func (lifecycle *recordedContainerLifecycle) Restart(_ context.Context, nodeID, 
 func (lifecycle *recordedContainerLifecycle) Stop(_ context.Context, nodeID, containerID string) error {
 	lifecycle.stopNode, lifecycle.stopID = nodeID, containerID
 	return lifecycle.err
+}
+
+func (lifecycle *recordedContainerLifecycle) Inspect(_ context.Context, nodeID, containerID string) (podman.ContainerInspect, error) {
+	if lifecycle.err != nil {
+		return podman.ContainerInspect{}, lifecycle.err
+	}
+	return podman.ContainerInspect{
+		ContainerDetails: podman.ContainerDetails{
+			Container: podman.Container{
+				ID:   containerID,
+				Name: "test-" + containerID,
+			},
+		},
+		IPAddress: "10.88.0.42",
+		Env: []podman.EnvVar{
+			{Key: "APP_ENV", Value: "production", Sensitive: false},
+			{Key: "DB_PASSWORD", Value: "secret123", Sensitive: true},
+		},
+	}, nil
 }
 
 type recordedOperationalEvents struct {
@@ -197,5 +217,24 @@ func assertContainerEvent(t *testing.T, event operations.Event, eventType, conta
 	if event.Type != eventType || event.Source != operations.SourceAutomatic || event.Visibility != operations.VisibilityNormal ||
 		event.NodeID != "edge-1" || event.ContainerID != containerID || event.Actor != "admin@example.com" || event.OccurredAt.IsZero() {
 		t.Fatalf("container event = %#v", event)
+	}
+}
+
+func TestContainerInspectSuccessAndSecurity(t *testing.T) {
+	lifecycle := &recordedContainerLifecycle{}
+	server, _ := newContainerLifecycleTestServer(t, lifecycle, &memoryAudit{})
+	_, cookie, _ := startTestBrowserSession(t, server, "admin@example.com")
+
+	request := loopbackRequest(httptest.NewRequest(http.MethodGet, "/api/v1/containers/redis/inspect?nodeId=local", nil))
+	request.Header.Set("Tailscale-User-Login", "admin@example.com")
+	request.AddCookie(cookie)
+	response := httptest.NewRecorder()
+	server.Handler().ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("inspect status=%d body=%s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "10.88.0.42") || !strings.Contains(response.Body.String(), "DB_PASSWORD") {
+		t.Fatalf("unexpected inspect body: %s", response.Body.String())
 	}
 }

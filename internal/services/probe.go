@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -114,6 +115,9 @@ func (p *Prober) Probe(ctx context.Context, rawURL string) ProbeResult {
 		}
 		_ = connection.Close()
 		return ProbeResult{Status: model.ServiceStatusUp, LatencyMS: latency}
+	}
+	if strings.EqualFold(parsed.Scheme, "dns") {
+		return p.probeDNS(ctx, parsed, started)
 	}
 	if err := validateHTTPURL(rawURL); err != nil || p == nil || p.client == nil {
 		return ProbeResult{Status: model.ServiceStatusDown}
@@ -286,4 +290,79 @@ func DefaultAllowedPrefixes() []netip.Prefix {
 		prefixes = append(prefixes, prefix)
 	}
 	return prefixes
+}
+
+func (p *Prober) probeDNS(ctx context.Context, parsed *url.URL, started time.Time) ProbeResult {
+	if err := validateDNSURL(parsed); err != nil || p == nil || p.dialContext == nil {
+		return ProbeResult{Status: model.ServiceStatusDown}
+	}
+	server, port := parsed.Hostname(), parsed.Port()
+	if port == "" {
+		port = "53"
+	}
+	domain := strings.TrimPrefix(parsed.Path, "/")
+	if !strings.HasSuffix(domain, ".") {
+		domain += "."
+	}
+	queryType := parsed.Query().Get("type")
+	if queryType == "" {
+		queryType = "A"
+	}
+	destination := net.JoinHostPort(server, port)
+	resolver := &net.Resolver{
+		PreferGo: true,
+		Dial: func(ctx context.Context, network, _ string) (net.Conn, error) {
+			return p.dialContext(ctx, network, destination)
+		},
+	}
+	var queryErr error
+	if strings.EqualFold(queryType, "AAAA") {
+		_, queryErr = resolver.LookupNetIP(ctx, "ip6", domain)
+	} else {
+		_, queryErr = resolver.LookupNetIP(ctx, "ip4", domain)
+	}
+	latency := time.Since(started).Milliseconds()
+	if queryErr == nil {
+		return ProbeResult{Status: model.ServiceStatusUp, LatencyMS: latency}
+	}
+	var dnsErr *net.DNSError
+	if errors.As(queryErr, &dnsErr) && dnsErr.IsNotFound {
+		return ProbeResult{Status: model.ServiceStatusUp, LatencyMS: latency}
+	}
+	return ProbeResult{Status: model.ServiceStatusDown, LatencyMS: latency}
+}
+
+func validateDNSURL(parsed *url.URL) error {
+	if !strings.EqualFold(parsed.Scheme, "dns") {
+		return fmt.Errorf("scheme must be dns")
+	}
+	if parsed.Hostname() == "" {
+		return fmt.Errorf("DNS server is required")
+	}
+	if parsed.User != nil {
+		return fmt.Errorf("DNS URL must not contain credentials")
+	}
+	if parsed.Fragment != "" {
+		return fmt.Errorf("DNS URL must not contain fragment")
+	}
+	domain := strings.TrimPrefix(parsed.Path, "/")
+	if domain == "" {
+		return fmt.Errorf("domain name is required")
+	}
+	if len(domain) > 253 {
+		return fmt.Errorf("domain name exceeds 253 characters")
+	}
+	if strings.ContainsAny(domain, " \t\n\r") {
+		return fmt.Errorf("domain name contains whitespace")
+	}
+	if port := parsed.Port(); port != "" {
+		portNum, err := strconv.Atoi(port)
+		if err != nil || portNum < 1 || portNum > 65535 {
+			return fmt.Errorf("port must be 1-65535")
+		}
+	}
+	if queryType := parsed.Query().Get("type"); queryType != "" && !strings.EqualFold(queryType, "A") && !strings.EqualFold(queryType, "AAAA") {
+		return fmt.Errorf("only A and AAAA query types are supported")
+	}
+	return nil
 }

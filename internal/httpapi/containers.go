@@ -21,6 +21,37 @@ type containerLifecycleRequest struct {
 func (s *Server) restartContainer(c *gin.Context) { s.containerLifecycle(c, "restart") }
 func (s *Server) stopContainer(c *gin.Context)    { s.containerLifecycle(c, "stop") }
 
+func (s *Server) inspectContainer(c *gin.Context) {
+	principal := principalFromContext(c)
+	if principal.Login == "" {
+		writeError(c, http.StatusUnauthorized, "unauthorized", "Authentication required.", nil)
+		return
+	}
+	containerID := strings.TrimSpace(c.Param("id"))
+	if !validContainerID(containerID) {
+		writeError(c, http.StatusBadRequest, "invalid_container", "The container id is invalid.", nil)
+		return
+	}
+	nodeID := strings.TrimSpace(c.Query("nodeId"))
+	if nodeID == "" {
+		nodeID = "local"
+	}
+	if !validContainerID(nodeID) {
+		writeError(c, http.StatusBadRequest, "invalid_node", "The node id is invalid.", nil)
+		return
+	}
+	if s.options.ContainerLifecycle == nil {
+		writeError(c, http.StatusServiceUnavailable, "container_lifecycle_unavailable", "Container operations are unavailable.", nil)
+		return
+	}
+	inspectData, err := s.options.ContainerLifecycle.Inspect(c.Request.Context(), nodeID, containerID)
+	if err != nil {
+		writeContainerLifecycleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, inspectData)
+}
+
 func (s *Server) containerLifecycle(c *gin.Context, action string) {
 	principal, ok := s.authorizeMutation(c, true)
 	if !ok {
