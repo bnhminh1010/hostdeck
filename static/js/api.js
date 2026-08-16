@@ -110,6 +110,11 @@ export class DashboardApi {
     return this.request(`/api/v1/containers/${encodeURIComponent(id)}/stop`, { method: "POST", mutation: true, body: { nodeId } });
   }
 
+  inspectContainer(id, nodeId = "local", signal) {
+    const query = new URLSearchParams({ nodeId });
+    return this.request(`/api/v1/containers/${encodeURIComponent(id)}/inspect?${query}`, { signal });
+  }
+
   listNodes(signal) {
     return this.request("/api/v1/nodes", { signal });
   }

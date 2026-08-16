@@ -524,6 +524,51 @@ export function createTerminalController({ api, demo = false, toast }) {
   });
   mobileWorkbench.addEventListener("change", syncWorkbenchClass);
 
+  const mobileKeys = document.getElementById("terminal-mobile-keys");
+  mobileKeys?.querySelectorAll(".terminal-key-btn")?.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const keyType = btn.dataset.key;
+      switch (keyType) {
+        case "ESC":
+          sendKey("\x1b");
+          break;
+        case "TAB":
+          sendKey("\t");
+          break;
+        case "CTRL_C":
+          sendKey("\x03");
+          break;
+        case "UP":
+          sendKey("\x1b[A");
+          break;
+        case "DOWN":
+          sendKey("\x1b[B");
+          break;
+        case "CLEAR":
+          terminal.clear();
+          break;
+      }
+    });
+  });
+
+  function sendKey(str) {
+    if (demoExec) {
+      if (str === "\x03") {
+        demoLine = "";
+        terminal.write("^C\r\n");
+        const prompt = active?.mode === "host" ? "\x1b[32madmin@homelab-01\x1b[0m:\x1b[34m~\x1b[0m$ " : "\x1b[32mdemo@homelab\x1b[0m:\x1b[34m/app\x1b[0m$ ";
+        terminal.write(prompt);
+      } else if (str === "\t") {
+        terminal.write("  ");
+      }
+      return;
+    }
+    if (!active || active.readOnly || socket?.readyState !== WebSocket.OPEN) return;
+    const encoded = new TextEncoder().encode(str);
+    socket.send(encoded);
+  }
+
   terminal.onData((data) => {
     if (demoExec) {
       if (data === "\r") {

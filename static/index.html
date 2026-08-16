@@ -568,6 +568,14 @@
         </div>
       </header>
       <div id="terminal-body" class="terminal-body">
+        <div id="terminal-mobile-keys" class="terminal-mobile-keys" aria-label="Terminal mobile quick keys">
+          <button type="button" class="terminal-key-btn" data-key="ESC">ESC</button>
+          <button type="button" class="terminal-key-btn" data-key="TAB">TAB</button>
+          <button type="button" class="terminal-key-btn" data-key="CTRL_C">CTRL+C</button>
+          <button type="button" class="terminal-key-btn" data-key="UP">▲</button>
+          <button type="button" class="terminal-key-btn" data-key="DOWN">▼</button>
+          <button type="button" class="terminal-key-btn" data-key="CLEAR">CLEAR</button>
+        </div>
         <div id="terminal" class="terminal" aria-label="Host and container terminal"></div>
         <section id="log-viewer" class="log-viewer" aria-label="Container logs" hidden>
           <div class="log-viewer-toolbar">
@@ -601,6 +609,76 @@
       <p id="service-form-error" class="form-error" role="alert" hidden></p>
       <footer><button class="button button-ghost" type="button" data-dialog-close>CANCEL</button><button id="service-form-submit" class="button button-primary" type="submit">ADD SERVICE</button></footer>
     </form>
+  </dialog>
+
+  <dialog id="container-inspect-dialog" class="modal modal-wide" aria-labelledby="container-inspect-title">
+    <div class="modal-form inspect-dialog-content">
+      <header class="inspect-header">
+        <div>
+          <div class="inspect-title-row">
+            <h2 id="container-inspect-title">Container Inspect</h2>
+            <span id="inspect-status-badge" class="badge">RUNNING</span>
+          </div>
+          <p id="inspect-image-label" class="mono text-muted"></p>
+        </div>
+        <button class="icon-button" type="button" data-dialog-close aria-label="Close dialog">×</button>
+      </header>
+
+      <div class="inspect-nav-tabs" role="tablist">
+        <button type="button" class="inspect-tab is-active" data-tab="networking" role="tab" aria-selected="true">🔌 NETWORKING</button>
+        <button type="button" class="inspect-tab" data-tab="mounts" role="tab" aria-selected="false">📁 MOUNTS</button>
+        <button type="button" class="inspect-tab" data-tab="env" role="tab" aria-selected="false">🔑 ENVIRONMENT</button>
+        <button type="button" class="inspect-tab" data-tab="controls" role="tab" aria-selected="false">⚙️ CONTROLS</button>
+      </div>
+
+      <div class="inspect-body">
+        <div id="inspect-tab-networking" class="inspect-tab-pane is-active">
+          <div class="inspect-section">
+            <h4>IP ADDRESS & NETWORK</h4>
+            <div id="inspect-network-info" class="inspect-kv-grid"></div>
+          </div>
+          <div class="inspect-section">
+            <h4>PORT BINDINGS</h4>
+            <div id="inspect-ports-table" class="inspect-table-wrap"></div>
+          </div>
+        </div>
+
+        <div id="inspect-tab-mounts" class="inspect-tab-pane" hidden>
+          <div class="inspect-section">
+            <h4>VOLUME MOUNTS</h4>
+            <div id="inspect-mounts-table" class="inspect-table-wrap"></div>
+          </div>
+        </div>
+
+        <div id="inspect-tab-env" class="inspect-tab-pane" hidden>
+          <div class="inspect-section">
+            <div class="inspect-section-head">
+              <h4>ENVIRONMENT VARIABLES</h4>
+              <button id="inspect-reveal-all-btn" type="button" class="button button-ghost button-small">👁️ REVEAL ALL SECRETS</button>
+            </div>
+            <div id="inspect-env-table" class="inspect-table-wrap"></div>
+          </div>
+        </div>
+
+        <div id="inspect-tab-controls" class="inspect-tab-pane" hidden>
+          <div class="inspect-section">
+            <h4>EXECUTION CONFIGURATION</h4>
+            <div id="inspect-exec-info" class="inspect-kv-grid"></div>
+          </div>
+          <div class="inspect-section inspect-actions-section">
+            <h4>QUICK ACTIONS</h4>
+            <div class="inspect-actions-row">
+              <button id="inspect-action-restart" type="button" class="button button-secondary">🔄 RESTART CONTAINER</button>
+              <button id="inspect-action-stop" type="button" class="button button-danger">⏹️ STOP CONTAINER</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <button class="button button-ghost" type="button" data-dialog-close>CLOSE</button>
+      </footer>
+    </div>
   </dialog>
 
   <dialog id="delete-dialog" class="modal modal-small" aria-labelledby="delete-dialog-title">
