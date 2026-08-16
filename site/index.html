@@ -460,19 +460,23 @@
       flex-direction: column;
       justify-content: center;
       padding: 110px var(--space-lg) 90px;
-      z-index: 2;
+      z-index: 5;
     }
 
     .chapter-inner {
       max-width: 1200px;
       margin: 0 auto;
       width: 100%;
+      position: relative;
+      z-index: 10;
     }
 
     #ch-02 .chapter-inner {
-      max-width: 360px;
+      max-width: 380px;
       margin: 0;
-      margin-left: max(var(--space-md), calc((100vw - 1380px) / 2));
+      margin-left: max(var(--space-lg), calc((100vw - 1440px) / 2));
+      position: relative;
+      z-index: 10;
     }
 
     /* Chapter number (background element) */
@@ -1151,6 +1155,30 @@
       white-space: nowrap;
     }
 
+    .hud-fs-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--red);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(224, 35, 28, 0.35);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .hud-fs-btn:hover {
+      background: var(--red-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(224, 35, 28, 0.5);
+    }
+
     .hud-hint {
       color: var(--bone-dim);
       opacity: 0.85;
@@ -1233,6 +1261,289 @@
       line-height: 1.5;
       color: var(--bone-dim);
       margin: 0;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       34" CURVED ULTRAWIDE HARDWARE MONITOR MODAL (21:9 RATIO)
+       ═══════════════════════════════════════════════════════════════════════ */
+    .fullscreen-demo-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      padding: 20px 16px;
+    }
+
+    .fullscreen-demo-modal[aria-hidden="false"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .fs-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(12, 19, 30, 0.92) 0%, rgba(3, 6, 10, 0.97) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .fs-monitor-stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: min(94vw, 1540px);
+      max-width: 100%;
+      margin: auto;
+      z-index: 2;
+    }
+
+    /* ScreenBar Light Fixture Mounted on Top */
+    .fs-screenbar-fixture {
+      position: relative;
+      width: min(540px, 60%);
+      height: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: -7px;
+      z-index: 10;
+    }
+
+    .fs-screenbar-body {
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(90deg, #1e293b 0%, #475569 25%, #94a3b8 50%, #475569 75%, #1e293b 100%);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+    }
+
+    .fs-screenbar-light {
+      width: 90%;
+      height: 3px;
+      background: #fff0dd;
+      border-radius: 2px;
+      box-shadow: 0 0 16px 4px rgba(255, 240, 221, 0.65), 0 0 35px 8px rgba(255, 220, 180, 0.35);
+    }
+
+    /* 34" Curved Hardware Monitor Frame (Curved Bezel with Depth) */
+    .fs-curved-monitor {
+      position: relative;
+      width: 100%;
+      background: #06090e;
+      border: 14px solid #0d121a;
+      outline: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      box-shadow:
+        inset 0 0 40px rgba(0, 0, 0, 0.9),
+        0 30px 100px rgba(0, 0, 0, 0.95),
+        0 0 80px rgba(56, 189, 248, 0.14);
+      overflow: hidden;
+      transform: scale(0.96);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .fullscreen-demo-modal[aria-hidden="false"] .fs-curved-monitor {
+      transform: scale(1);
+    }
+
+    .fs-modal-header {
+      height: 44px;
+      background: #090e16;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      flex-shrink: 0;
+    }
+
+    .fs-modal-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #f8fafc;
+      letter-spacing: 0.06em;
+    }
+
+    .fs-monitor-badge {
+      background: rgba(56, 189, 248, 0.14);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .fs-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fs-btn-tab {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #38bdf8;
+      text-decoration: none;
+      padding: 4px 11px;
+      border-radius: 5px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(56, 189, 248, 0.06);
+      transition: all 0.2s ease;
+    }
+
+    .fs-btn-tab:hover {
+      background: rgba(56, 189, 248, 0.2);
+      color: #fff;
+      border-color: #38bdf8;
+    }
+
+    .fs-btn-close {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: #f8fafc;
+      background: #e5432c;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .fs-btn-close:hover {
+      background: #ff5740;
+      box-shadow: 0 0 12px rgba(229, 67, 44, 0.5);
+    }
+
+    .fs-modal-body {
+      width: 100%;
+      height: 62vh;
+      min-height: 480px;
+      max-height: 720px;
+      background: #03060a;
+      position: relative;
+    }
+
+    .fs-modal-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Bottom Chin with Laser Engraved Branding & Status LED */
+    .fs-monitor-chin {
+      height: 28px;
+      background: #0a0f17;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #64748b;
+      letter-spacing: 0.08em;
+    }
+
+    .fs-chin-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fs-brand-logo {
+      color: #94a3b8;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .fs-brand-spec {
+      color: #475569;
+      font-size: 9.5px;
+    }
+
+    .fs-chin-power {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #475569;
+      font-size: 9.5px;
+    }
+
+    .fs-power-led {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: pulsePower 2s infinite ease-in-out;
+    }
+
+    @keyframes pulsePower {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.35; }
+    }
+
+    /* Heavy-Duty Aluminum Stand Silhouette below Monitor */
+    .fs-monitor-stand-base {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -2px;
+      z-index: 1;
+    }
+
+    .fs-stand-pillar {
+      width: 64px;
+      height: 24px;
+      background: linear-gradient(180deg, #182230 0%, #0d141e 100%);
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .fs-stand-feet {
+      width: 240px;
+      height: 8px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 4px 4px 0 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
+    }
+
+    @media (max-width: 768px) {
+      .fs-curved-monitor {
+        border-width: 8px;
+        border-radius: 16px;
+      }
+      .fs-screenbar-fixture {
+        width: 80%;
+      }
+      .fs-brand-spec {
+        display: none;
+      }
+      .fs-modal-body {
+        height: 68vh;
+        min-height: 360px;
+      }
     }
 
     /* ═══════════════════════════════════════════════════════════════════════
@@ -1509,57 +1820,103 @@
       justify-content: center;
     }
 
-    /* Install command with inline copy button */
+    /* Install command with continuous marquee and inline copy button */
     .install-command-box {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      padding: 12px 18px;
-      background: var(--ink-2);
-      border: 1px solid var(--line);
+      gap: 12px;
+      padding: 8px 12px;
+      background: rgba(8, 12, 18, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 8px;
       font-family: var(--font-mono);
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--bone-dim);
       max-width: 680px;
-      margin: var(--space-lg) auto;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      margin: var(--space-md) auto;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
     }
 
-    .install-command-box code {
-      color: var(--bone);
-      overflow-x: auto;
+    .install-marquee-viewport {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
       white-space: nowrap;
-      font-family: inherit;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      height: 28px;
+      display: flex;
+      align-items: center;
     }
 
-    .install-command-box code::-webkit-scrollbar {
-      display: none;
+    .install-marquee-track {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      white-space: nowrap;
+      animation: install-marquee-anim 18s linear infinite;
+      will-change: transform;
+    }
+
+    .install-command-box:hover .install-marquee-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes install-marquee-anim {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .cmd-text {
+      color: #f1f5f9;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .cmd-prompt {
+      color: #38bdf8;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .cmd-sep {
+      color: #e5432c;
+      font-size: 9px;
+      opacity: 0.8;
     }
 
     .copy-btn {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       padding: 6px 12px;
       font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--bone-dim);
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--line);
-      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #ff7a66;
+      background: rgba(229, 67, 44, 0.14);
+      border: 1px solid rgba(229, 67, 44, 0.35);
+      border-radius: 6px;
       cursor: pointer;
       flex-shrink: 0;
       transition: all var(--duration-fast) var(--ease-smooth);
     }
 
     .copy-btn:hover {
-      color: var(--bone);
-      border-color: var(--line-strong);
-      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: #e5432c;
+      background: #e5432c;
+      box-shadow: 0 0 12px rgba(229, 67, 44, 0.4);
+    }
+
+    .copy-btn.is-copied {
+      background: rgba(77, 187, 109, 0.2);
+      border-color: #4dbb6d;
+      color: #4dbb6d;
     }
 
     .copy-btn.is-copied {
@@ -2117,157 +2474,326 @@
         box-sizing: border-box;
       }
 
+      /* Ultra-Compact Glassmorphic Mobile Layout (MengTo/kage style) */
+      .chapter {
+        min-height: 100vh;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0 12px 18px 12px;
+        pointer-events: none;
+      }
+
       .chapter .chapter-inner,
       .hero .chapter-inner {
-        background: rgba(8, 12, 18, 0.76);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        padding: 18px 16px;
-        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65);
+        pointer-events: auto;
+        background: rgba(8, 12, 18, 0.42);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 14px;
+        padding: 10px 14px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
         margin: 0 auto;
-        max-width: 100%;
+        width: 100%;
+        max-width: 360px;
+        max-height: 40vh;
+        overflow-y: auto;
+        scrollbar-width: none;
         position: relative;
         z-index: 10;
+      }
+      .chapter .chapter-inner::-webkit-scrollbar,
+      .hero .chapter-inner::-webkit-scrollbar {
+        display: none;
       }
 
       .chapter-num-bg {
         display: none;
       }
 
-      .hero {
-        min-height: 100vh;
-        justify-content: flex-end;
-        padding-top: 36vh;
-        padding-bottom: 24px;
-        align-items: flex-start;
-      }
-
       .hero-badge {
-        margin-bottom: 14px;
-        font-size: 11px;
-        padding: 4px 12px;
+        margin-bottom: 6px;
+        font-size: 10px;
+        padding: 2px 8px;
       }
 
       .hero h1 {
-        font-size: clamp(34px, 7.8vw, 48px);
-        margin-bottom: 14px;
+        font-size: clamp(22px, 5.8vw, 30px);
+        margin-bottom: 6px;
         line-height: 1.1;
       }
 
       .hero-sub {
         color: var(--bone-dim);
-        font-size: 15px;
-        line-height: 1.55;
-        margin-bottom: 22px;
+        font-size: 12px;
+        line-height: 1.42;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
 
       .chapter h2 {
-        font-size: clamp(26px, 6.5vw, 36px);
-        margin-bottom: 12px;
+        font-size: clamp(18px, 4.8vw, 24px);
+        margin-bottom: 4px;
         line-height: 1.15;
       }
 
       .chapter-body {
-        font-size: 14.5px;
-        line-height: 1.55;
+        font-size: 12px;
+        line-height: 1.42;
         color: var(--bone-dim);
-        margin-bottom: 18px;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
 
-      .chapter-label {
-        font-size: 10.5px;
-        margin-bottom: 10px;
+      .chapter-label, .sec-head {
+        font-size: 9.5px;
+        margin-bottom: 6px;
       }
 
       .hero-cta {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
         width: 100%;
-        max-width: 340px;
-        gap: 10px;
+        gap: 6px;
       }
 
       .hero-cta .btn {
-        width: 100%;
+        flex: 1;
         text-align: center;
-        padding: 12px 18px;
-        font-size: 13.5px;
+        padding: 8px 10px;
+        font-size: 11.5px;
       }
 
       .hero-term {
-        margin-top: 18px;
+        margin-top: 6px;
         width: 100%;
-        max-width: 340px;
-        font-size: 12px;
-        padding: 10px 14px;
+        font-size: 10.5px;
+        padding: 6px 10px;
       }
 
       .metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
       }
 
       .metric-card {
-        padding: 14px 12px;
+        padding: 6px 4px;
+        border-radius: 8px;
       }
 
       .metric-value {
-        font-size: 32px;
+        font-size: 18px;
+      }
+
+      .metric-label {
+        font-size: 9px;
+      }
+
+      .metric-status {
+        display: none;
+      }
+
+
+
+      .hud-action-panel {
+        padding: 6px 8px;
+        gap: 5px;
+      }
+
+      .hud-status-bar {
+        font-size: 9.5px;
+      }
+
+      .hud-fs-btn {
+        padding: 4px 8px;
+        font-size: 9.5px;
+      }
+
+      .hud-guide-card {
+        display: none;
+      }
+
+      .hud-shortcuts {
+        display: flex;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        gap: 4px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: 2px;
+      }
+      .hud-shortcuts::-webkit-scrollbar {
+        display: none;
+      }
+
+      .hud-chip {
+        flex: 0 0 auto;
+        padding: 4px 8px;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+
+      .network-diagram {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        margin-top: 4px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .network-row {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 4px;
+      }
+
+      .network-row:nth-child(2) {
+        display: none;
+      }
+
+      .network-node {
+        padding: 4px 6px;
+        gap: 2px;
+        border-radius: 6px;
+        min-width: 60px;
+      }
+
+      .network-node .network-icon {
+        width: 14px;
+        height: 14px;
+      }
+
+      .network-node .network-label {
+        font-size: 8.5px;
+      }
+
+      .network-node .network-status {
+        font-size: 7.5px;
+        padding: 1px 3px;
+      }
+
+      .network-arrow {
+        font-size: 9px;
       }
 
       .workspace-deck {
         grid-template-columns: 1fr;
-        gap: 14px;
-        padding: 12px;
+        gap: 8px;
+        padding: 8px;
+        margin-top: 6px;
       }
 
       .workspace-nav {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        flex-wrap: nowrap;
         gap: 6px;
+        padding: 2px 2px 6px 2px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .workspace-nav::-webkit-scrollbar {
+        display: none;
       }
 
       .ws-tab {
-        padding: 8px 10px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
+        flex: 0 0 auto;
+        padding: 5px 10px;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .ws-tab.active {
+        background: rgba(229, 67, 44, 0.18);
+        border-color: #e5432c;
+      }
+
+      .ws-tab-num {
+        font-size: 9.5px;
+        font-weight: 700;
+      }
+
+      .ws-tab-title {
+        font-size: 11px;
+        white-space: nowrap;
       }
 
       .ws-tab-desc {
         display: none;
       }
 
+      .workspace-stage {
+        border-radius: 8px;
+        margin-top: 2px;
+      }
+
       .workspace-display {
-        min-height: 240px;
+        min-height: 140px;
+        max-height: 175px;
+        position: relative;
+      }
+
+      .ws-stage-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 6px 8px;
+        background: rgba(5, 7, 10, 0.88);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .ws-badge {
+        font-size: 8.5px;
+        padding: 1px 5px;
+        border-radius: 3px;
+        background: rgba(229, 67, 44, 0.2);
+        color: #ff7a66;
+        border: 1px solid rgba(229, 67, 44, 0.35);
+      }
+
+      .ws-caption {
+        font-size: 10px;
+        line-height: 1.3;
+        color: #cbd5e1;
+        white-space: normal;
       }
 
       /* Command box on Mobile */
       .install-command-box {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 14px 16px;
-        gap: 12px;
+        padding: 5px 8px;
+        gap: 8px;
         width: 100%;
-        background: rgba(8, 12, 18, 0.92);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 10px;
+        margin: 8px auto;
       }
-      .install-command-box code {
-        font-size: 12px;
-        line-height: 1.5;
-        white-space: normal;
-        word-break: break-all;
-        color: var(--bone);
+      .install-marquee-viewport {
+        height: 26px;
+      }
+      .cmd-text {
+        font-size: 11px;
       }
       .copy-btn {
-        width: 100%;
-        height: 42px;
-        font-size: 13px;
-        font-weight: 600;
-        justify-content: center;
+        padding: 4px 9px;
+        font-size: 10.5px;
       }
 
       /* Deep-dive sections on Mobile */
@@ -2312,50 +2838,115 @@
       .final-cta-buttons .btn {
         width: 100%;
       }
-    }
 
-    @media (max-width: 480px) {
-      .chapter {
-        padding: 72px 14px 44px;
+      /* Fullscreen Interactive Live Demo Modal - Mobile Optimization */
+      .fullscreen-demo-modal {
+        padding: 8px 6px;
+        align-items: center;
       }
 
-      .hero h1 {
-        font-size: 32px;
+      .fs-monitor-stage {
+        width: 100%;
+        max-width: 100%;
       }
 
-      .workspace-nav {
-        grid-template-columns: repeat(2, 1fr);
+      .fs-screenbar-fixture {
+        width: min(220px, 60%);
+        height: 8px;
+        margin-bottom: -4px;
       }
 
-      .metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+      .fs-screenbar-body {
+        height: 6px;
       }
 
-      .metric-card {
-        padding: 12px 10px;
+      .fs-screenbar-light {
+        height: 2px;
       }
 
-      .metric-value {
-        font-size: 26px;
+      .fs-curved-monitor {
+        border-width: 6px;
+        border-radius: 14px;
+        box-shadow:
+          inset 0 0 20px rgba(0, 0, 0, 0.9),
+          0 10px 40px rgba(0, 0, 0, 0.95);
       }
 
-      .metric-label {
+      .fs-modal-header {
+        height: 38px;
+        padding: 0 8px;
+        gap: 6px;
+      }
+
+      .fs-modal-title {
+        font-size: 10px;
+        gap: 5px;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .fs-monitor-badge {
+        display: none;
+      }
+
+      .fs-modal-title span:last-child {
+        display: none;
+      }
+
+      .fs-modal-title::after {
+        content: "LIVE CONSOLE";
+        font-size: 10px;
+        color: #f8fafc;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+      }
+
+      .fs-modal-actions {
+        gap: 5px;
+        flex-shrink: 0;
+      }
+
+      .fs-btn-tab {
+        font-size: 9.5px;
+        padding: 3px 6px;
+        white-space: nowrap;
+      }
+
+      .fs-btn-close {
+        font-size: 9.5px;
+        padding: 3px 7px;
+        white-space: nowrap;
+      }
+
+      .fs-modal-body {
+        height: 72vh;
+        min-height: 440px;
+        max-height: 78vh;
+      }
+
+      .fs-monitor-chin {
+        height: 24px;
+        padding: 0 10px;
+        font-size: 9px;
+      }
+
+      .fs-brand-spec {
+        display: none;
+      }
+
+      .fs-brand-logo {
         font-size: 9.5px;
       }
 
-      .metric-status {
-        font-size: 10px;
-        padding: 2px 6px;
+      .fs-chin-power {
+        font-size: 8.5px;
+        gap: 4px;
       }
 
-      .terminal-panel {
-        padding: 12px;
-        font-size: 11.5px;
-      }
-
-      .network-node {
-        padding: 10px;
+      .fs-monitor-stand-base {
+        display: none;
       }
     }
   </style>
@@ -2527,19 +3118,22 @@
         <div class="hud-action-panel">
           <div class="hud-status-bar">
             <span class="hud-pip"><span class="pulse-dot"></span> KVM LIVE CONSOLE</span>
-            <span class="hud-hint">Interact directly with the rack screen →</span>
+            <button type="button" class="hud-fs-btn" id="btn-open-fullscreen-demo" aria-label="Expand Fullscreen Interactive Demo">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg>
+              <span>⛶ Expand Fullscreen Demo</span>
+            </button>
           </div>
           <div class="hud-shortcuts" role="tablist" aria-label="Console Workspaces">
             <button type="button" class="hud-chip active" id="hud-ws-overview" data-ws="overview"><svg class="chip-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2.5 13.5v-4M6.5 13.5v-8M10.5 13.5v-5M14.5 13.5v-2"/></svg> Overview</button>
             <button type="button" class="hud-chip" id="hud-ws-containers" data-ws="containers"><svg class="chip-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 2 3.5 9h4l-1 5 5.5-7h-4l1-5Z"/></svg> Redis Incident</button>
             <button type="button" class="hud-chip" id="hud-ws-terminal" data-ws="terminal"><svg class="chip-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2.5 4.5 6 8l-3.5 3.5M8.5 12h5"/></svg> Host Terminal</button>
             <button type="button" class="hud-chip" id="hud-ws-logs" data-ws="logs"><svg class="chip-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4.5 1.5h5l3 3v10h-8v-13Z"/><path d="M9.5 1.5v3h3M6.5 8h4M6.5 10.5h4"/></svg> Live Logs</button>
-            <a href="app/?demo=1" target="_blank" rel="noopener" class="hud-chip link-chip" title="Open full demo dashboard in new tab"><span>Fullscreen ↗</span></a>
+            <a href="app/?demo=1" target="_blank" rel="noopener" class="hud-chip link-chip" title="Open full demo dashboard in new tab"><span>Open in new tab ↗</span></a>
           </div>
           <div class="hud-guide-card">
             <div class="hud-guide-title">HARDWARE CONSOLE EMULATION</div>
             <p class="hud-guide-text">
-              The 17" KVM monitor on the server rack runs an interactive HostDeck sandbox. Click quick-switch tabs above or click directly on the 3D screen.
+              17" rack-mounted KVM console running live real-time HostDeck sandbox. Click <b>"Expand Fullscreen Demo"</b> above for a full 100vw x 100vh interactive experience!
             </p>
           </div>
         </div>
@@ -2720,8 +3314,18 @@
           Install with a single script, unprivileged, APT/DNF/Pacman aware. Tailscale Serve terminates HTTPS — no host port ever published. Open your *.ts.net URL and start observing.
         </p>
         <div class="install-command-box">
-          <code id="install-code">curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash</code>
-          <button class="copy-btn" id="copy-install" aria-label="Copy installation command">Copy</button>
+          <div class="install-marquee-viewport">
+            <div class="install-marquee-track">
+              <span class="cmd-text"><span class="cmd-prompt">❯</span> curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash</span>
+              <span class="cmd-sep">✦</span>
+              <span class="cmd-text"><span class="cmd-prompt">❯</span> curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash</span>
+              <span class="cmd-sep">✦</span>
+            </div>
+          </div>
+          <button class="copy-btn" id="copy-install" aria-label="Copy installation command" data-copy="curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3a1.5 1.5 0 0 1 1.5-1.5H11"/></svg>
+            <span>Copy</span>
+          </button>
         </div>
         <div class="tech-badges">
           <span class="tech-badge">Go</span>
@@ -2992,6 +3596,58 @@
     </div>
   </footer>
 
+  <!-- Fullscreen Interactive Live Demo Modal (34" Curved Ultrawide Hardware Monitor Frame) -->
+  <div id="demo-fullscreen-modal" class="fullscreen-demo-modal" aria-hidden="true">
+    <div class="fs-modal-backdrop" id="fs-modal-backdrop"></div>
+    
+    <div class="fs-monitor-stage">
+      <!-- ScreenBar Light Fixture on Top of Monitor Frame -->
+      <div class="fs-screenbar-fixture">
+        <div class="fs-screenbar-body"></div>
+        <div class="fs-screenbar-light"></div>
+      </div>
+
+      <!-- 34" Curved Ultrawide Hardware Chassis -->
+      <div class="fs-modal-window fs-curved-monitor">
+        <!-- Top Bezel & Integrated Actions Header -->
+        <div class="fs-modal-header">
+          <div class="fs-modal-title">
+            <span class="pulse-dot"></span>
+            <span class="fs-monitor-badge">34" CURVED ULTRAWIDE 21:9</span>
+            <span>HOSTDECK // LIVE WORKSTATION CONSOLE</span>
+          </div>
+          <div class="fs-modal-actions">
+            <a href="app/?demo=1" target="_blank" rel="noopener" class="fs-btn-tab" title="Open in new tab">Open in new tab ↗</a>
+            <button type="button" class="fs-btn-close" id="btn-close-fullscreen-demo" aria-label="Close fullscreen demo">✕ Close (ESC)</button>
+          </div>
+        </div>
+
+        <!-- 21:9 Screen Viewport -->
+        <div class="fs-modal-body">
+          <iframe id="fs-demo-iframe" src="about:blank" title="HostDeck Fullscreen Interactive Demo" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <!-- Bottom Chin with Laser Engraved Branding & Status LED -->
+        <div class="fs-monitor-chin">
+          <div class="fs-chin-brand">
+            <span class="fs-brand-logo">HOSTDECK</span>
+            <span class="fs-brand-spec">34" ULTRAWIDE 3440×1440 · 165Hz HDR · 1500R CURVE</span>
+          </div>
+          <div class="fs-chin-power">
+            <span class="fs-power-led"></span>
+            <span>ONLINE / SYNCED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aluminum Monitor Stand Base Silhouette -->
+      <div class="fs-monitor-stand-base">
+        <div class="fs-stand-pillar"></div>
+        <div class="fs-stand-feet"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- 3D Raycasting HUD Tooltip -->
   <div id="rack-tooltip" class="rack-tooltip" style="display:none;"></div>
 
@@ -3045,6 +3701,7 @@
       const canvas = document.getElementById('scene-canvas');
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+      window.__sceneCamera = camera;
 
       const renderer = new THREE.WebGLRenderer({
         canvas: canvas,
@@ -3102,7 +3759,9 @@
           rightBayIntensity: 1.35,
           key: 0xa0c8f0,
           keyIntensity: 1.6,
-          fill: 0x385c7c
+          fill: 0x385c7c,
+          deskGlow: 0x38bdf8,
+          pcGlow: 0x3388ff
         },
         incident: {
           name: 'Incident Emergency Red',
@@ -3114,7 +3773,9 @@
           rightBayIntensity: 1.5,
           key: 0xff8877,
           keyIntensity: 1.7,
-          fill: 0x7a2020
+          fill: 0x7a2020,
+          deskGlow: 0xe5432c,
+          pcGlow: 0xff3322
         },
         amber: {
           name: 'Warm Homelab Amber',
@@ -3126,7 +3787,9 @@
           rightBayIntensity: 1.4,
           key: 0xffd080,
           keyIntensity: 1.6,
-          fill: 0x6e4a1a
+          fill: 0x6e4a1a,
+          deskGlow: 0xffaa33,
+          pcGlow: 0xffbb44
         },
         matrix: {
           name: 'Matrix Cyber Neon',
@@ -3138,7 +3801,9 @@
           rightBayIntensity: 1.45,
           key: 0x6ee7b7,
           keyIntensity: 1.7,
-          fill: 0x165b33
+          fill: 0x165b33,
+          deskGlow: 0x10b981,
+          pcGlow: 0x34d399
         }
       };
 
@@ -3161,6 +3826,9 @@
           rightBayIntensity: theme.rightBayIntensity,
           keyIntensity: theme.keyIntensity
         };
+
+        if (deskAmbientLight) deskAmbientLight.color.set(theme.deskGlow);
+        if (pcInternalLight) pcInternalLight.color.set(theme.pcGlow);
 
         // Update active UI dot
         document.querySelectorAll('.theme-dot').forEach(dot => {
@@ -3501,6 +4169,611 @@
       }
 
       // ═══════════════════════════════════════════════════════════════════════
+      // DEVELOPER HOMELAB COMMAND WORKBENCH & DESK SETUP (Left Side)
+      // ═══════════════════════════════════════════════════════════════════════
+      let deskScreenBarLight = null;
+      let deskAmbientLight = null;
+      let pcInternalLight = null;
+      const deskFanMeshes = [];
+
+      // Dynamic Canvas Textures for Developer Desk Displays
+      const ultrawideCanvas = document.createElement('canvas');
+      ultrawideCanvas.width = 1024;
+      ultrawideCanvas.height = 512;
+      const uwCtx = ultrawideCanvas.getContext('2d');
+      const uwTexture = new THREE.CanvasTexture(ultrawideCanvas);
+      uwTexture.anisotropy = 8;
+
+      const portraitCanvas = document.createElement('canvas');
+      portraitCanvas.width = 512;
+      portraitCanvas.height = 1024;
+      const ptCtx = portraitCanvas.getContext('2d');
+      const ptTexture = new THREE.CanvasTexture(portraitCanvas);
+      ptTexture.anisotropy = 8;
+
+      const macbookCanvas = document.createElement('canvas');
+      macbookCanvas.width = 512;
+      macbookCanvas.height = 320;
+      const mbCtx = macbookCanvas.getContext('2d');
+      const mbTexture = new THREE.CanvasTexture(macbookCanvas);
+      mbTexture.anisotropy = 8;
+
+      function updateDeskDisplays(time) {
+        // 1. 27" Vertical / Portrait Monitor: HostDeck GitHub README & Quickstart Docs
+        ptCtx.fillStyle = '#060a0f';
+        ptCtx.fillRect(0, 0, 512, 1024);
+
+        // Header
+        ptCtx.fillStyle = '#0e1520';
+        ptCtx.fillRect(0, 0, 512, 56);
+        ptCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ptCtx.strokeRect(0, 0, 512, 56);
+
+        ptCtx.fillStyle = '#e5432c';
+        ptCtx.fillRect(20, 18, 20, 20);
+        ptCtx.fillStyle = '#f8fafc';
+        ptCtx.font = 'bold 20px monospace';
+        ptCtx.fillText('HOSTDECK // README.md', 52, 34);
+
+        ptCtx.fillStyle = '#94a3b8';
+        ptCtx.font = '13px monospace';
+        ptCtx.fillText('Single-Binary Homelab Observability', 20, 84);
+        ptCtx.fillText('Tailscale-Only · Zero Inbound Ports', 20, 106);
+
+        // Badges row
+        const badges = [
+          { text: 'Go 1.22', bg: '#0284c7' },
+          { text: 'Podman', bg: '#8b5cf6' },
+          { text: 'Tailscale', bg: '#10b981' },
+          { text: '60 FPS', bg: '#e5432c' }
+        ];
+        let bx = 20;
+        badges.forEach(b => {
+          ptCtx.fillStyle = b.bg;
+          ptCtx.fillRect(bx, 126, 95, 24);
+          ptCtx.fillStyle = '#ffffff';
+          ptCtx.font = 'bold 12px monospace';
+          ptCtx.fillText(b.text, bx + 12, 142);
+          bx += 105;
+        });
+
+        // Architecture Box
+        ptCtx.fillStyle = '#0a1017';
+        ptCtx.fillRect(20, 168, 472, 220);
+        ptCtx.strokeStyle = 'rgba(255,255,255,0.07)';
+        ptCtx.strokeRect(20, 168, 472, 220);
+
+        ptCtx.fillStyle = '#38bdf8';
+        ptCtx.font = 'bold 13px monospace';
+        ptCtx.fillText('## ARCHITECTURE', 36, 196);
+
+        ptCtx.fillStyle = '#cbd5e1';
+        ptCtx.font = '12px monospace';
+        const archLines = [
+          '┌─────────────────────────────────────────┐',
+          '│   Tailscale WireGuard Identity Mesh     │',
+          '└────────────────────┬────────────────────┘',
+          '                     ▼',
+          '┌─────────────────────────────────────────┐',
+          '│ HostDeck Dashboard Server (:8080)       │',
+          '│  • 3-Tier SQLite (90-Day Telemetry)     │',
+          '│  • WebSocket 60fps Realtime Stream      │',
+          '└────────────────────┬────────────────────┘',
+          '                     ▼',
+          '┌─────────────────────────────────────────┐',
+          '│ Rootless Podman Socket + Node Agents    │',
+          '└─────────────────────────────────────────┘'
+        ];
+        archLines.forEach((al, idx) => {
+          ptCtx.fillText(al, 36, 222 + idx * 17);
+        });
+
+        // Quickstart
+        ptCtx.fillStyle = '#38bdf8';
+        ptCtx.font = 'bold 13px monospace';
+        ptCtx.fillText('## QUICK START', 20, 420);
+
+        ptCtx.fillStyle = '#0d131a';
+        ptCtx.fillRect(20, 436, 472, 80);
+        ptCtx.fillStyle = '#4ade80';
+        ptCtx.font = '13px monospace';
+        ptCtx.fillText('$ curl -fsSL https://hostdeck.dev | bash', 34, 466);
+        ptCtx.fillText('$ hostdeck start --tailscale', 34, 494);
+
+        // Core Features
+        ptCtx.fillStyle = '#38bdf8';
+        ptCtx.font = 'bold 13px monospace';
+        ptCtx.fillText('## CORE FEATURES', 20, 546);
+
+        const features = [
+          '[✓] Zero inbound WAN ports / Tailscale auth',
+          '[✓] 3-tier SQLite history 90d (no Prometheus)',
+          '[✓] Live container inspect (masked passwords)',
+          '[✓] Confirmed host shell (audit-trailed)',
+          '[✓] Telegram & Discord alert adapters',
+          '[✓] Mobile virtual terminal quick-key bar',
+          '[✓] 60fps smooth telemetry (zero jank)',
+          '[✓] 5-node cluster cross-monitoring'
+        ];
+        features.forEach((f, idx) => {
+          ptCtx.fillStyle = idx % 2 === 0 ? '#f8fafc' : '#94a3b8';
+          ptCtx.font = '13px monospace';
+          ptCtx.fillText(f, 20, 576 + idx * 30);
+        });
+
+        ptTexture.needsUpdate = true;
+
+        // 2. MacBook Pro: HostDeck CLI / TUI Live Session
+        mbCtx.fillStyle = '#06090e';
+        mbCtx.fillRect(0, 0, 512, 320);
+
+        // Terminal Topbar
+        mbCtx.fillStyle = '#0f1620';
+        mbCtx.fillRect(0, 0, 512, 28);
+        mbCtx.fillStyle = '#ef4444';
+        mbCtx.beginPath(); mbCtx.arc(16, 14, 5, 0, Math.PI * 2); mbCtx.fill();
+        mbCtx.fillStyle = '#f59e0b';
+        mbCtx.beginPath(); mbCtx.arc(32, 14, 5, 0, Math.PI * 2); mbCtx.fill();
+        mbCtx.fillStyle = '#10b981';
+        mbCtx.beginPath(); mbCtx.arc(48, 14, 5, 0, Math.PI * 2); mbCtx.fill();
+
+        mbCtx.fillStyle = '#e2e8f0';
+        mbCtx.font = 'bold 11px monospace';
+        mbCtx.fillText('hostdeck-cli v1.4.0 · homelab-01 · admin@tailnet', 72, 18);
+
+        // Live Node Stats
+        mbCtx.fillStyle = '#0a1017';
+        mbCtx.fillRect(12, 38, 488, 120);
+        mbCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+        mbCtx.strokeRect(12, 38, 488, 120);
+
+        mbCtx.fillStyle = '#38bdf8';
+        mbCtx.font = 'bold 12px monospace';
+        mbCtx.fillText('NODE: homelab-01 (AMD EPYC 16-Core)  [UPTIME: 42d 8h]', 24, 58);
+
+        const cpuVal = Math.round(28 + Math.sin(time * 2) * 6);
+        mbCtx.fillStyle = '#4ade80';
+        mbCtx.font = '11px monospace';
+        mbCtx.fillText(`CPU:  [||||||||||||..........] ${cpuVal}% · 41°C`, 24, 80);
+
+        mbCtx.fillStyle = '#38bdf8';
+        mbCtx.fillText('RAM:  4.8 GB / 16.0 GB (30%) · SWAP: 0 MB', 24, 98);
+
+        mbCtx.fillStyle = '#f59e0b';
+        mbCtx.fillText('NVMe: 847 GB / 2.0 TB (42%) · IOPS: 4,820', 24, 116);
+
+        mbCtx.fillStyle = '#a855f7';
+        mbCtx.fillText('PODS: 5 running · 0 issues · Tailscale: 0.8ms', 24, 134);
+
+        // Interactive Command
+        mbCtx.fillStyle = '#4ade80';
+        mbCtx.font = '12px monospace';
+        mbCtx.fillText('admin@homelab-01:~$ hostdeck containers inspect redis-cache', 16, 185);
+
+        mbCtx.fillStyle = '#cbd5e1';
+        mbCtx.font = '11px monospace';
+        mbCtx.fillText('→ ID: 894bf2a09  State: UP (Up 14 days)', 24, 210);
+        mbCtx.fillText('→ IP: 10.88.0.12  Network: podman (bridge)', 24, 230);
+        mbCtx.fillText('→ Ports: 6379:6379/tcp  Mounts: /opt/data:rw', 24, 250);
+        mbCtx.fillStyle = '#f59e0b';
+        mbCtx.fillText('→ Secrets: DB_PASS=•••••••• [MASKED]', 24, 270);
+
+        // Blinking Cursor
+        if (Math.sin(time * 6) > 0) {
+          mbCtx.fillStyle = '#4ade80';
+          mbCtx.fillRect(16, 290, 8, 14);
+        }
+
+        mbTexture.needsUpdate = true;
+      }
+
+      let deskGroupRef = null;
+      const interactiveUnits = [];
+      window.interactiveUnits = interactiveUnits;
+
+      function buildErgonomicChair() {
+        const chair = new THREE.Group();
+        // Positioned in front of the desk facing outward at an attractive 3/4 angle
+        chair.position.set(-0.12, 0.0, 0.82);
+        chair.rotation.y = 0.52;
+
+        const alumChairMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.25, metalness: 0.95 });
+        const meshSeatMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.75, metalness: 0.25 });
+        const chairFrameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.45, metalness: 0.7 });
+        const puPadMat = new THREE.MeshStandardMaterial({ color: 0x090d14, roughness: 0.6, metalness: 0.2 });
+
+        // 1. 5-Star Flat Radial Caster Base (Resting directly on raised floor at y = -3.18)
+        const baseCenter = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.10, 0.06, 16), alumChairMat);
+        baseCenter.position.set(0, -3.14, 0);
+        chair.add(baseCenter);
+
+        for (let i = 0; i < 5; i++) {
+          const angle = (i * Math.PI * 2) / 5;
+          const legGroup = new THREE.Group();
+          legGroup.rotation.y = angle;
+
+          const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.022, 0.36), alumChairMat);
+          spoke.position.set(0, -3.15, 0.18);
+          legGroup.add(spoke);
+
+          // Miniature dual caster wheel (touching floor at y = -3.18)
+          const caster = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.024, 12), puPadMat);
+          caster.rotation.z = Math.PI / 2;
+          caster.position.set(0, -3.168, 0.36);
+          legGroup.add(caster);
+
+          chair.add(legGroup);
+        }
+
+        // 2. Chrome Gas Lift Cylinder (Extending from floor base to seat mech)
+        const piston = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.032, 2.66, 16), alumChairMat);
+        piston.position.set(0, -1.80, 0);
+        chair.add(piston);
+
+        // 3. Compact Under-seat Tilt Mechanism Box
+        const tiltMech = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.08, 0.28), chairFrameMat);
+        tiltMech.position.set(0, -0.46, 0);
+        chair.add(tiltMech);
+
+        // Tilt levers
+        [-0.16, 0.16].forEach(lx => {
+          const lever = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.14, 8), alumChairMat);
+          lever.rotation.z = Math.PI / 2;
+          lever.position.set(lx < 0 ? -0.20 : 0.20, -0.46, 0);
+          chair.add(lever);
+        });
+
+        // 4. Ergonomic Contoured Saddle Seat Cushion (Waterfall Edge)
+        const seatCushion = new THREE.Mesh(new THREE.BoxGeometry(0.70, 0.07, 0.64), meshSeatMat);
+        seatCushion.position.set(0, -0.40, 0.04);
+        chair.add(seatCushion);
+
+        const seatBezel = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.035, 0.66), chairFrameMat);
+        seatBezel.position.set(0, -0.43, 0.04);
+        chair.add(seatBezel);
+
+        // 5. S-Curved Ergonomic Spine & Lumbar Backrest (Rises 38cm ABOVE desk)
+        const spineBar = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.76, 0.045), alumChairMat);
+        spineBar.position.set(0, 0.08, -0.28);
+        spineBar.rotation.x = -0.1;
+        chair.add(spineBar);
+
+        // Contoured Backrest Frame & Breathable Mesh Panel
+        const backFrame = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.74, 0.035), chairFrameMat);
+        backFrame.position.set(0, 0.08, -0.26);
+        backFrame.rotation.x = -0.1;
+        chair.add(backFrame);
+
+        const backMeshPanel = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.66, 0.02), meshSeatMat);
+        backMeshPanel.position.set(0, 0.08, -0.24);
+        backMeshPanel.rotation.x = -0.1;
+        chair.add(backMeshPanel);
+
+        // Horizontal Lumbar Support Cushion Pad
+        const lumbarPad = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.14, 0.035), puPadMat);
+        lumbarPad.position.set(0, -0.14, -0.23);
+        lumbarPad.rotation.x = -0.1;
+        chair.add(lumbarPad);
+
+        // 6. 3D Adjustable Armrests (Left & Right, 10cm below desk)
+        [-0.38, 0.38].forEach(ax => {
+          const armStalk = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.32, 0.045), alumChairMat);
+          armStalk.position.set(ax, -0.24, -0.05);
+          chair.add(armStalk);
+
+          const armPad = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.032, 0.28), puPadMat);
+          armPad.position.set(ax, -0.10, -0.02);
+          chair.add(armPad);
+        });
+
+        // 7. Ergonomic Contoured Headrest (Rises 62cm ABOVE desk = head level)
+        const hrStalk = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.24, 0.028), alumChairMat);
+        hrStalk.position.set(0, 0.52, -0.38);
+        hrStalk.rotation.x = -0.12;
+        chair.add(hrStalk);
+
+        const hrPillow = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.15, 0.045), puPadMat);
+        hrPillow.position.set(0, 0.62, -0.36);
+        hrPillow.rotation.x = -0.12;
+        chair.add(hrPillow);
+
+        return chair;
+      }
+
+      function buildDeveloperDeskSetup() {
+        const deskGroup = new THREE.Group();
+        // Positioned prominently in the foreground hero bay, tabletop at y = -1.90, floor at y = -5.10 (floor_rel = -3.20)
+        deskGroup.position.set(3.6, -1.90, 3.4);
+        deskGroup.rotation.y = -0.42;
+        deskGroupRef = deskGroup;
+
+        // Materials
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x161310, roughness: 0.5, metalness: 0.15 });
+        const deskSteelMat = new THREE.MeshStandardMaterial({ color: 0x18202a, roughness: 0.35, metalness: 0.9 });
+        const feltMat = new THREE.MeshStandardMaterial({ color: 0x0c1015, roughness: 0.9, metalness: 0.05 });
+        const screenBezelMat = new THREE.MeshStandardMaterial({ color: 0x11161d, roughness: 0.3, metalness: 0.85 });
+        const alumMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.25, metalness: 0.95 });
+        const keyboardMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.6 });
+        const keyAccentMat = new THREE.MeshStandardMaterial({ color: 0xe5432c, roughness: 0.3, metalness: 0.5 });
+        const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x152230, transparent: true, opacity: 0.38, roughness: 0.1, transmission: 0.85, ior: 1.5 });
+
+        // 1. Tabletop (240cm x 95cm x 4.8cm)
+        const topGeo = new THREE.BoxGeometry(2.40, 0.048, 0.95);
+        const topMesh = new THREE.Mesh(topGeo, woodMat);
+        deskGroup.add(topMesh);
+
+        // 2. Dual Telescopic Steel Standing Desk Legs (Reaching raised floor at y = -3.18)
+        [-0.92, 0.92].forEach(lx => {
+          const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.10, 3.16, 0.10), deskSteelMat);
+          pillar.position.set(lx, -1.58, 0);
+          deskGroup.add(pillar);
+
+          const foot = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.04, 0.80), deskSteelMat);
+          foot.position.set(lx, -3.18, 0);
+          deskGroup.add(foot);
+
+          const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.03, 0.68), deskSteelMat);
+          bracket.position.set(lx, -0.035, 0);
+          deskGroup.add(bracket);
+        });
+
+        const cableTray = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.05, 0.18), deskSteelMat);
+        cableTray.position.set(0, -0.16, -0.20);
+        deskGroup.add(cableTray);
+
+        // 3. Felt Desk Mat (120cm x 48cm)
+        const matMesh = new THREE.Mesh(new THREE.BoxGeometry(1.20, 0.006, 0.48), feltMat);
+        matMesh.position.set(-0.06, 0.026, 0.18);
+        deskGroup.add(matMesh);
+
+        // 4. Primary 34" Curved Ultrawide Monitor (21:9 Aspect Ratio) — HOSTDECK LIVE DEMO VIDEO
+        const uwChassis = new THREE.Mesh(new THREE.BoxGeometry(1.24, 0.54, 0.045), screenBezelMat);
+        uwChassis.position.set(-0.06, 0.48, -0.24);
+        deskGroup.add(uwChassis);
+
+        const uwDisplayMat = new THREE.MeshBasicMaterial({ map: videoTexture });
+        const uwScreen = new THREE.Mesh(new THREE.PlaneGeometry(1.20, 0.50), uwDisplayMat);
+        uwScreen.position.set(-0.06, 0.48, -0.215);
+        deskGroup.add(uwScreen);
+
+        // Register 34" Curved Ultrawide Monitor as interactive click unit
+        uwScreen.userData = {
+          isDeskCurvedScreen: true,
+          name: '34" Curved Ultrawide Workstation',
+          info: 'Click to launch HostDeck Live Interactive Demo'
+        };
+        uwChassis.userData = uwScreen.userData;
+        interactiveUnits.push(uwScreen);
+        interactiveUnits.push(uwChassis);
+
+        // Heavy-duty Single Monitor Arm
+        const armBase = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.055, 0.10, 16), alumMat);
+        armBase.position.set(-0.06, 0.06, -0.42);
+        deskGroup.add(armBase);
+
+        const armPole = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.52, 16), alumMat);
+        armPole.position.set(-0.06, 0.30, -0.42);
+        deskGroup.add(armPole);
+
+        const armJoint = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.065, 0.22), alumMat);
+        armJoint.position.set(-0.06, 0.48, -0.32);
+        deskGroup.add(armJoint);
+
+        // ScreenBar LED Lightbar on top of Ultrawide
+        const barMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.65, 16), alumMat);
+        barMesh.rotation.z = Math.PI / 2;
+        barMesh.position.set(-0.06, 0.76, -0.22);
+        deskGroup.add(barMesh);
+
+        const barLightStrip = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.010), new THREE.MeshBasicMaterial({ color: 0xfff0dd }));
+        barLightStrip.rotation.x = Math.PI / 2;
+        barLightStrip.position.set(-0.06, 0.75, -0.22);
+        deskGroup.add(barLightStrip);
+
+        deskScreenBarLight = new THREE.PointLight(0xffedd5, 1.2, 4.0);
+        deskScreenBarLight.position.set(-0.06, 0.72, 0.08);
+        deskGroup.add(deskScreenBarLight);
+
+        // 5. Secondary 27" Vertical / Portrait Monitor (9:16) — HOSTDECK README & DOCS
+        const ptGroup = new THREE.Group();
+        ptGroup.position.set(0.82, 0.54, -0.16);
+        ptGroup.rotation.y = -0.32;
+
+        const ptChassis = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.90, 0.04), screenBezelMat);
+        ptGroup.add(ptChassis);
+
+        const ptDisplayMat = new THREE.MeshBasicMaterial({ map: ptTexture });
+        const ptScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.86), ptDisplayMat);
+        ptScreen.position.set(0, 0, 0.024);
+        ptGroup.add(ptScreen);
+
+        const ptArm = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.045, 0.22), alumMat);
+        ptArm.position.set(0, 0, -0.12);
+        ptGroup.add(ptArm);
+        deskGroup.add(ptGroup);
+
+        // 6. MacBook Pro 16" on Aluminum Stand — HOSTDECK CLI / TUI CONSOLE
+        const mbGroup = new THREE.Group();
+        mbGroup.position.set(-0.88, 0.08, 0.10);
+        mbGroup.rotation.y = 0.32;
+
+        const mbStandBase = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.010, 0.28), alumMat);
+        mbStandBase.position.set(0, 0.005, 0);
+        mbGroup.add(mbStandBase);
+
+        const mbStandRiser = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.14, 0.012), alumMat);
+        mbStandRiser.position.set(0, 0.07, -0.08);
+        mbStandRiser.rotation.x = -0.25;
+        mbGroup.add(mbStandRiser);
+
+        const mbBase = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.016, 0.35), alumMat);
+        mbBase.position.set(0, 0.14, 0);
+        mbGroup.add(mbBase);
+
+        const mbKb = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.004, 0.17), keyboardMat);
+        mbKb.position.set(0, 0.15, -0.05);
+        mbGroup.add(mbKb);
+
+        const mbTrack = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.004, 0.11), new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.3, metalness: 0.8 }));
+        mbTrack.position.set(0, 0.15, 0.09);
+        mbGroup.add(mbTrack);
+
+        const mbLidGroup = new THREE.Group();
+        mbLidGroup.position.set(0, 0.148, -0.16);
+        mbLidGroup.rotation.x = -0.42;
+
+        const mbLidChassis = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.33, 0.012), alumMat);
+        mbLidChassis.position.set(0, 0.165, 0);
+        mbLidGroup.add(mbLidChassis);
+
+        const mbScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.30), new THREE.MeshBasicMaterial({ map: mbTexture }));
+        mbScreen.position.set(0, 0.165, 0.008);
+        mbLidGroup.add(mbScreen);
+
+        mbGroup.add(mbLidGroup);
+        deskGroup.add(mbGroup);
+
+        // 7. Custom High-Performance Workstation PC Tower (Mid-Tower)
+        const pcGroup = new THREE.Group();
+        pcGroup.position.set(1.08, 0.32, 0.18);
+        pcGroup.rotation.y = -0.12;
+
+        const pcChassis = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.58, 0.54), screenBezelMat);
+        pcGroup.add(pcChassis);
+
+        const pcFrontMesh = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.54, 0.025), new THREE.MeshStandardMaterial({ color: 0x070b10, roughness: 0.8, metalness: 0.4 }));
+        pcFrontMesh.position.set(0, 0, 0.275);
+        pcGroup.add(pcFrontMesh);
+
+        const fanGeo = new THREE.CircleGeometry(0.085, 16);
+        const fanMat = new THREE.MeshBasicMaterial({ color: 0x3388ff, side: THREE.DoubleSide });
+        [0.14, -0.14].forEach(fy => {
+          const fan = new THREE.Mesh(fanGeo, fanMat);
+          fan.position.set(0, fy, 0.29);
+          pcGroup.add(fan);
+          deskFanMeshes.push(fan);
+        });
+
+        const pcGlass = new THREE.Mesh(new THREE.BoxGeometry(0.010, 0.54, 0.50), glassMat);
+        pcGlass.position.set(-0.142, 0, 0);
+        pcGroup.add(pcGlass);
+
+        const pcGpu = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.32), new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 }));
+        pcGpu.position.set(-0.04, -0.08, 0.03);
+        pcGroup.add(pcGpu);
+
+        const pcGpuGlow = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.02, 0.22), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        pcGpuGlow.position.set(-0.11, -0.07, 0.03);
+        pcGroup.add(pcGpuGlow);
+
+        pcInternalLight = new THREE.PointLight(0x38bdf8, 0.85, 2.4);
+        pcInternalLight.position.set(-0.05, 0.05, 0);
+        pcGroup.add(pcInternalLight);
+
+        deskGroup.add(pcGroup);
+
+        // 8. Custom 75% Mechanical Keyboard
+        const kbGroup = new THREE.Group();
+        kbGroup.position.set(-0.16, 0.038, 0.28);
+
+        const kbBase = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.022, 0.18), keyboardMat);
+        kbGroup.add(kbBase);
+
+        const keysCluster = new THREE.Mesh(new THREE.BoxGeometry(0.41, 0.014, 0.15), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.3 }));
+        keysCluster.position.set(0, 0.014, 0);
+        kbGroup.add(keysCluster);
+
+        const escKey = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.016, 0.025), keyAccentMat);
+        escKey.position.set(-0.18, 0.016, -0.058);
+        kbGroup.add(escKey);
+
+        const enterKey = new THREE.Mesh(new THREE.BoxGeometry(0.048, 0.016, 0.025), keyAccentMat);
+        enterKey.position.set(0.16, 0.016, 0.008);
+        kbGroup.add(enterKey);
+
+        const kbGlow = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.004, 0.19), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        kbGlow.position.set(0, -0.008, 0);
+        kbGroup.add(kbGlow);
+
+        deskGroup.add(kbGroup);
+
+        // 9. Ergonomic Mouse
+        const mouseMesh = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.042, 0.16), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.7 }));
+        mouseMesh.position.set(0.24, 0.045, 0.28);
+        mouseMesh.rotation.y = -0.08;
+        deskGroup.add(mouseMesh);
+
+        // 10. Studio Monitor Active Speakers (Left & Right)
+        [-1.02, 0.48].forEach(sx => {
+          const spkGrp = new THREE.Group();
+          spkGrp.position.set(sx, 0.18, -0.16);
+          spkGrp.rotation.y = sx < 0 ? 0.32 : -0.26;
+
+          const spkBody = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.30, 0.20), screenBezelMat);
+          spkGrp.add(spkBody);
+
+          const woofer = new THREE.Mesh(new THREE.CircleGeometry(0.06, 16), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5, metalness: 0.3 }));
+          woofer.position.set(0, -0.05, 0.102);
+          spkGrp.add(woofer);
+
+          const tweeter = new THREE.Mesh(new THREE.CircleGeometry(0.024, 12), new THREE.MeshBasicMaterial({ color: 0x64748b }));
+          tweeter.position.set(0, 0.07, 0.102);
+          spkGrp.add(tweeter);
+
+          deskGroup.add(spkGrp);
+        });
+
+        // 11. Headphone Stand & Studio Headphones
+        const hpStand = new THREE.Group();
+        hpStand.position.set(0.86, 0.16, 0.38);
+        const hpBase = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.065, 0.016, 16), alumMat);
+        hpStand.add(hpBase);
+        const hpPole = new THREE.Mesh(new THREE.CylinderGeometry(0.010, 0.010, 0.32, 10), alumMat);
+        hpPole.position.set(0, 0.16, 0);
+        hpStand.add(hpPole);
+        const hpCradle = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.010, 0.09), alumMat);
+        hpCradle.position.set(0, 0.32, 0);
+        hpStand.add(hpCradle);
+        const hpBand = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.010, 8, 16, Math.PI), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 }));
+        hpBand.position.set(0, 0.31, 0);
+        hpStand.add(hpBand);
+        deskGroup.add(hpStand);
+
+        // 12. Developer Homelab Ceramic Coffee Mug
+        const mugGrp = new THREE.Group();
+        mugGrp.position.set(-0.52, 0.045, 0.34);
+        const coaster = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.008, 16), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 }));
+        mugGrp.add(coaster);
+        const mugBody = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.04, 0.09, 16), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.2, metalness: 0.1 }));
+        mugBody.position.set(0, 0.05, 0);
+        mugGrp.add(mugBody);
+        deskGroup.add(mugGrp);
+
+        // 13. Ergonomic Mesh Chair (Herman Miller Aeron Style)
+        deskGroup.add(buildErgonomicChair());
+
+        // 14. Desk Underglow Ambient Light
+        deskAmbientLight = new THREE.PointLight(0x38bdf8, 1.2, 4.5);
+        deskAmbientLight.position.set(0, -0.3, 0);
+        deskGroup.add(deskAmbientLight);
+
+        // 15. Fiber & Cat6A Braided Trunk running across floor to Server Rack on Left
+        const trunkCurve = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(-1.0, -0.05, -0.3),
+          new THREE.Vector3(-1.5, -1.8, -0.4),
+          new THREE.Vector3(-2.2, -3.16, -0.4),
+          new THREE.Vector3(-3.4, -3.16, -0.2),
+          new THREE.Vector3(-4.8, -3.16, 0.0)
+        ]);
+        const trunkGeo = new THREE.TubeGeometry(trunkCurve, 20, 0.03, 8, false);
+        const trunkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6, metalness: 0.3 });
+        const trunkMesh = new THREE.Mesh(trunkGeo, trunkMat);
+        deskGroup.add(trunkMesh);
+
+        return deskGroup;
+      }
+
+      // ═══════════════════════════════════════════════════════════════════════
       // REALISTIC DATACENTER CORRIDOR AISLE (Aligned Server Rack Rows)
       // ═══════════════════════════════════════════════════════════════════════
       const bgLedObjects = [];
@@ -3509,78 +4782,142 @@
         const bgGrp = new THREE.Group();
 
         // 2 Straight Parallel Rows of Enterprise Cabinets (Aisle Corridor)
-        // Row A: Aligned on the right at x = +2.4 (Hero rack is the frontmost rack at z = 0, x = +2.4)
-        // Row B: Aligned on the left at x = -3.6 facing across the aisle
         const rowAZPositions = [ -2.8, -5.6, -8.4, -11.2, -14.0, -16.8 ];
         const rowBZPositions = [ 0.0, -2.8, -5.6, -8.4, -11.2, -14.0, -16.8 ];
         const rackPositions = [];
 
-        // Row A Cabinets (Parallel behind Hero Rack extending along -Z)
         rowAZPositions.forEach(z => {
           rackPositions.push({ x: 2.4, y: 0, z: z, rotY: 0, row: 'A' });
         });
 
-        // Row B Cabinets (Facing row across the cold aisle)
         rowBZPositions.forEach(z => {
           rackPositions.push({ x: -3.6, y: 0, z: z, rotY: 0.04, row: 'B' });
         });
 
-        const bgCabMat = new THREE.MeshStandardMaterial({ color: 0x151d28, roughness: 0.45, metalness: 0.85 });
+        const bgCabMat = new THREE.MeshStandardMaterial({ color: 0x141c26, roughness: 0.45, metalness: 0.85 });
         const bgPostMat = new THREE.MeshStandardMaterial({ color: 0x222e3d, roughness: 0.35, metalness: 0.95 });
-        const bgServerMat = new THREE.MeshStandardMaterial({ color: 0x0c121a, roughness: 0.5, metalness: 0.8 });
-        const bgMeshDoorMat = new THREE.MeshStandardMaterial({ color: 0x080e14, roughness: 0.7, metalness: 0.6 });
+        const bgServerChassisMat = new THREE.MeshStandardMaterial({ color: 0x18222e, roughness: 0.4, metalness: 0.8 });
+        const bgBezelMat = new THREE.MeshStandardMaterial({ color: 0x0f1620, roughness: 0.3, metalness: 0.9 });
+        const bgDriveCaddyMat = new THREE.MeshStandardMaterial({ color: 0x080d14, roughness: 0.5, metalness: 0.85 });
+        const bgMeshDoorMat = new THREE.MeshStandardMaterial({ color: 0x070c12, roughness: 0.7, metalness: 0.5 });
+        const pduMat = new THREE.MeshStandardMaterial({ color: 0x1c2430, metalness: 0.9, roughness: 0.3 });
 
         const bgLedCyan = new THREE.MeshBasicMaterial({ color: 0x3399ff });
         const bgLedGreen = new THREE.MeshBasicMaterial({ color: 0x33cc66 });
-        const bgLedAmber = new THREE.MeshBasicMaterial({ color: 0xff9933 });
+        const bgLedAmber = new THREE.MeshBasicMaterial({ color: 0xffaa33 });
+        const bgLedBlue = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
 
         rackPositions.forEach((rp, rIdx) => {
           const r = new THREE.Group();
           r.position.set(rp.x, rp.y, rp.z);
           r.rotation.y = rp.rotY;
 
-          // Main cabinet enclosure (42U industrial frame)
+          // Main 42U cabinet enclosure
           const cab = new THREE.Mesh(new THREE.BoxGeometry(2.38, 10.0, 1.76), bgCabMat);
           r.add(cab);
 
-          // 4 Corner vertical mounting posts
+          // 4 Vertical mounting posts
           [[-1.15, 0.84], [1.15, 0.84], [-1.15, -0.84], [1.15, -0.84]].forEach(offset => {
             const p = new THREE.Mesh(new THREE.BoxGeometry(0.12, 10.0, 0.12), bgPostMat);
             p.position.set(offset[0], 0, offset[1]);
             r.add(p);
           });
 
-          // Top roof fan cowl
+          // Top roof plate
           const roof = new THREE.Mesh(new THREE.BoxGeometry(2.42, 0.16, 1.8), bgPostMat);
           roof.position.set(0, 5.0, 0);
           r.add(roof);
 
-          // 7 Stacked server units inside each cabinet
-          for (let u = 0; u < 7; u++) {
-            const uy = 3.6 - u * 1.2;
-            const srv = new THREE.Mesh(new THREE.BoxGeometry(2.14, 0.98, 0.08), bgServerMat);
-            srv.position.set(0, uy, 0.86);
-            r.add(srv);
+          // Vertical Zero-U Intelligent PDU on rear post
+          const pdu = new THREE.Mesh(new THREE.BoxGeometry(0.08, 9.2, 0.14), pduMat);
+          pdu.position.set(1.12, 0, -0.78);
+          r.add(pdu);
 
-            // Perforated mesh ventilation area
-            const meshArea = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.72, 0.02), bgMeshDoorMat);
-            meshArea.position.set(0.3, uy, 0.91);
-            r.add(meshArea);
+          // Digital PDU 7-segment readout meter
+          const pduDisplay = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.18), new THREE.MeshBasicMaterial({ color: 0xe5432c }));
+          pduDisplay.position.set(1.165, 3.8, -0.78);
+          pduDisplay.rotation.y = Math.PI / 2;
+          r.add(pduDisplay);
 
-            // Multi-segment LED activity lights
-            for (let l = 0; l < 5; l++) {
-              const ledMat = (l + u + rIdx) % 4 === 0 ? bgLedAmber : ((l + u) % 2 === 0 ? bgLedCyan : bgLedGreen);
-              const led = new THREE.Mesh(new THREE.CircleGeometry(0.018, 6), ledMat);
-              led.position.set(-0.84 + l * 0.12, uy + 0.22, 0.92);
-              r.add(led);
-              bgLedObjects.push({ mesh: led, baseMat: ledMat, rate: 3.0 + ((l * 3 + u * 7 + rIdx * 5) % 8), seed: (l * 1.7 + u * 2.3 + rIdx) });
+          // ── Tầng 1: 48-Port 10GbE ToR Fiber Switch (y = 4.2) ──
+          const torSwitch = new THREE.Mesh(new THREE.BoxGeometry(2.14, 0.44, 0.12), bgBezelMat);
+          torSwitch.position.set(0, 4.2, 0.86);
+          r.add(torSwitch);
+
+          for (let sp = 0; sp < 16; sp++) {
+            const sx = -0.88 + sp * 0.118;
+            const sfp = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.08, 0.02), bgDriveCaddyMat);
+            sfp.position.set(sx, 4.2, 0.93);
+            r.add(sfp);
+
+            const sfpLed = new THREE.Mesh(new THREE.CircleGeometry(0.012, 6), (sp + rIdx) % 3 === 0 ? bgLedAmber : bgLedBlue);
+            sfpLed.position.set(sx, 4.28, 0.945);
+            r.add(sfpLed);
+            bgLedObjects.push({ mesh: sfpLed, baseMat: sfpLed.material, rate: 8.0 + (sp % 5) * 2, seed: sp * 1.3 + rIdx });
+          }
+
+          // ── Tầng 2: 24-Bay SAN Storage Array (y = 2.8) ──
+          const sanStorage = new THREE.Mesh(new THREE.BoxGeometry(2.14, 1.25, 0.12), bgServerChassisMat);
+          sanStorage.position.set(0, 2.8, 0.86);
+          r.add(sanStorage);
+
+          for (let dRow = 0; dRow < 2; dRow++) {
+            for (let dCol = 0; dCol < 12; dCol++) {
+              const dx = -0.9 + dCol * 0.16;
+              const dy = 3.1 - dRow * 0.55;
+              const caddy = new THREE.Mesh(new THREE.BoxGeometry(0.135, 0.48, 0.03), bgDriveCaddyMat);
+              caddy.position.set(dx, dy, 0.925);
+              r.add(caddy);
+
+              const dLed = new THREE.Mesh(new THREE.CircleGeometry(0.011, 6), (dCol + dRow + rIdx) % 4 === 0 ? bgLedAmber : bgLedGreen);
+              dLed.position.set(dx - 0.04, dy + 0.18, 0.945);
+              r.add(dLed);
+              bgLedObjects.push({ mesh: dLed, baseMat: dLed.material, rate: 4.0 + (dCol * 3) % 9, seed: dCol * 2.1 + dRow });
             }
           }
+
+          // ── Tầng 3 - 6: 4x 2U High-Density Compute Servers (y = 1.0, -0.6, -2.2, -3.8) ──
+          const computeHeights = [ 1.0, -0.6, -2.2, -3.8 ];
+          computeHeights.forEach((cy, sIdx) => {
+            const srv = new THREE.Mesh(new THREE.BoxGeometry(2.14, 1.15, 0.1), bgServerChassisMat);
+            srv.position.set(0, cy, 0.86);
+            r.add(srv);
+
+            // Left side 8x 2.5" drive caddies
+            for (let c = 0; c < 8; c++) {
+              const cx = -0.88 + (c % 4) * 0.22;
+              const cRow = Math.floor(c / 4);
+              const cY = cy + 0.22 - cRow * 0.44;
+
+              const caddy = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.38, 0.025), bgDriveCaddyMat);
+              caddy.position.set(cx, cY, 0.92);
+              r.add(caddy);
+
+              const actLed = new THREE.Mesh(new THREE.CircleGeometry(0.012, 6), bgLedGreen);
+              actLed.position.set(cx - 0.06, cY + 0.12, 0.94);
+              r.add(actLed);
+              bgLedObjects.push({ mesh: actLed, baseMat: bgLedGreen, rate: 5.0 + (c * 2 + sIdx) % 7, seed: c * 1.5 + sIdx * 3 });
+            }
+
+            // Right side hexagonal ventilation mesh & control bezel
+            const meshArea = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.85, 0.02), bgMeshDoorMat);
+            meshArea.position.set(0.48, cy, 0.915);
+            r.add(meshArea);
+
+            // Power LED + Blue UID Locator LED
+            const pwr = new THREE.Mesh(new THREE.CircleGeometry(0.016, 6), bgLedGreen);
+            pwr.position.set(0.88, cy + 0.3, 0.935);
+            r.add(pwr);
+
+            const uid = new THREE.Mesh(new THREE.CircleGeometry(0.016, 6), bgLedBlue);
+            uid.position.set(0.88, cy + 0.15, 0.935);
+            r.add(uid);
+          });
 
           bgGrp.add(r);
         });
 
-        // Overhead Longitudinal Cable Ladder Trays along Row A and Row B
+        // Overhead Longitudinal Cable Ladder Trays
         const ladderMat = new THREE.MeshStandardMaterial({ color: 0x253548, metalness: 0.92, roughness: 0.25 });
         const ladderRowA = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 24), ladderMat);
         ladderRowA.position.set(2.4, 5.3, -7.0);
@@ -3590,14 +4927,24 @@
         ladderRowB.position.set(-3.6, 5.3, -7.0);
         bgGrp.add(ladderRowB);
 
-        // Cross-Aisle Cable Bridge Ladders connecting Row A & Row B every 2.8m
+        // Cross-Aisle Cable Bridge Ladders connecting Row A & Row B
         [ 0.0, -2.8, -5.6, -8.4, -11.2, -14.0 ].forEach(z => {
           const bridge = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.08, 0.6), ladderMat);
           bridge.position.set(-0.6, 5.38, z);
           bgGrp.add(bridge);
         });
 
-        // High-tech Overhead Cold-Aisle Linear LED Light Strips along the ceiling center
+        // Overhead Yellow Optical Fiber Raceways
+        const yellowFiberMat = new THREE.MeshStandardMaterial({ color: 0xe6a100, roughness: 0.35, metalness: 0.15 });
+        const fiberDuctA = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.22, 24), yellowFiberMat);
+        fiberDuctA.position.set(2.4, 5.65, -7.0);
+        bgGrp.add(fiberDuctA);
+
+        const fiberDuctB = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.22, 24), yellowFiberMat);
+        fiberDuctB.position.set(-3.6, 5.65, -7.0);
+        bgGrp.add(fiberDuctB);
+
+        // Linear Ceiling Cold-Aisle Light Strip
         const lightStripGeo = new THREE.BoxGeometry(0.1, 0.04, 24);
         const lightStripMat = new THREE.MeshBasicMaterial({ color: 0xa8d8ff });
         const lightStrip = new THREE.Mesh(lightStripGeo, lightStripMat);
@@ -3611,7 +4958,9 @@
 
         return bgGrp;
       }
-      sceneRoot.add(buildBackgroundCluster());
+      let bgClusterRef = buildBackgroundCluster();
+      sceneRoot.add(bgClusterRef);
+      sceneRoot.add(buildDeveloperDeskSetup());
 
       const ledObjects = [];
       const dynamicLights = [];
@@ -3622,7 +4971,6 @@
       const cableTesterLeds = [];
       const fanMeshes = [];
       const beaconLeds = [];
-      const interactiveUnits = [];
       let alertDiagPanelMesh = null;
 
       // ═══════════════════════════════════════════════════════════════════════
@@ -3832,115 +5180,173 @@
       }
       rackGroup.add(buildSmartUPS2U());
 
-      // ── Diagnostic Crash-Cart Lab Workbench ──
-      function buildLabWorkbench() {
+      // ── [1U] 24-Port LC Duplex Fiber Optic Patch Panel (y = +0.35) ──
+      function buildFiberPatchPanel1U() {
         const grp = new THREE.Group();
-        grp.position.set(4.8, -2.5, 2.0);
-        grp.rotation.y = -0.45;
-        grp.userData = {
-          name: '[WORKBENCH] Diagnostic Crash Cart',
-          info: 'ESD Antistatic Station · Cable Tester · Field Terminal'
-        };
+        grp.position.set(0, 0.35, 0);
 
-        const tableTop = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.12, 1.8), new THREE.MeshStandardMaterial({ color: 0x161d26, metalness: 0.6, roughness: 0.4 }));
-        grp.add(tableTop);
+        const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.14, 0.56, 1.2), chassisMat);
+        grp.add(chassis);
 
-        const legGeo = new THREE.BoxGeometry(0.08, 2.8, 0.08);
-        const legMat = new THREE.MeshStandardMaterial({ color: 0x222c38, metalness: 0.9, roughness: 0.2 });
-        [[-1.45, 0.75], [1.45, 0.75], [-1.45, -0.75], [1.45, -0.75]].forEach(pos => {
-          const leg = new THREE.Mesh(legGeo, legMat);
-          leg.position.set(pos[0], -1.4, pos[1]);
-          grp.add(leg);
-        });
+        const face = new THREE.Mesh(new THREE.BoxGeometry(2.16, 0.54, 0.08), faceplateMat);
+        face.position.set(0, 0, 0.84);
+        grp.add(face);
 
-        const esdMatMesh = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.2), new THREE.MeshStandardMaterial({ color: 0x103050, roughness: 0.8 }));
-        esdMatMesh.rotation.x = -Math.PI / 2;
-        esdMatMesh.position.set(0, 0.065, 0);
-        grp.add(esdMatMesh);
+        const lcMatAqua = new THREE.MeshStandardMaterial({ color: 0x00c8c8, roughness: 0.3, metalness: 0.2 });
+        const lcMatBezel = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.7 });
 
-        const techMonBezel = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.65, 0.06), new THREE.MeshStandardMaterial({ color: 0x18202a, metalness: 0.8 }));
-        techMonBezel.rotation.x = -0.3;
-        techMonBezel.position.set(-0.5, 0.45, -0.15);
-        grp.add(techMonBezel);
+        for (let b = 0; b < 4; b++) {
+          const bay = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.32, 0.04), lcMatBezel);
+          bay.position.set(-0.75 + b * 0.5, 0, 0.88);
+          grp.add(bay);
 
-        const techScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.55), new THREE.MeshBasicMaterial({ color: 0x0a2238 }));
-        techScreen.rotation.x = -0.3;
-        techScreen.position.set(-0.5, 0.45, -0.115);
-        grp.add(techScreen);
+          for (let p = 0; p < 6; p++) {
+            const lc = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.09, 0.03), lcMatAqua);
+            lc.position.set(-0.75 + b * 0.5 - 0.15 + p * 0.06, 0, 0.91);
+            grp.add(lc);
 
-        const testerBox = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.08, 0.48), new THREE.MeshStandardMaterial({ color: 0x202832, metalness: 0.7 }));
-        testerBox.position.set(0.65, 0.1, 0.2);
-        grp.add(testerBox);
-
-        for (let l = 0; l < 8; l++) {
-          const tLed = new THREE.Mesh(new THREE.CircleGeometry(0.012, 6), ledMatGreen);
-          tLed.rotation.x = -Math.PI / 2;
-          tLed.position.set(0.65, 0.145, 0.0 - l * 0.045);
-          grp.add(tLed);
-          cableTesterLeds.push(tLed);
-        }
-
-        const spool = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.15, 16), new THREE.MeshStandardMaterial({ color: 0xdda010, roughness: 0.4 }));
-        spool.position.set(0.7, 0.13, -0.4);
-        grp.add(spool);
-
-        const crimper = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.35), new THREE.MeshStandardMaterial({ color: 0x182028, metalness: 0.9 }));
-        crimper.rotation.y = 0.4;
-        crimper.position.set(0.2, 0.08, 0.3);
-        grp.add(crimper);
-
-        const lampPole = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.7, 8), railMat);
-        lampPole.position.set(-1.1, 0.4, -0.5);
-        grp.add(lampPole);
-
-        const lampHead = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.15, 12), new THREE.MeshStandardMaterial({ color: 0x202832, metalness: 0.8 }));
-        lampHead.rotation.x = Math.PI * 0.7;
-        lampHead.position.set(-1.0, 0.75, -0.35);
-        grp.add(lampHead);
-
-        const lampLight = new THREE.PointLight(0xffeedd, 0.85, 3.5);
-        lampLight.position.set(-1.0, 0.7, -0.3);
-        grp.add(lampLight);
-
-        return grp;
-      }
-      sceneRoot.add(buildLabWorkbench());
-
-      // ── Wall-Mounted 9U Mini Network Cabinet (Right Background Bay) ──
-      function buildWallMountCabinet() {
-        const grp = new THREE.Group();
-        grp.position.set(5.5, 1.2, 0.4);
-        grp.rotation.y = -0.55;
-
-        const box = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.2, 1.2), new THREE.MeshStandardMaterial({ color: 0x121820, metalness: 0.9, roughness: 0.2 }));
-        grp.add(box);
-
-        const glassDoor = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.0), new THREE.MeshStandardMaterial({
-          color: 0x081018,
-          transparent: true,
-          opacity: 0.65,
-          metalness: 0.9,
-          roughness: 0.1
-        }));
-        glassDoor.position.set(0, 0, 0.61);
-        grp.add(glassDoor);
-
-        for (let u = 0; u < 3; u++) {
-          const sw = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.35, 0.8), faceplateMat);
-          sw.position.set(0, 0.6 - u * 0.6, 0.1);
-          grp.add(sw);
-
-          for (let p = 0; p < 8; p++) {
-            const pLed = new THREE.Mesh(new THREE.CircleGeometry(0.014, 6), ledMatGreen);
-            pLed.position.set(-0.45 + p * 0.12, 0.6 - u * 0.6, 0.52);
-            grp.add(pLed);
-            ledObjects.push({ mesh: pLed, baseMat: ledMatGreen, seed: u * 3 + p });
+            if (p % 2 === 0) {
+              const fiberLed = new THREE.Mesh(new THREE.CircleGeometry(0.008, 6), ledMatGreen);
+              fiberLed.position.set(-0.75 + b * 0.5 - 0.15 + p * 0.06, 0.08, 0.92);
+              grp.add(fiberLed);
+              ledObjects.push({ mesh: fiberLed, baseMat: ledMatGreen, seed: b * 6 + p });
+            }
           }
         }
+        return grp;
+      }
+      rackGroup.add(buildFiberPatchPanel1U());
+
+      // ── IoT Environmental Sensor Barometer Module (y = +1.3 on right rack pillar) ──
+      function buildIoTRackSensor() {
+        const grp = new THREE.Group();
+        grp.position.set(1.15, 1.3, 0.86);
+
+        const sensorBody = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.28, 0.16), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.8 }));
+        grp.add(sensorBody);
+
+        const oledScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 0.16), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        oledScreen.rotation.y = Math.PI / 2;
+        oledScreen.position.set(0.062, 0.02, 0);
+        grp.add(oledScreen);
+
+        const statLed = new THREE.Mesh(new THREE.CircleGeometry(0.012, 8), ledMatGreen);
+        statLed.rotation.y = Math.PI / 2;
+        statLed.position.set(0.062, -0.09, 0);
+        grp.add(statLed);
 
         return grp;
       }
-      sceneRoot.add(buildWallMountCabinet());
+      rackGroup.add(buildIoTRackSensor());
+
+      // ── Architectural Datacenter Room Enclosure (No Empty Void) ──
+      function buildDatacenterRoomArchitecture() {
+        const roomGrp = new THREE.Group();
+
+        // 1. Back Wall (z = -22.0)
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0x0a1017, roughness: 0.7, metalness: 0.4 });
+        const panelMat = new THREE.MeshStandardMaterial({ color: 0x141e2a, roughness: 0.5, metalness: 0.75 });
+        const trimMat = new THREE.MeshStandardMaterial({ color: 0x223246, roughness: 0.3, metalness: 0.9 });
+        const conduitMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.2, metalness: 0.95 });
+
+        const backWall = new THREE.Mesh(new THREE.BoxGeometry(36, 15, 0.5), wallMat);
+        backWall.position.set(0, 1.5, -22.0);
+        roomGrp.add(backWall);
+
+        // Acoustic Cladding Wall Panels
+        for (let col = -3; col <= 3; col++) {
+          const panel = new THREE.Mesh(new THREE.BoxGeometry(4.2, 11.5, 0.15), panelMat);
+          panel.position.set(col * 4.8, 1.5, -21.7);
+          roomGrp.add(panel);
+
+          // Horizontal architectural LED accent lines
+          const ledTrim = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.03, 0.02), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+          ledTrim.position.set(col * 4.8, 4.2, -21.6);
+          roomGrp.add(ledTrim);
+        }
+
+        // HostDeck Datacenter Backlit Sign Canvas
+        const roomSignCanvas = document.createElement('canvas');
+        roomSignCanvas.width = 1024;
+        roomSignCanvas.height = 256;
+        const rsc = roomSignCanvas.getContext('2d');
+        rsc.fillStyle = '#060a0f';
+        rsc.fillRect(0, 0, 1024, 256);
+        rsc.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+        rsc.lineWidth = 4;
+        rsc.strokeRect(8, 8, 1008, 240);
+
+        rsc.fillStyle = '#e5432c';
+        rsc.fillRect(40, 40, 32, 32);
+        rsc.fillStyle = '#f8fafc';
+        rsc.font = 'bold 36px monospace';
+        rsc.fillText('HOSTDECK // PRIMARY HOMELAB SUITE 01', 90, 68);
+
+        rsc.fillStyle = '#38bdf8';
+        rsc.font = 'bold 20px monospace';
+        rsc.fillText('TAILSCALE MESH  ·  5 ROOTLESS NODES  ·  TIER-3 REDUNDANCY', 40, 140);
+
+        rsc.fillStyle = '#4ade80';
+        rsc.font = 'bold 18px monospace';
+        rsc.fillText('● SYSTEM STATUS: OPTIMAL  ·  0 WAN PORTS  ·  AIR INLET 19.5°C', 40, 195);
+        const roomSignTexture = new THREE.CanvasTexture(roomSignCanvas);
+
+        const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(9.6, 2.4), new THREE.MeshBasicMaterial({ map: roomSignTexture }));
+        signMesh.position.set(-0.6, 5.2, -21.6);
+        roomGrp.add(signMesh);
+
+        // Electrical Conduit Pipes & Breaker Panels on Back Wall
+        for (let p = 0; p < 4; p++) {
+          const conduit = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 14, 12), conduitMat);
+          conduit.position.set(-7.5 + p * 0.16, 1.5, -21.65);
+          roomGrp.add(conduit);
+        }
+
+        const breakerCabinet = new THREE.Mesh(new THREE.BoxGeometry(1.8, 3.2, 0.4), trimMat);
+        breakerCabinet.position.set(-7.5, 0.8, -21.5);
+        roomGrp.add(breakerCabinet);
+
+        const breakerLed = new THREE.Mesh(new THREE.CircleGeometry(0.03, 8), new THREE.MeshBasicMaterial({ color: 0x4ade80 }));
+        breakerLed.position.set(-7.5, 2.0, -21.28);
+        roomGrp.add(breakerLed);
+
+        // HVAC Circular Exhaust Air Intake Grilles
+        [5.8, 11.2].forEach(hx => {
+          const grilleBezel = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.1, 24), trimMat);
+          grilleBezel.rotation.x = Math.PI / 2;
+          grilleBezel.position.set(hx, 4.5, -21.65);
+          roomGrp.add(grilleBezel);
+
+          const grilleCore = new THREE.Mesh(new THREE.CircleGeometry(0.82, 24), new THREE.MeshStandardMaterial({ color: 0x05080c, roughness: 0.9 }));
+          grilleCore.position.set(hx, 4.5, -21.59);
+          roomGrp.add(grilleCore);
+        });
+
+        // 2. Side Walls (Left x = -11.0, Right x = +11.0)
+        const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, 15, 36), wallMat);
+        leftWall.position.set(-11.0, 1.5, -6.0);
+        roomGrp.add(leftWall);
+
+        const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, 15, 36), wallMat);
+        rightWall.position.set(11.0, 1.5, -6.0);
+        roomGrp.add(rightWall);
+
+        // 3. Overhead Ceiling & Large Industrial HVAC Ducts (y = 6.2)
+        const ceiling = new THREE.Mesh(new THREE.BoxGeometry(36, 0.5, 36), wallMat);
+        ceiling.position.set(0, 6.4, -6.0);
+        roomGrp.add(ceiling);
+
+        const ductMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.35, metalness: 0.85 });
+        [-4.5, 3.5].forEach(dx => {
+          const hvacDuct = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 34, 16), ductMat);
+          hvacDuct.rotation.x = Math.PI / 2;
+          hvacDuct.position.set(dx, 5.8, -6.0);
+          roomGrp.add(hvacDuct);
+        });
+
+        return roomGrp;
+      }
+      sceneRoot.add(buildDatacenterRoomArchitecture());
 
       // ── Overhead Yellow Optical Fiber Raceways (Connecting Main Rack to Right Bay) ──
       function buildFiberRaceways() {
@@ -3973,7 +5379,7 @@
 
       // Dedicated Right Bay Fill Light
       rightBayLight = new THREE.PointLight(0x70a0d0, 1.35, 18);
-      rightBayLight.position.set(4.8, 1.5, 3.5);
+      rightBayLight.position.set(5.2, 1.8, 3.5);
       sceneRoot.add(rightBayLight);
 
       // ── TẦNG 1: [1U] Compute Node-01 Telemetry & CPU Load Bar (y = +3.6) (CH.01 Monitor) ──
@@ -4097,7 +5503,8 @@
         grp.userData = {
           name: '[KVM-CONSOLE] HostDeck Live Console',
           info: 'Live Demo 60fps · 8 Workspaces · Click to open',
-          targetChapter: 1
+          isKvmConsoleScreen: true,
+          targetChapter: 2
         };
 
         const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.14, 1.38, 1.65), chassisMat);
@@ -4123,15 +5530,29 @@
         monitorBezel.position.set(0, 0.28, 1.15);
         grp.add(monitorBezel);
 
-        // Active Glowing Dashboard Display Screen with real demo video texture
+        // Active Glowing Dashboard Display Screen with real demo video texture & image fallback
+        const textureLoader = new THREE.TextureLoader();
+        const fallbackTex = textureLoader.load('screenshots/overview.png', (tex) => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+          if (screenMat) screenMat.needsUpdate = true;
+        });
         const screenGeo = new THREE.PlaneGeometry(1.58, 0.98);
         const screenMat = new THREE.MeshBasicMaterial({
-          map: videoTexture,
+          map: fallbackTex,
+          side: THREE.DoubleSide,
           toneMapped: false
         });
+        if (demoVideo) {
+          demoVideo.addEventListener('timeupdate', () => {
+            if (demoVideo.currentTime > 0.1 && screenMat.map !== videoTexture) {
+              screenMat.map = videoTexture;
+              screenMat.needsUpdate = true;
+            }
+          });
+        }
         const screenMesh = new THREE.Mesh(screenGeo, screenMat);
         screenMesh.rotation.x = -0.22;
-        screenMesh.position.set(0, 0.28, 1.175);
+        screenMesh.position.set(0, 0.28, 1.18);
         grp.add(screenMesh);
 
         // Screen Glow PointLight (Subtle ambient backlight, no harsh specular glare)
@@ -4448,43 +5869,43 @@
       // CINEMATIC CAMERA RIG & MULTI-DEVICE SPLINE WAYPOINTS
       // ═══════════════════════════════════════════════════════════════════════
       const CAM_WAYPOINTS_DESKTOP = [
-        // 00 Hero: 3/4 Isometric perspective down the Datacenter central aisle corridor
-        { p: [ -0.8, 1.0, 9.0 ], t: [ 1.6, 0.0, 0.0 ], fov: 42 },
+        // 00 Hero: Balanced golden-ratio perspective framing Server Rack + Prominent Developer Desk
+        { p: [ 0.0, 0.4, 9.2 ], t: [ 2.0, -0.15, 0.0 ], fov: 45 },
 
         // 01 Monitor: Mid-range glance into 2U KVM Console Screen & Telemetry
-        { p: [ 0.6, 1.25, 4.5 ], t: [ 2.1, 0.95, 0.88 ], fov: 46 },
+        { p: [ 0.4, 1.25, 4.4 ], t: [ 1.8, 0.95, 0.88 ], fov: 46 },
 
-        // 02 Act: Direct front-facing angle on 17" KVM Interactive Screen (framed on right)
-        { p: [ 1.05, 1.28, 3.55 ], t: [ 2.2, 1.08, 1.18 ], fov: 44 },
+        // 02 Act: Dynamic glance on 17" KVM Interactive Screen framed on the right
+        { p: [ 0.32, 1.08, 3.4 ], t: [ 1.8, 1.08, 1.18 ], fov: 42 },
 
         // 03 Secure: Side angle on Tầng 4 Switch & Brush D-rings (Zero Inbound Ports)
-        { p: [ 0.2, -0.2, 4.6 ], t: [ 2.2, -0.3, 0.0 ], fov: 48 },
+        { p: [ 0.0, -0.2, 4.4 ], t: [ 1.8, -0.3, 0.0 ], fov: 48 },
 
         // 04 Topology: High-angle isometric on Tầng 5 Storage SAN & Workspaces
-        { p: [ 1.5, -1.4, 5.4 ], t: [ 2.2, -1.6, 0.0 ], fov: 46 },
+        { p: [ 1.0, -1.4, 5.2 ], t: [ 1.8, -1.6, 0.0 ], fov: 46 },
 
         // 05 Afterlight: Upward monumental angle on Tầng 6 Smart PDU (48W efficiency)
-        { p: [ 0.9, -2.5, 6.2 ], t: [ 2.2, -2.6, 0.0 ], fov: 46 }
+        { p: [ 0.6, -2.5, 6.0 ], t: [ 1.8, -2.6, 0.0 ], fov: 46 }
       ];
 
       const CAM_WAYPOINTS_MOBILE = [
-        // 00 Hero: Full rack towering in the center of mobile viewport
-        { p: [ 0.0, 1.2, 7.0 ], t: [ 0.0, 0.2, 0.0 ], fov: 46 },
+        // 00 Hero: Full 42U Server Rack centered vertically with symmetrical aisle background
+        { p: [ 0.0, 0.2, 11.2 ], t: [ 0.0, -0.15, 0.0 ], fov: 48 },
 
-        // 01 Monitor: Telemetry and KVM Console
-        { p: [ 0.0, 1.1, 2.7 ], t: [ 0.0, 0.9, 1.18 ], fov: 48 },
+        // 01 Monitor: Focus directly on Telemetry Node & KVM Console at x = 0
+        { p: [ 0.0, 1.2, 5.0 ], t: [ 0.0, 0.95, 0.88 ], fov: 46 },
 
-        // 02 Act: Direct frontal view on KVM Live interactive console
-        { p: [ 0.0, 1.06, 2.25 ], t: [ 0.0, 1.0, 1.18 ], fov: 48 },
+        // 02 Act: Elevated frontal view on 17" KVM Interactive Screen in upper viewport (above bottom card)
+        { p: [ 0.0, 0.45, 5.0 ], t: [ 0.0, 0.85, 1.18 ], fov: 46 },
 
-        // 03 Secure: Direct focus on Gigabit Switch & fiber cables
-        { p: [ 0.0, -0.2, 2.4 ], t: [ 0.0, -0.3, 0.88 ], fov: 50 },
+        // 03 Secure: Direct focus on Gigabit Switch & Fiber Patch Panel at x = 0
+        { p: [ 0.0, -0.25, 4.8 ], t: [ 0.0, -0.3, 0.0 ], fov: 48 },
 
-        // 04 Topology: Direct focus on SAN Storage unit
-        { p: [ 0.2, -1.7, 3.2 ], t: [ 0.0, -1.8, 0.87 ], fov: 46 },
+        // 04 Topology: Direct focus on SAN Storage unit at x = 0
+        { p: [ 0.0, -1.3, 5.2 ], t: [ 0.0, -1.45, 0.0 ], fov: 48 },
 
-        // 05 Afterlight: Smart PDU and power display
-        { p: [ -0.2, -2.85, 3.2 ], t: [ -0.2, -3.0, 0.87 ], fov: 46 }
+        // 05 Afterlight: Direct focus on Smart-UPS and Smart PDU at x = 0
+        { p: [ 0.0, -2.5, 5.4 ], t: [ 0.0, -2.6, 0.0 ], fov: 48 }
       ];
 
       let activeWaypoints = CAM_WAYPOINTS_DESKTOP;
@@ -4497,6 +5918,7 @@
         curvePos = new THREE.CatmullRomCurve3(activeWaypoints.map(w => new THREE.Vector3(...w.p)), false, 'centripetal');
         curveTarget = new THREE.CatmullRomCurve3(activeWaypoints.map(w => new THREE.Vector3(...w.t)), false, 'centripetal');
       }
+      updateCameraSpline();
 
       const RIG = {
         prog: 0,
@@ -4544,7 +5966,11 @@
         let fov = lerp(activeWaypoints[idx].fov, activeWaypoints[idx + 1].fov, frac);
 
         const isMobile = window.innerWidth < 768;
-        if (!isMobile) {
+        if (isMobile) {
+          const aspect = window.innerWidth / window.innerHeight;
+          const aspectScale = clamp(0.62 / Math.max(0.40, aspect), 1.0, 1.48);
+          fov *= aspectScale;
+        } else {
           const nf = aspectFix();
           if (nf > 0) {
             _camDir.subVectors(_currentPos, _currentTarget).normalize();
@@ -4614,7 +6040,7 @@
           dot.classList.toggle('active', i === activeIdx);
         });
 
-        const isCh2 = Math.abs(RIG.prog - 2) < 0.6;
+        const isCh2 = Math.abs(RIG.prog - 2) < 0.48;
         const screenWrapperEl = document.getElementById('rack-screen-3d-wrapper');
         if (isCh2) {
           if (screenWrapperEl) screenWrapperEl.classList.add('is-active-3d');
@@ -4748,16 +6174,30 @@
         }
       });
 
-      // Click to Focus on 3D unit
+      // Click to Focus on 3D unit or launch interactive workstation demo
       window.addEventListener('click', (e) => {
-        if (e.target.closest('a, button, input, textarea, .nav, .workspace-deck')) return;
-        raycaster.setFromCamera(mouseVec, camera);
+        if (e.target.closest('a, button, input, textarea, .nav, .workspace-deck, .fullscreen-demo-modal')) return;
+        const clickVec = new THREE.Vector2(
+          (e.clientX / window.innerWidth) * 2 - 1,
+          -(e.clientY / window.innerHeight) * 2 + 1
+        );
+        raycaster.setFromCamera(clickVec, camera);
         const hits = raycaster.intersectObjects(interactiveUnits, true);
         if (hits.length > 0) {
-          const rootObj = hits[0].object.parent;
-          if (rootObj && rootObj.userData && rootObj.userData.targetChapter !== undefined) {
-            const targetCh = document.querySelector(`section[data-chapter="0${rootObj.userData.targetChapter}"]`);
-            if (targetCh) targetCh.scrollIntoView({ behavior: 'smooth' });
+          const hitObj = hits[0].object;
+          const objData = (hitObj.userData && (hitObj.userData.isDeskCurvedScreen || hitObj.userData.isKvmConsoleScreen || hitObj.userData.targetChapter !== undefined))
+            ? hitObj.userData
+            : (hitObj.parent ? hitObj.parent.userData : null);
+
+          if (objData) {
+            if (objData.isDeskCurvedScreen || objData.isKvmConsoleScreen) {
+              if (window.openFullscreenDemo) window.openFullscreenDemo();
+              return;
+            }
+            if (objData.targetChapter !== undefined) {
+              const targetCh = document.querySelector(`section[data-chapter="0${objData.targetChapter}"]`);
+              if (targetCh) targetCh.scrollIntoView({ behavior: 'smooth' });
+            }
           }
         }
       });
@@ -4776,8 +6216,9 @@
         lastTime = now;
         const time = now * 0.001;
 
-        // Update Live HostDeck Dashboard Screen Texture
+        // Update Live HostDeck Dashboard Screen Texture & Developer Desk Displays
         updateDashboardCanvas(time);
+        updateDeskDisplays(time);
 
         // Animate Traveling Data Pulses along Cables
         pulseParticles.forEach(p => {
@@ -4824,9 +6265,12 @@
           led.material = idx === testStep ? ledMatGreen : ledMatDim;
         });
 
-        // Top Roof Exhaust Cooling Fan Rotation
+        // Top Roof Exhaust Cooling Fan Rotation & Desk PC Fans
         fanMeshes.forEach(f => {
           f.rotation.z += dt * 7.5;
+        });
+        deskFanMeshes.forEach(f => {
+          f.rotation.z += dt * 8.5;
         });
 
         // 3-Tier Andon Status Beacon on Top of Rack
@@ -4885,26 +6329,36 @@
           rackGroup.rotation.y = Math.sin(time * 0.2) * 0.015;
         }
 
-        // Raycasting update for HUD Tooltip
+        // Raycasting update for HUD Tooltip & Pointer Cursor
         raycaster.setFromCamera(mouseVec, camera);
         const hits = raycaster.intersectObjects(interactiveUnits, true);
         if (hits.length > 0 && tooltipEl) {
           const hitObj = hits[0].object;
-          const parentData = hitObj.parent.userData;
-          if (parentData && parentData.name) {
-            tooltipEl.innerHTML = `<strong>${parentData.name}</strong><br><span style="color:#aab4ad;font-size:11px;">${parentData.info}</span>`;
+          const objData = (hitObj.userData && (hitObj.userData.name || hitObj.userData.title))
+            ? hitObj.userData
+            : (hitObj.parent ? hitObj.parent.userData : null);
+
+          if (objData && (objData.name || objData.title)) {
+            const title = objData.title || objData.name;
+            const info = objData.desc || objData.info || '';
+            const isCurved = !!objData.isDeskCurvedScreen;
+            tooltipEl.innerHTML = `<strong style="${isCurved ? 'color:#38bdf8;' : ''}">${title}</strong><br><span style="color:#aab4ad;font-size:11px;">${info}</span>`;
             tooltipEl.style.display = 'block';
             tooltipEl.style.opacity = '1';
+            document.body.style.cursor = 'pointer';
           }
-        } else if (tooltipEl && tooltipEl.style.display !== 'none') {
-          tooltipEl.style.opacity = '0';
-          setTimeout(() => { if (tooltipEl.style.opacity === '0') tooltipEl.style.display = 'none'; }, 150);
+        } else {
+          document.body.style.cursor = 'auto';
+          if (tooltipEl && tooltipEl.style.display !== 'none') {
+            tooltipEl.style.opacity = '0';
+            setTimeout(() => { if (tooltipEl.style.opacity === '0') tooltipEl.style.display = 'none'; }, 150);
+          }
         }
 
         // Apply Kage camera physics
         applyCamera(dt);
 
-        if (Math.round(RIG.prog) === 2) {
+        if (Math.abs(RIG.prog - 2) < 0.48) {
           if (kvmScreenMesh) kvmScreenMesh.visible = false;
         } else {
           if (kvmScreenMesh) kvmScreenMesh.visible = true;
@@ -4914,7 +6368,7 @@
                 kvmScreenMat.map = videoTexture;
                 kvmScreenMat.needsUpdate = true;
               }
-            } else {
+            } else if (typeof dashTexture !== 'undefined' && dashTexture) {
               if (kvmScreenMat.map !== dashTexture) {
                 kvmScreenMat.map = dashTexture;
                 kvmScreenMat.needsUpdate = true;
@@ -4967,11 +6421,27 @@
       function applyResponsiveLayout() {
         const isMobile = window.innerWidth < 768;
         if (isMobile) {
-          rackGroup.scale.set(0.92, 0.92, 0.92);
+          rackGroup.scale.set(0.88, 0.88, 0.88);
           rackGroup.position.set(0.0, -0.2, 0.0);
+          if (bgClusterRef) {
+            bgClusterRef.position.set(0.60, -0.2, 0.0);
+            bgClusterRef.scale.set(0.92, 0.92, 0.92);
+          }
+          if (deskGroupRef) {
+            deskGroupRef.position.set(4.2, -1.90, 0.5);
+            deskGroupRef.scale.set(0.65, 0.65, 0.65);
+          }
         } else {
-          rackGroup.scale.set(1.0, 1.0, 1.0);
-          rackGroup.position.set(2.4, 0, 0);
+          rackGroup.scale.set(0.95, 0.95, 0.95);
+          rackGroup.position.set(1.8, 0, 0);
+          if (bgClusterRef) {
+            bgClusterRef.position.set(0, 0, 0);
+            bgClusterRef.scale.set(1.0, 1.0, 1.0);
+          }
+          if (deskGroupRef) {
+            deskGroupRef.position.set(3.6, -1.90, 3.4);
+            deskGroupRef.scale.set(1.0, 1.0, 1.0);
+          }
         }
         if (cssRackGroup) {
           cssRackGroup.scale.copy(rackGroup.scale);
@@ -4979,6 +6449,7 @@
         }
         updateCameraSpline();
       }
+      applyResponsiveLayout();
 
       function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -5183,11 +6654,10 @@
     // ═══════════════════════════════════════════════════════════════════════
     (function() {
       const copyBtn = document.getElementById('copy-install');
-      const codeEl = document.getElementById('install-code');
-      if (!copyBtn || !codeEl) return;
+      if (!copyBtn) return;
 
       copyBtn.addEventListener('click', async () => {
-        const text = codeEl.textContent.trim();
+        const text = copyBtn.getAttribute('data-copy') || 'curl -fsSL https://github.com/bnhminh1010/hostdeck/releases/latest/download/install.sh | bash';
         try {
           await navigator.clipboard.writeText(text);
         } catch (err) {
@@ -5202,32 +6672,53 @@
         }
 
         copyBtn.classList.add('is-copied');
-        copyBtn.textContent = 'Copied ✓';
+        copyBtn.innerHTML = '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5 6.5-7"/></svg><span>Copied ✓</span>';
         setTimeout(() => {
           copyBtn.classList.remove('is-copied');
-          copyBtn.textContent = 'Copy';
+          copyBtn.innerHTML = '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3a1.5 1.5 0 0 1 1.5-1.5H11"/></svg><span>Copy</span>';
         }, 2000);
       });
     })();
 
     // ═══════════════════════════════════════════════════════════════════════
-    // CUSTOM CURSOR
+    // FULLSCREEN INTERACTIVE LIVE DEMO MODAL HANDLERS
     // ═══════════════════════════════════════════════════════════════════════
     (function() {
-      if (window.matchMedia('(pointer: coarse)').matches) return;
+      const fsModal = document.getElementById('demo-fullscreen-modal');
+      const fsIframe = document.getElementById('fs-demo-iframe');
+      const btnOpenFs = document.getElementById('btn-open-fullscreen-demo');
+      const btnCloseFs = document.getElementById('btn-close-fullscreen-demo');
+      const fsBackdrop = document.getElementById('fs-modal-backdrop');
 
-      const cursor = document.getElementById('cursor');
-      if (!cursor) return;
+      function openFullscreenDemo(e) {
+        if (e) e.preventDefault();
+        if (fsModal) {
+          if (fsIframe && (!fsIframe.src || fsIframe.src === 'about:blank' || fsIframe.src.endsWith('about:blank'))) {
+            fsIframe.src = 'app/?demo=1';
+          }
+          fsModal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
 
-      document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX - 6 + 'px';
-        cursor.style.top = e.clientY - 6 + 'px';
-      });
+      function closeFullscreenDemo() {
+        if (fsModal) {
+          fsModal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
 
-      const interactives = document.querySelectorAll('a, button, .ws-tab');
-      interactives.forEach(el => {
-        el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-        el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+      window.openFullscreenDemo = openFullscreenDemo;
+      window.closeFullscreenDemo = closeFullscreenDemo;
+
+      if (btnOpenFs) btnOpenFs.addEventListener('click', openFullscreenDemo);
+      if (btnCloseFs) btnCloseFs.addEventListener('click', closeFullscreenDemo);
+      if (fsBackdrop) fsBackdrop.addEventListener('click', closeFullscreenDemo);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && fsModal && fsModal.getAttribute('aria-hidden') === 'false') {
+          closeFullscreenDemo();
+        }
       });
     })();
   </script>

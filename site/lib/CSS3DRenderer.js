@@ -99,7 +99,7 @@
 
 				}
 
-				if ( scene.autoUpdate === true ) scene.updateMatrixWorld();
+				if ( scene.matrixWorldAutoUpdate === true ) scene.updateMatrixWorld();
 				if ( camera.parent === null ) camera.updateMatrixWorld();
 				let tx, ty;
 
