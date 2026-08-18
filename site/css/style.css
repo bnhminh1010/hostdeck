@@ -223,7 +223,7 @@ code, pre, .mono {
   font-weight: 400;
   padding: 6px 14px;
   border-radius: var(--radius-pill);
-  transition: all var(--dur) var(--ease);
+  transition: color, background-color var(--dur) var(--ease);
 }
 .nav-links a:hover {
   color: var(--bone);
@@ -250,7 +250,7 @@ code, pre, .mono {
   letter-spacing: 0.04em;
   border: 1px solid rgba(224, 35, 28, 0.35);
   border-radius: var(--radius-pill);
-  transition: all var(--dur) var(--ease);
+  transition: background-color, color, border-color var(--dur) var(--ease);
 }
 .nav-cta-pill:hover {
   background: var(--vermilion);
@@ -270,7 +270,7 @@ code, pre, .mono {
   background: transparent;
   color: var(--bone-dim);
   cursor: pointer;
-  transition: all var(--dur) var(--ease);
+  transition: color, border-color, background-color var(--dur) var(--ease);
 }
 .nav-burger:hover {
   color: var(--bone);
@@ -304,7 +304,7 @@ code, pre, .mono {
 .nav-drawer-panel a {
   color: var(--bone-dim); font-family: var(--font-mono); font-size: 14px;
   padding: 11px 12px; border-radius: 8px;
-  transition: all var(--dur) var(--ease);
+  transition: color, background-color var(--dur) var(--ease);
 }
 .nav-drawer-panel a:hover { color: var(--bone); background: rgba(255, 255, 255, 0.08); }
 .nav-drawer-panel .nav-active { color: var(--vermilion); background: rgba(224, 35, 28, 0.16); font-weight: 600; }
@@ -437,7 +437,7 @@ code, pre, .mono {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
-  transition: all 240ms var(--ease);
+  transition: color, border-color, box-shadow 240ms var(--ease);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -584,7 +584,7 @@ code, pre, .mono {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: all var(--dur) var(--ease);
+  transition: border-color, transform var(--dur) var(--ease);
 }
 .fact-cell:hover {
   border-color: rgba(255, 255, 255, 0.2);
@@ -649,7 +649,7 @@ code, pre, .mono {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
-  transition: all var(--dur) var(--ease);
+  transition: border-color var(--dur) var(--ease);
 }
 .cl-version:hover {
   border-color: rgba(255, 255, 255, 0.18);

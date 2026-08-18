@@ -221,7 +221,7 @@
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
-      transition: all var(--duration-normal) var(--ease-smooth);
+      transition: color, background-color, border-color, box-shadow var(--duration-normal) var(--ease-smooth);
     }
 
     .nav-brand {
@@ -275,7 +275,7 @@
       border: 1px solid rgba(224, 35, 28, 0.35);
       border-radius: 999px;
       text-decoration: none;
-      transition: all var(--duration-fast) var(--ease-smooth);
+      transition: background-color, color, border-color var(--duration-fast) var(--ease-smooth);
     }
 
     .nav-cta:hover {
@@ -312,7 +312,7 @@
       padding: 0;
       cursor: pointer;
       background-clip: padding-box;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform, border-color, box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
     }
 
@@ -435,7 +435,7 @@
       border-radius: 50%;
       background: rgba(5, 7, 10, 0.4);
       backdrop-filter: blur(4px);
-      transition: all var(--duration-fast) var(--ease-smooth);
+      transition: color, border-color, background-color var(--duration-fast) var(--ease-smooth);
     }
 
     .rail-dot:hover {
@@ -558,7 +558,12 @@
       transform: none;
     }
 
-    /* Chapter label fallback */
+    /* Chapter label fallback.
+       DELIBERATE DESIGN CHOICE (Kage DNA): the CH.0x eyebrow + chapter rail are
+       part of the cinematic 5-chapter scroll structure — the number sequence
+       carries navigational information the reader needs, so it is exempt from
+       the "eyebrow on every section" / "numbered section markers" anti-patterns
+       (impeccable craft-floor). Do not remove without replacing the rail nav. */
     .chapter-label {
       display: inline-block;
       margin-bottom: var(--space-md);
@@ -832,7 +837,7 @@
       border-radius: 6px;
       cursor: pointer;
       white-space: nowrap;
-      transition: all var(--duration-fast) var(--ease-smooth);
+      transition: background-color, color, border-color, box-shadow var(--duration-fast) var(--ease-smooth);
     }
 
     .btn-solid {
@@ -916,7 +921,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
-      transition: all var(--duration-fast) var(--ease-smooth);
+      transition: border-color, transform var(--duration-fast) var(--ease-smooth);
     }
     .metric-card:hover {
       border-color: rgba(255, 255, 255, 0.22);
@@ -963,6 +968,30 @@
     .status-warn {
       background: rgba(215, 173, 69, 0.18);
       color: var(--yellow);
+    }
+
+    /* Spec line — compact mono facts row (replaces metric-card grid) */
+    .spec-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 14px;
+      margin-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      color: var(--bone-dim);
+    }
+
+    .spec-item b {
+      font-weight: 600;
+      color: var(--bone);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .spec-sep {
+      color: var(--vermilion);
+      opacity: 0.6;
     }
 
     /* ═══════════════════════════════════════════════════════════════════════
@@ -1169,7 +1198,7 @@
       border-radius: 6px;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(224, 35, 28, 0.35);
-      transition: all 0.2s ease;
+      transition: background-color, transform, box-shadow 0.2s ease;
       white-space: nowrap;
     }
 
@@ -1205,7 +1234,7 @@
       font-family: var(--font-mono);
       font-size: 12px;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: border-color, color, background-color 0.18s ease;
       text-decoration: none;
     }
 
@@ -1405,7 +1434,7 @@
       border-radius: 5px;
       border: 1px solid rgba(56, 189, 248, 0.35);
       background: rgba(56, 189, 248, 0.06);
-      transition: all 0.2s ease;
+      transition: background-color, color, border-color 0.2s ease;
     }
 
     .fs-btn-tab:hover {
@@ -1424,7 +1453,7 @@
       border-radius: 5px;
       padding: 5px 13px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background-color, box-shadow 0.2s ease;
     }
 
     .fs-btn-close:hover {
@@ -1577,7 +1606,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
-      transition: all var(--duration-fast);
+      transition: border-color, box-shadow var(--duration-fast) var(--ease-smooth);
     }
 
     .network-node.highlight {
@@ -1652,7 +1681,7 @@
       color: var(--bone-dim);
       text-align: left;
       cursor: pointer;
-      transition: all var(--duration-fast) var(--ease-smooth);
+      transition: background-color, color, border-color var(--duration-fast) var(--ease-smooth);
     }
 
     .ws-tab:hover {
@@ -1903,7 +1932,7 @@
       border-radius: 6px;
       cursor: pointer;
       flex-shrink: 0;
-      transition: all var(--duration-fast) var(--ease-smooth);
+      transition: color, border-color, background-color, box-shadow var(--duration-fast) var(--ease-smooth);
     }
 
     .copy-btn:hover {
@@ -2254,7 +2283,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
       text-decoration: none;
-      transition: all var(--duration-fast) var(--ease-smooth);
+      transition: border-color, transform var(--duration-fast) var(--ease-smooth);
     }
 
     .deep-doc-card:hover {
@@ -2486,9 +2515,9 @@
       .chapter .chapter-inner,
       .hero .chapter-inner {
         pointer-events: auto;
-        background: rgba(8, 12, 18, 0.42);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: rgba(8, 12, 18, 0.92);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         border: 1px solid rgba(255, 255, 255, 0.09);
         border-radius: 14px;
         padding: 10px 14px;
@@ -2501,6 +2530,8 @@
         scrollbar-width: none;
         position: relative;
         z-index: 10;
+        transform: translateZ(0);
+        will-change: transform;
       }
       .chapter .chapter-inner::-webkit-scrollbar,
       .hero .chapter-inner::-webkit-scrollbar {
@@ -3074,28 +3105,12 @@
         <p class="chapter-body reveal-text">
           Live CPU, memory, disk, network, load and temperature. Container health and resource usage. TLS certificate observations. Service uptime and backup freshness — all in one glance, with 90-day history.
         </p>
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <span class="metric-label">Workspaces</span>
-            <span class="metric-value">8</span>
-            <span class="metric-status status-ok">All-in-one loop</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Static Binaries</span>
-            <span class="metric-value">3</span>
-            <span class="metric-status status-ok">Zero Node / npm</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Inbound Ports</span>
-            <span class="metric-value">0</span>
-            <span class="metric-status status-ok">Tailscale auth plane</span>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">Console RSS</span>
-            <span class="metric-value">50<span class="metric-unit">MB</span></span>
-            <span class="metric-status status-ok">Dashboard + Agent</span>
-          </div>
-        </div>
+        <p class="spec-line reveal-text" aria-label="HostDeck at a glance">
+          <span class="spec-item"><b>8</b> workspaces</span><span class="spec-sep">·</span>
+          <span class="spec-item"><b>3</b> static binaries</span><span class="spec-sep">·</span>
+          <span class="spec-item"><b>0</b> inbound ports</span><span class="spec-sep">·</span>
+          <span class="spec-item"><b>50 MB</b> console RSS</span>
+        </p>
       </div>
     </section>
 
@@ -3599,7 +3614,7 @@
   <!-- Fullscreen Interactive Live Demo Modal (34" Curved Ultrawide Hardware Monitor Frame) -->
   <div id="demo-fullscreen-modal" class="fullscreen-demo-modal" aria-hidden="true">
     <div class="fs-modal-backdrop" id="fs-modal-backdrop"></div>
-    
+
     <div class="fs-monitor-stage">
       <!-- ScreenBar Light Fixture on Top of Monitor Frame -->
       <div class="fs-screenbar-fixture">
@@ -3710,7 +3725,8 @@
         powerPreference: 'high-performance'
       });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const isMobileInit = window.innerWidth < 768;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileInit ? 1.35 : 2.0));
       renderer.setClearColor(0x05070a, 1);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
@@ -6026,6 +6042,9 @@
         }
       }
 
+      const cachedRailDots = Array.from(document.querySelectorAll('.rail-dot'));
+      const cachedScreenWrapperEl = document.getElementById('rack-screen-3d-wrapper');
+
       function updateScrollProgress() {
         const y = window.scrollY;
         if (!chapterAnchors.length || y <= chapterAnchors[0]) {
@@ -6042,14 +6061,15 @@
         }
 
         const activeIdx = Math.round(RIG.prog);
-        document.querySelectorAll('.rail-dot').forEach((dot, i) => {
-          dot.classList.toggle('active', i === activeIdx);
-        });
+        if (window.innerWidth >= 768 && cachedRailDots.length > 0) {
+          cachedRailDots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === activeIdx);
+          });
+        }
 
         const isCh2 = Math.abs(RIG.prog - 2) < 0.48;
-        const screenWrapperEl = document.getElementById('rack-screen-3d-wrapper');
         if (isCh2) {
-          if (screenWrapperEl) screenWrapperEl.classList.add('is-active-3d');
+          if (cachedScreenWrapperEl) cachedScreenWrapperEl.classList.add('is-active-3d');
           if (kvmScreenMesh) kvmScreenMesh.visible = false;
           if (demoVideo && !demoVideo.paused) {
             try { demoVideo.pause(); } catch(e) {}
@@ -6058,7 +6078,7 @@
             playBootSequence();
           }
         } else {
-          if (screenWrapperEl) screenWrapperEl.classList.remove('is-active-3d');
+          if (cachedScreenWrapperEl) cachedScreenWrapperEl.classList.remove('is-active-3d');
           if (kvmScreenMesh) kvmScreenMesh.visible = true;
           if (demoVideo && demoVideo.paused) {
             try { demoVideo.play().catch(() => {}); } catch(e) {}
@@ -6213,18 +6233,25 @@
       // ═══════════════════════════════════════════════════════════════════════
       let lastTime = performance.now();
       let isTabVisible = true;
+      let animationFrameCounter = 0;
 
       function renderLoop(now) {
         if (!isTabVisible) return;
         requestAnimationFrame(renderLoop);
 
+        animationFrameCounter++;
+        const isMobileScreen = window.innerWidth < 768;
         const dt = Math.min((now - lastTime) * 0.001, 0.1);
         lastTime = now;
         const time = now * 0.001;
 
-        // Update Live HostDeck Dashboard Screen Texture & Developer Desk Displays
-        updateDashboardCanvas(time);
-        updateDeskDisplays(time);
+        // Throttle Live HostDeck Dashboard Screen Texture & Developer Desk Displays
+        if (animationFrameCounter % (isMobileScreen ? 6 : 4) === 0) {
+          updateDashboardCanvas(time);
+        }
+        if (!isMobileScreen && (animationFrameCounter % 6 === 0)) {
+          updateDeskDisplays(time);
+        }
 
         // Animate Traveling Data Pulses along Cables
         pulseParticles.forEach(p => {
@@ -6295,17 +6322,21 @@
           alertDiagPanelMesh.material.color.setRGB(0.88 * alertIntensity, 0.14 * alertIntensity, 0.11 * alertIntensity);
         }
 
-        ledObjects.forEach((led) => {
+        // Throttled LED blinking on mobile (every 2 frames)
+        if (!isMobileScreen || (animationFrameCounter % 2 === 0)) {
           const blinkRate = isMonitorChapter ? 8.0 : 3.0;
-          const blink = Math.sin(time * blinkRate + led.seed);
-          led.mesh.material = blink > 0.4 ? led.baseMat : ledMatDim;
-        });
+          ledObjects.forEach((led) => {
+            const blink = Math.sin(time * blinkRate + led.seed);
+            led.mesh.material = blink > 0.4 ? led.baseMat : ledMatDim;
+          });
 
-        // Background Datacenter Rack LED Matrices
-        bgLedObjects.forEach(l => {
-          const blink = Math.sin(time * l.rate + l.seed);
-          l.mesh.material = blink > 0.15 ? l.baseMat : ledMatDim;
-        });
+          if (!isMobileScreen) {
+            bgLedObjects.forEach(l => {
+              const blink = Math.sin(time * l.rate + l.seed);
+              l.mesh.material = blink > 0.15 ? l.baseMat : ledMatDim;
+            });
+          }
+        }
 
         // Dynamic Lights Intensity
         dynamicLights.forEach(dl => {
@@ -6326,38 +6357,42 @@
 
         // Dust particle drift
         if (!prefersReducedMotion) {
-          const positions = dustPoints.geometry.attributes.position.array;
-          for (let i = 0; i < positions.length; i += 3) {
-            positions[i + 1] += Math.sin(time + i) * 0.0006;
-            positions[i] += Math.cos(time + i * 0.5) * 0.0006;
+          if (!isMobileScreen) {
+            const positions = dustPoints.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+              positions[i + 1] += Math.sin(time + i) * 0.0006;
+              positions[i] += Math.cos(time + i * 0.5) * 0.0006;
+            }
+            dustPoints.geometry.attributes.position.needsUpdate = true;
           }
-          dustPoints.geometry.attributes.position.needsUpdate = true;
           rackGroup.rotation.y = Math.sin(time * 0.2) * 0.015;
         }
 
-        // Raycasting update for HUD Tooltip & Pointer Cursor
-        raycaster.setFromCamera(mouseVec, camera);
-        const hits = raycaster.intersectObjects(interactiveUnits, true);
-        if (hits.length > 0 && tooltipEl) {
-          const hitObj = hits[0].object;
-          const objData = (hitObj.userData && (hitObj.userData.name || hitObj.userData.title))
-            ? hitObj.userData
-            : (hitObj.parent ? hitObj.parent.userData : null);
+        // Raycasting update for HUD Tooltip & Pointer Cursor (Desktop only)
+        if (!isMobileScreen) {
+          raycaster.setFromCamera(mouseVec, camera);
+          const hits = raycaster.intersectObjects(interactiveUnits, true);
+          if (hits.length > 0 && tooltipEl) {
+            const hitObj = hits[0].object;
+            const objData = (hitObj.userData && (hitObj.userData.name || hitObj.userData.title))
+              ? hitObj.userData
+              : (hitObj.parent ? hitObj.parent.userData : null);
 
-          if (objData && (objData.name || objData.title)) {
-            const title = objData.title || objData.name;
-            const info = objData.desc || objData.info || '';
-            const isCurved = !!objData.isDeskCurvedScreen;
-            tooltipEl.innerHTML = `<strong style="${isCurved ? 'color:#38bdf8;' : ''}">${title}</strong><br><span style="color:#aab4ad;font-size:11px;">${info}</span>`;
-            tooltipEl.style.display = 'block';
-            tooltipEl.style.opacity = '1';
-            document.body.style.cursor = 'pointer';
-          }
-        } else {
-          document.body.style.cursor = 'auto';
-          if (tooltipEl && tooltipEl.style.display !== 'none') {
-            tooltipEl.style.opacity = '0';
-            setTimeout(() => { if (tooltipEl.style.opacity === '0') tooltipEl.style.display = 'none'; }, 150);
+            if (objData && (objData.name || objData.title)) {
+              const title = objData.title || objData.name;
+              const info = objData.desc || objData.info || '';
+              const isCurved = !!objData.isDeskCurvedScreen;
+              tooltipEl.innerHTML = `<strong style="${isCurved ? 'color:#38bdf8;' : ''}">${title}</strong><br><span style="color:#aab4ad;font-size:11px;">${info}</span>`;
+              tooltipEl.style.display = 'block';
+              tooltipEl.style.opacity = '1';
+              document.body.style.cursor = 'pointer';
+            }
+          } else {
+            document.body.style.cursor = 'auto';
+            if (tooltipEl && tooltipEl.style.display !== 'none') {
+              tooltipEl.style.opacity = '0';
+              setTimeout(() => { if (tooltipEl.style.opacity === '0') tooltipEl.style.display = 'none'; }, 150);
+            }
           }
         }
 
@@ -6405,7 +6440,7 @@
 
         renderer.render(scene, camera);
 
-        if (cssRenderer && cssScene && cssSceneRoot && cssRackGroup) {
+        if (cssRenderer && cssScene && cssSceneRoot && cssRackGroup && Math.abs(RIG.prog - 2) < 0.8) {
           cssSceneRoot.position.copy(sceneRoot.position);
           cssSceneRoot.rotation.copy(sceneRoot.rotation);
           cssRackGroup.position.copy(rackGroup.position);
@@ -6426,6 +6461,8 @@
 
       function applyResponsiveLayout() {
         const isMobile = window.innerWidth < 768;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.35 : 2.0));
+
         if (isMobile) {
           rackGroup.scale.set(0.88, 0.88, 0.88);
           rackGroup.position.set(0.0, -0.2, 0.0);
@@ -6434,8 +6471,7 @@
             bgClusterRef.scale.set(0.92, 0.92, 0.92);
           }
           if (deskGroupRef) {
-            deskGroupRef.position.set(4.2, -1.90, 0.5);
-            deskGroupRef.scale.set(0.65, 0.65, 0.65);
+            deskGroupRef.visible = false;
           }
         } else {
           rackGroup.scale.set(0.95, 0.95, 0.95);
@@ -6445,6 +6481,7 @@
             bgClusterRef.scale.set(1.0, 1.0, 1.0);
           }
           if (deskGroupRef) {
+            deskGroupRef.visible = true;
             deskGroupRef.position.set(3.6, -1.90, 3.4);
             deskGroupRef.scale.set(1.0, 1.0, 1.0);
           }
@@ -6478,8 +6515,19 @@
         });
       });
 
+      let isScrollProgressPending = false;
+      function onScrollThrottled() {
+        if (!isScrollProgressPending) {
+          requestAnimationFrame(() => {
+            updateScrollProgress();
+            isScrollProgressPending = false;
+          });
+          isScrollProgressPending = true;
+        }
+      }
+
       window.addEventListener('resize', onWindowResize);
-      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+      window.addEventListener('scroll', onScrollThrottled, { passive: true });
       window.addEventListener('load', () => {
         applyResponsiveLayout();
         measureSections();
