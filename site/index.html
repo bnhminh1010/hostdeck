@@ -2531,6 +2531,13 @@
         pointer-events: none;
       }
 
+      /* Chapter cards centered — override the desktop #ch-02 offset
+         (margin-left max(var(--space-lg), calc((100vw - 1440px)/2)) was
+         pushing the card 16px right of center and 4px past the edge on
+         mobile). Kage-style: cards sit centered on small screens. */
+      #ch-02 .chapter-inner {
+        margin-left: 0;
+      }
       .chapter .chapter-inner,
       .hero .chapter-inner {
         pointer-events: auto;
