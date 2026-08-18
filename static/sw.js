@@ -1,4 +1,4 @@
-const CACHE_NAME = "homelab-dashboard-shell-v8";
+const CACHE_NAME = "homelab-dashboard-shell-v10";
 const SHELL = [
   "./",
   "./index.html",
@@ -45,5 +45,21 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(fetch(request).catch(() => caches.match("./index.html")));
     return;
   }
+  // CSS/JS: stale-while-revalidate so mobile gets responsive styles immediately
+  if (url.pathname.endsWith(".css") || url.pathname.endsWith(".js") || url.pathname.endsWith(".mjs")) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) =>
+        cache.match(request).then((cached) => {
+          const fetchPromise = fetch(request).then((response) => {
+            if (response.ok) cache.put(request, response.clone());
+            return response;
+          }).catch(() => cached);
+          return cached || fetchPromise;
+        })
+      )
+    );
+    return;
+  }
+  // Other static assets: cache-first
   event.respondWith(caches.match(request).then((cached) => cached || fetch(request)));
 });

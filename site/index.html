@@ -6234,27 +6234,42 @@
       let lastTime = performance.now();
       let isTabVisible = true;
       let animationFrameCounter = 0;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let isHeroVisible = true;
+
+      // IntersectionObserver to pause when hero off-screen
+      const heroObserver = new IntersectionObserver((entries) => {
+        isHeroVisible = entries[0].isIntersecting;
+      }, { rootMargin: '200px' });
+      heroObserver.observe(document.getElementById('scene-canvas') || document.body);
 
       function renderLoop(now) {
-        if (!isTabVisible) return;
+        if (!isTabVisible || !isHeroVisible || prefersReducedMotion) {
         requestAnimationFrame(renderLoop);
+        return;
+      }
+      requestAnimationFrame(renderLoop);
 
         animationFrameCounter++;
         const isMobileScreen = window.innerWidth < 768;
+        const isLowEnd = navigator.deviceMemory && navigator.deviceMemory < 4;
         const dt = Math.min((now - lastTime) * 0.001, 0.1);
         lastTime = now;
         const time = now * 0.001;
 
         // Throttle Live HostDeck Dashboard Screen Texture & Developer Desk Displays
-        if (animationFrameCounter % (isMobileScreen ? 6 : 4) === 0) {
+        const dashThrottle = (isMobileScreen || isLowEnd) ? 8 : 4;
+        if (animationFrameCounter % dashThrottle === 0) {
           updateDashboardCanvas(time);
         }
-        if (!isMobileScreen && (animationFrameCounter % 6 === 0)) {
+        const deskThrottle = (isMobileScreen || isLowEnd) ? 12 : 6;
+        if (!isMobileScreen && !isLowEnd && (animationFrameCounter % deskThrottle === 0)) {
           updateDeskDisplays(time);
         }
 
         // Animate Traveling Data Pulses along Cables
-        pulseParticles.forEach(p => {
+        const pulseParticlesActive = (isMobileScreen || isLowEnd) ? pulseParticles.slice(0, Math.ceil(pulseParticles.length * 0.3)) : pulseParticles;
+        pulseParticlesActive.forEach(p => {
           const t = (time * p.speed + p.offset) % 1.0;
           const pos = p.curve.getPointAt(t);
           p.mesh.position.copy(pos);
@@ -6325,13 +6340,15 @@
         // Throttled LED blinking on mobile (every 2 frames)
         if (!isMobileScreen || (animationFrameCounter % 2 === 0)) {
           const blinkRate = isMonitorChapter ? 8.0 : 3.0;
-          ledObjects.forEach((led) => {
+          const ledObjectsActive = (isMobileScreen || isLowEnd) ? ledObjects.slice(0, Math.ceil(ledObjects.length * 0.4)) : ledObjects;
+          ledObjectsActive.forEach((led) => {
             const blink = Math.sin(time * blinkRate + led.seed);
             led.mesh.material = blink > 0.4 ? led.baseMat : ledMatDim;
           });
 
-          if (!isMobileScreen) {
-            bgLedObjects.forEach(l => {
+          if (!isMobileScreen && !isLowEnd) {
+            const bgLedObjectsActive = bgLedObjects.slice(0, Math.ceil(bgLedObjects.length * 0.5));
+            bgLedObjectsActive.forEach(l => {
               const blink = Math.sin(time * l.rate + l.seed);
               l.mesh.material = blink > 0.15 ? l.baseMat : ledMatDim;
             });
@@ -6356,8 +6373,7 @@
         });
 
         // Dust particle drift
-        if (!prefersReducedMotion) {
-          if (!isMobileScreen) {
+        if (!prefersReducedMotion && !isMobileScreen && !isLowEnd) {
             const positions = dustPoints.geometry.attributes.position.array;
             for (let i = 0; i < positions.length; i += 3) {
               positions[i + 1] += Math.sin(time + i) * 0.0006;
@@ -6365,11 +6381,13 @@
             }
             dustPoints.geometry.attributes.position.needsUpdate = true;
           }
-          rackGroup.rotation.y = Math.sin(time * 0.2) * 0.015;
+          if (!isMobileScreen && !isLowEnd) {
+            rackGroup.rotation.y = Math.sin(time * 0.2) * 0.015;
+          }
         }
 
         // Raycasting update for HUD Tooltip & Pointer Cursor (Desktop only)
-        if (!isMobileScreen) {
+        if (!isMobileScreen && !isLowEnd) {
           raycaster.setFromCamera(mouseVec, camera);
           const hits = raycaster.intersectObjects(interactiveUnits, true);
           if (hits.length > 0 && tooltipEl) {
@@ -6440,7 +6458,7 @@
 
         renderer.render(scene, camera);
 
-        if (cssRenderer && cssScene && cssSceneRoot && cssRackGroup && Math.abs(RIG.prog - 2) < 0.8) {
+        if (!isMobileScreen && !isLowEnd && cssRenderer && cssScene && cssSceneRoot && cssRackGroup && Math.abs(RIG.prog - 2) < 0.8) {
           cssSceneRoot.position.copy(sceneRoot.position);
           cssSceneRoot.rotation.copy(sceneRoot.rotation);
           cssRackGroup.position.copy(rackGroup.position);
