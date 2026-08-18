@@ -6277,7 +6277,10 @@
         if (animationFrameCounter % dashThrottle === 0) {
           updateDashboardCanvas(time);
         }
-        const deskThrottle = (isMobileScreen || isLowEnd) ? 12 : 6;
+        // Desk displays redraw 3 large canvases (1024x512 + 512x1024 + 512x320)
+        // with dozens of fillText calls each — every 12 frames (~5x/s) is plenty
+        // for the visual effect; 6 frames (~10x/s) was burning main-thread CPU.
+        const deskThrottle = (isMobileScreen || isLowEnd) ? 20 : 12;
         if (!isMobileScreen && !isLowEnd && (animationFrameCounter % deskThrottle === 0)) {
           updateDeskDisplays(time);
         }
