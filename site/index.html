@@ -6242,11 +6242,16 @@
       let isHeroVisible = true;
       let hasRenderedFirstFrame = false;
 
-      // IntersectionObserver to pause when hero off-screen
+      // IntersectionObserver to pause 3D render when hero is off-screen
       const heroObserver = new IntersectionObserver((entries) => {
         isHeroVisible = entries[0].isIntersecting;
-      }, { rootMargin: '200px' });
-      heroObserver.observe(document.getElementById('scene-canvas') || document.body);
+      }, { rootMargin: '120px' });
+      // Observe the hero SECTION (ch-00), not the fixed canvas — the canvas is
+      // position:fixed full-viewport, so it is ALWAYS intersecting and would
+      // never trigger a pause. Watching the hero section means the expensive
+      // WebGL render loop actually stops once the user scrolls past the hero.
+      const heroSection = document.getElementById('ch-00') || document.querySelector('.chapter.hero');
+      heroObserver.observe(heroSection || document.body);
 
       function renderLoop(now) {
         const firstFrame = !hasRenderedFirstFrame;
