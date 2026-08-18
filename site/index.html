@@ -1009,7 +1009,6 @@
       border: 2px solid rgba(223, 231, 224, 0.22);
       border-radius: 6px;
       overflow: hidden;
-      position: relative;
       pointer-events: none;
       opacity: 0;
       visibility: hidden;
@@ -1022,6 +1021,25 @@
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
+    }
+
+    /* Mobile fallback: CSS3DRenderer is skipped on small screens, so the
+       rack screen can't be attached to the 3D scene. Instead, float the
+       live-demo screen (boot sequence + dashboard iframe) over the empty
+       background zone above the chapter card. */
+    @media (max-width: 767px) {
+      .rack-screen-3d-wrapper.is-active-3d {
+        position: fixed;
+        top: 8vh;
+        left: 50%;
+        right: auto;
+        bottom: auto;
+        width: min(calc(100vw - 24px), 400px);
+        height: auto;
+        aspect-ratio: 1280 / 794;
+        transform: translateX(-50%);
+        z-index: 5;
+      }
     }
 
     .rack-screen-iframe {
@@ -2458,6 +2476,18 @@
         display: none;
       }
 
+      /* Mobile: the CSS3D rack screen wrapper (1280x794) is NOT rendered on
+         mobile (CSS3DRenderer is skipped for perf), so take it out of layout
+         entirely. position:fixed alone is not enough — a fixed element wider
+         than the viewport still inflates document scrollWidth to 1280px,
+         which triggers Chrome Android's scale-to-fit (auto-fit) and makes
+         the whole page render as a shrunken desktop site. display:none
+         removes it from layout: scrollWidth collapses back to the viewport
+         and the mobile layout applies on first load. Desktop keeps it. */
+      .rack-screen-3d-wrapper {
+        display: none !important;
+      }
+
       /* Compact, High-Tech Floating Glass Header for Mobile */
       .nav {
         top: 10px;
@@ -2529,8 +2559,11 @@
         margin: 0 auto;
         width: 100%;
         max-width: 360px;
-        max-height: 40vh;
-        overflow-y: auto;
+        /* No max-height clamp: content must fully fit so users don't have
+           to scroll inside the card. The chapter keeps min-height:100vh
+           with the 3D background visible above the card. */
+        max-height: none;
+        overflow-y: visible;
         scrollbar-width: none;
         position: relative;
         z-index: 10;
