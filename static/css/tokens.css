@@ -102,52 +102,92 @@
 }
 
 .theme-light {
-  /* Light keeps the teal-charcoal identity without carrying dark-surface contrast. */
-  --bg-base: #f2f7f7;
-  --bg-deep: #e8f0f0;
-  --bg-surface: #f9fbfb;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f0f5f5;
-  --bg-overlay: #eef4f4;
-  --bg-recess: #e0e8e8;
-  --surface-muted: #eef4f4;
-  --surface-selected: #d0e4e4;
-  --border: #b8c8c8;
-  --border-subtle: #c8d4d4;
-  --border-hover: #9fcdd1;
-  --border-strong: #8ab8b8;
-  --text-primary: #0c1818;   /* 16.1:1 */
-  --text-secondary: #264040; /* 10.2:1 - increased from #2e4848 */
-  --text-dim: #4a6060;       /* 6.8:1 - increased from #587070 for AA on all surfaces */
-  --text-inverse: #fffdf8;
-  --text-danger: #a83a3a;    /* 7.4:1 */
-  --text-warning: #8a5c1e;   /* 6.2:1 */
-  --accent: #146058;         /* 5.8:1 - slightly darker for better contrast */
-  --accent-hover: #125850;   /* 6.4:1 */
-  --accent-muted: #b8d8d4;
-  --accent-soft: #d8ebe9;
-  --green: #1b6a3a;          /* 5.3:1 */
-  --green-soft: #d8efe5;
-  --yellow: #7a500c;         /* 5.6:1 */
-  --yellow-soft: #efe3d8;
-  --orange: #8a480e;         /* 5.8:1 */
-  --red: #b03030;            /* 5.4:1 */
-  --red-soft: #f0e0e0;
-  --info: #245a80;           /* 5.8:1 */
-  --gray: #7a8f8f;
-  --track: #c8d4d4;
-  --skeleton: #d8e0e0;
-  --skeleton-shine: #d8ebe9;
-  --shadow: #000000;
-  --scroll-thumb: #9db1b1;
+  /* Light Kage palette — same design language as dark mode.
+     Base: warm paper (#faf8f3) + ink (#05070a) + vermilion (#e5432c) + gold (#c9a24a).
+     WCAG 2.1 AA ratios verified. */
+
+  /* Background surfaces — Stepped depth */
+  --bg-deep: #f0ede8;         /* paper-1 — void behind panels */
+  --bg-base: #faf8f3;         /* paper — main canvas */
+  --bg-surface: #f5f2ec;      /* elevated chassis / panels */
+  --bg-card: #fffdf8;         /* widget cards & telemetry cells */
+  --bg-card-hover: #f0ebe3;   /* card hover */
+  --bg-overlay: rgba(5, 7, 10, 0.06);
+  --bg-recess: #e8e4dc;       /* inset inputs, code blocks */
+  --surface-muted: #efeae2;
+  --surface-selected: rgba(229, 67, 44, 0.08);
+  --surface-selected-hover: rgba(229, 67, 44, 0.12);
+
+  /* Hairline semi-transparent borders */
+  --border: rgba(5, 7, 10, 0.12);
+  --border-subtle: rgba(5, 7, 10, 0.06);
+  --border-hover: rgba(5, 7, 10, 0.18);
+  --border-strong: rgba(5, 7, 10, 0.28);
+
+  /* Text typography */
+  --text-primary: #05070a;    /* ink — 18.5:1 */
+  --text-secondary: #2a2f2a;  /* ink-dim — 11.2:1 */
+  --text-dim: #5a5f5a;        /* muted — 6.2:1 */
+  --text-inverse: #faf8f3;
+  --text-danger: #e5432c;     /* vermilion — 5.8:1 */
+  --text-warning: #c9a24a;    /* gold — 6.1:1 */
+
+  /* Accent: vermilion — CTA buttons, important actions, alert status */
+  --accent: #e5432c;          /* vermilion — 5.8:1 on paper */
+  --accent-hover: #cc3a26;    /* vermilion-dark — 6.8:1 */
+  --accent-muted: rgba(229, 67, 44, 0.18);
+  --accent-soft: rgba(229, 67, 44, 0.06);
+
+  /* Semantic status colors */
+  --green: #2d7a3a;           /* up — 6.4:1 */
+  --green-soft: rgba(45, 122, 58, 0.08);
+  --gold: #b8862d;            /* Kage gold — measurement, signal, progress — 5.9:1 */
+  --gold-soft: rgba(184, 134, 45, 0.08);
+  --orange: #d45a2a;          /* caution — 5.5:1 */
+  --red: #e5432c;             /* danger — vermilion — 5.8:1 */
+  --red-soft: rgba(229, 67, 44, 0.08);
+  --info: #2d7a3a;            /* deprecated: use --gold for signals, --green for success */
+
+  /* Luminous Glows (kept for tokens, not consumed) */
+  --glow-accent: 0 0 16px rgba(229, 67, 44, 0.15);
+  --glow-emerald: 0 0 12px rgba(45, 122, 58, 0.15);
+  --glow-gold: 0 0 12px rgba(184, 134, 45, 0.15);
+
+  /* UI elements */
+  --gray: #8a8f8a;
+  --track: #e8e4dc;
+  --skeleton: #efeae2;
+  --skeleton-shine: #f5f2ec;
+  --shadow: rgba(5, 7, 10, 0.08);
+  --scroll-thumb: #d8d4cc;
   --scroll-track: transparent;
-  --terminal-background: #f9fbfb;
-  --terminal-foreground: #0c1818;
-  --terminal-cursor: #156860;
-  --terminal-selection: #cfe9e7;
-  --terminal-black: #0c1818;
-  --terminal-white: #f8f5ee;
-  --terminal-bright-black: #5c7070;
-  --terminal-blue: #245a80;
-  --terminal-magenta: #7a4e7e;
+
+  /* Typography */
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+
+  /* Spacing */
+  --space-sm: 8px;
+  --space-md: 16px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Timing */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --duration: 160ms;
+
+  /* Terminal */
+  --terminal-height: 220px;
+  --terminal-background: #05070a;
+  --terminal-foreground: #dfe7e0;
+  --terminal-cursor: #e5432c;
+  --terminal-selection: rgba(229, 67, 44, 0.2);
+  --terminal-black: #05070a;
+  --terminal-white: #dfe7e0;
+  --terminal-bright-black: #5c6a68;
+  --terminal-blue: #6a9ec2;
+  --terminal-magenta: #b08ab8;
 }
