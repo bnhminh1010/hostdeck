@@ -1039,25 +1039,6 @@
       pointer-events: auto;
     }
 
-    /* Mobile fallback: CSS3DRenderer is skipped on small screens, so the
-       rack screen can't be attached to the 3D scene. Instead, float the
-       live-demo screen (boot sequence + dashboard iframe) over the empty
-       background zone above the chapter card. */
-    @media (max-width: 767px) {
-      .rack-screen-3d-wrapper.is-active-3d {
-        position: fixed;
-        top: 8vh;
-        left: 50%;
-        right: auto;
-        bottom: auto;
-        width: min(calc(100vw - 24px), 400px);
-        height: auto;
-        aspect-ratio: 1280 / 794;
-        transform: translateX(-50%);
-        z-index: 5;
-      }
-    }
-
     .rack-screen-iframe {
       width: 100%;
       height: 100%;
@@ -6552,7 +6533,11 @@
 
         renderer.render(scene, camera);
 
-        if (!isMobileScreen && !isLowEnd && cssRenderer && cssScene && cssSceneRoot && cssRackGroup && Math.abs(RIG.prog - 2) < 0.8) {
+        // CSS3D overlay keeps the live-demo screen attached to the rack in
+        // 3D space. Runs on mobile too: the renderer only applies a DOM
+        // transform to one element (cost is negligible vs the WebGL render),
+        // and the CH.02 camera looks at the KVM screen. gated to CH.02.
+        if (cssRenderer && cssScene && cssSceneRoot && cssRackGroup && Math.abs(RIG.prog - 2) < 0.8) {
           cssSceneRoot.position.copy(sceneRoot.position);
           cssSceneRoot.rotation.copy(sceneRoot.rotation);
           cssRackGroup.position.copy(rackGroup.position);
