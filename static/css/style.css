@@ -281,7 +281,7 @@ button:disabled { opacity: 0.48; cursor: not-allowed; }
 .workspace-nav-item:hover svg { opacity: 1; color: var(--accent-hover); }
 .workspace-nav-item.is-active, .workspace-nav-item[aria-current="page"] {
   border-color: var(--accent-muted);
-  color: #ffffff;
+  color: var(--text-primary);
   background: var(--accent-soft);
 }
 .workspace-nav-item.is-active svg, .workspace-nav-item[aria-current="page"] svg { opacity: 1; color: var(--accent-hover); }
