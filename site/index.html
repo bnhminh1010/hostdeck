@@ -2712,15 +2712,9 @@
         display: flex;
         min-width: 0;
         max-width: 100%;
-        overflow-x: auto;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         gap: 4px;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
         padding-bottom: 2px;
-      }
-      .hud-shortcuts::-webkit-scrollbar {
-        display: none;
       }
 
       .hud-chip {
@@ -4088,6 +4082,17 @@
           try { demoVideo.pause(); } catch(e) {}
         }
         if (!bootloaderEl || !progressBar) return;
+
+        // Mobile: skip the boot typing + screen flicker entirely. Those are
+        // desktop 3D effects (the flicker animates kvmScreenMesh) and replay
+        // every time the user scrolls CH.01<->CH.02, so the bootloader never
+        // clears and the live-demo iframe never shows. On small screens show
+        // the dashboard directly — no fake boot.
+        if (window.innerWidth < 768) {
+          bootloaderEl.classList.add('is-hidden');
+          setActiveHudChip('overview');
+          return;
+        }
 
         // Reset
         bootloaderEl.classList.remove('is-hidden');
