@@ -6256,10 +6256,12 @@
       function renderLoop(now) {
         const firstFrame = !hasRenderedFirstFrame;
         hasRenderedFirstFrame = true;
-        // First frame ALWAYS renders so the datacenter scene paints;
-        // subsequent frames pause only when the tab is hidden, the hero is
-        // off-screen, or the user prefers reduced motion (static scene kept).
-        if (!firstFrame && (!isTabVisible || !isHeroVisible || prefersReducedMotion)) {
+        // First frame ALWAYS renders so the datacenter scene paints.
+        // Camera physics (applyCamera below) and the WebGL render MUST keep
+        // running across ALL chapters — the camera orbits the scene per
+        // chapter (RIG.prog), so pausing the whole loop off-hero would freeze
+        // the background. Only tab-hidden and reduced-motion stop the loop.
+        if (!firstFrame && (!isTabVisible || prefersReducedMotion)) {
           requestAnimationFrame(renderLoop);
           return;
         }
@@ -6268,30 +6270,35 @@
         animationFrameCounter++;
         const isMobileScreen = window.innerWidth < 768;
         const isLowEnd = navigator.deviceMemory && navigator.deviceMemory < 4;
+        // Full-detail FX (LED blinks, dust, raycasts, canvas redraws) only run
+        // while the hero is on screen — they cost CPU on hundreds of meshes.
+        const sceneActive = isHeroVisible || firstFrame;
         const dt = Math.min((now - lastTime) * 0.001, 0.1);
         lastTime = now;
         const time = now * 0.001;
 
         // Throttle Live HostDeck Dashboard Screen Texture & Developer Desk Displays
         const dashThrottle = (isMobileScreen || isLowEnd) ? 8 : 4;
-        if (animationFrameCounter % dashThrottle === 0) {
+        if (sceneActive && animationFrameCounter % dashThrottle === 0) {
           updateDashboardCanvas(time);
         }
         // Desk displays redraw 3 large canvases (1024x512 + 512x1024 + 512x320)
         // with dozens of fillText calls each — every 12 frames (~5x/s) is plenty
         // for the visual effect; 6 frames (~10x/s) was burning main-thread CPU.
         const deskThrottle = (isMobileScreen || isLowEnd) ? 20 : 12;
-        if (!isMobileScreen && !isLowEnd && (animationFrameCounter % deskThrottle === 0)) {
+        if (sceneActive && !isMobileScreen && !isLowEnd && (animationFrameCounter % deskThrottle === 0)) {
           updateDeskDisplays(time);
         }
 
         // Animate Traveling Data Pulses along Cables
-        const pulseParticlesActive = (isMobileScreen || isLowEnd) ? pulseParticles.slice(0, Math.ceil(pulseParticles.length * 0.3)) : pulseParticles;
-        pulseParticlesActive.forEach(p => {
-          const t = (time * p.speed + p.offset) % 1.0;
-          const pos = p.curve.getPointAt(t);
-          p.mesh.position.copy(pos);
-        });
+        if (sceneActive) {
+          const pulseParticlesActive = (isMobileScreen || isLowEnd) ? pulseParticles.slice(0, Math.ceil(pulseParticles.length * 0.3)) : pulseParticles;
+          pulseParticlesActive.forEach(p => {
+            const t = (time * p.speed + p.offset) % 1.0;
+            const pos = p.curve.getPointAt(t);
+            p.mesh.position.copy(pos);
+          });
+        }
 
         // Dynamic LED Blink Telemetry
         const curChapter = RIG.smooth;
@@ -6300,76 +6307,78 @@
         const isSecureChapter = curChapter >= 2.6 && curChapter < 3.6;
         const isTopologyChapter = curChapter >= 3.6 && curChapter < 4.6;
 
-        // 8-Segment CPU Load Bar on Tầng 1 Node-01
-        const cpuLoad = isMonitorChapter ? (Math.sin(time * 3.5) * 0.25 + 0.65) : 0.35;
-        node01CpuMeterLeds.forEach(seg => {
-          seg.mesh.material = cpuLoad >= seg.threshold ? seg.baseMat : ledMatDim;
-        });
-
-        // 24 RJ45 Switch Ports Link/Act LEDs
-        rj45Leds.forEach(port => {
-          const rate = isSecureChapter ? 14.0 : 4.0;
-          const blink = Math.sin(time * rate + port.seed);
-          port.mesh.material = blink > 0.1 ? port.baseMat : ledMatDim;
-        });
-
-        // 12 Enterprise SAN Storage Disk I/O LEDs
-        sanDiskLeds.forEach(disk => {
-          const rate = isTopologyChapter ? 12.0 : 3.5;
-          const burst = Math.sin(time * rate + disk.seed) * Math.cos(time * 2.2 + disk.seed);
-          disk.mesh.material = burst > 0.25 ? ledMatAmber : ledMatDim;
-        });
-
-        // 4x NUC Micro-Node Cluster Activity LEDs
-        nucLeds.forEach(n => {
-          n.mesh.material = Math.sin(time * 9.0 + n.seed) > 0.15 ? ledMatGreen : ledMatDim;
-        });
-
-        // Diagnostic Cable Tester 8-LED Sequence Chaser
-        const testStep = Math.floor(time * 5.5) % 8;
-        cableTesterLeds.forEach((led, idx) => {
-          led.material = idx === testStep ? ledMatGreen : ledMatDim;
-        });
-
-        // Top Roof Exhaust Cooling Fan Rotation & Desk PC Fans
-        fanMeshes.forEach(f => {
-          f.rotation.z += dt * 7.5;
-        });
-        deskFanMeshes.forEach(f => {
-          f.rotation.z += dt * 8.5;
-        });
-
-        // 3-Tier Andon Status Beacon on Top of Rack
-        if (beaconLeds.length > 0) {
-          const b = beaconLeds[0];
-          b.red.material = isActChapter ? (Math.sin(time * 6.0) > 0 ? ledMatVermilion : ledMatDim) : ledMatDim;
-          b.amber.material = isMonitorChapter ? ledMatAmber : ledMatDim;
-          b.green.material = (!isActChapter && !isMonitorChapter) ? ledMatGreen : ledMatDim;
-          b.light.color.setHex(isActChapter ? 0xe5432c : (isMonitorChapter ? 0xffaa44 : 0x4dbb6d));
-          b.light.intensity = isActChapter ? (Math.sin(time * 6.0) * 0.4 + 0.8) : 0.6;
-        }
-
-        // 2U Server Node-03 Diagnostic Screen Alert Pulse
-        if (alertDiagPanelMesh) {
-          const alertIntensity = isActChapter ? (Math.sin(time * 5.0) * 0.3 + 0.7) : 0.4;
-          alertDiagPanelMesh.material.color.setRGB(0.88 * alertIntensity, 0.14 * alertIntensity, 0.11 * alertIntensity);
-        }
-
-        // Throttled LED blinking on mobile (every 2 frames)
-        if (!isMobileScreen || (animationFrameCounter % 2 === 0)) {
-          const blinkRate = isMonitorChapter ? 8.0 : 3.0;
-          const ledObjectsActive = (isMobileScreen || isLowEnd) ? ledObjects.slice(0, Math.ceil(ledObjects.length * 0.4)) : ledObjects;
-          ledObjectsActive.forEach((led) => {
-            const blink = Math.sin(time * blinkRate + led.seed);
-            led.mesh.material = blink > 0.4 ? led.baseMat : ledMatDim;
+        if (sceneActive) {
+          // 8-Segment CPU Load Bar on Tầng 1 Node-01
+          const cpuLoad = isMonitorChapter ? (Math.sin(time * 3.5) * 0.25 + 0.65) : 0.35;
+          node01CpuMeterLeds.forEach(seg => {
+            seg.mesh.material = cpuLoad >= seg.threshold ? seg.baseMat : ledMatDim;
           });
 
-          if (!isMobileScreen && !isLowEnd) {
-            const bgLedObjectsActive = bgLedObjects.slice(0, Math.ceil(bgLedObjects.length * 0.5));
-            bgLedObjectsActive.forEach(l => {
-              const blink = Math.sin(time * l.rate + l.seed);
-              l.mesh.material = blink > 0.15 ? l.baseMat : ledMatDim;
+          // 24 RJ45 Switch Ports Link/Act LEDs
+          rj45Leds.forEach(port => {
+            const rate = isSecureChapter ? 14.0 : 4.0;
+            const blink = Math.sin(time * rate + port.seed);
+            port.mesh.material = blink > 0.1 ? port.baseMat : ledMatDim;
+          });
+
+          // 12 Enterprise SAN Storage Disk I/O LEDs
+          sanDiskLeds.forEach(disk => {
+            const rate = isTopologyChapter ? 12.0 : 3.5;
+            const burst = Math.sin(time * rate + disk.seed) * Math.cos(time * 2.2 + disk.seed);
+            disk.mesh.material = burst > 0.25 ? ledMatAmber : ledMatDim;
+          });
+
+          // 4x NUC Micro-Node Cluster Activity LEDs
+          nucLeds.forEach(n => {
+            n.mesh.material = Math.sin(time * 9.0 + n.seed) > 0.15 ? ledMatGreen : ledMatDim;
+          });
+
+          // Diagnostic Cable Tester 8-LED Sequence Chaser
+          const testStep = Math.floor(time * 5.5) % 8;
+          cableTesterLeds.forEach((led, idx) => {
+            led.material = idx === testStep ? ledMatGreen : ledMatDim;
+          });
+
+          // Top Roof Exhaust Cooling Fan Rotation & Desk PC Fans
+          fanMeshes.forEach(f => {
+            f.rotation.z += dt * 7.5;
+          });
+          deskFanMeshes.forEach(f => {
+            f.rotation.z += dt * 8.5;
+          });
+
+          // 3-Tier Andon Status Beacon on Top of Rack
+          if (beaconLeds.length > 0) {
+            const b = beaconLeds[0];
+            b.red.material = isActChapter ? (Math.sin(time * 6.0) > 0 ? ledMatVermilion : ledMatDim) : ledMatDim;
+            b.amber.material = isMonitorChapter ? ledMatAmber : ledMatDim;
+            b.green.material = (!isActChapter && !isMonitorChapter) ? ledMatGreen : ledMatDim;
+            b.light.color.setHex(isActChapter ? 0xe5432c : (isMonitorChapter ? 0xffaa44 : 0x4dbb6d));
+            b.light.intensity = isActChapter ? (Math.sin(time * 6.0) * 0.4 + 0.8) : 0.6;
+          }
+
+          // 2U Server Node-03 Diagnostic Screen Alert Pulse
+          if (alertDiagPanelMesh) {
+            const alertIntensity = isActChapter ? (Math.sin(time * 5.0) * 0.3 + 0.7) : 0.4;
+            alertDiagPanelMesh.material.color.setRGB(0.88 * alertIntensity, 0.14 * alertIntensity, 0.11 * alertIntensity);
+          }
+
+          // Throttled LED blinking on mobile (every 2 frames)
+          if (!isMobileScreen || (animationFrameCounter % 2 === 0)) {
+            const blinkRate = isMonitorChapter ? 8.0 : 3.0;
+            const ledObjectsActive = (isMobileScreen || isLowEnd) ? ledObjects.slice(0, Math.ceil(ledObjects.length * 0.4)) : ledObjects;
+            ledObjectsActive.forEach((led) => {
+              const blink = Math.sin(time * blinkRate + led.seed);
+              led.mesh.material = blink > 0.4 ? led.baseMat : ledMatDim;
             });
+
+            if (!isMobileScreen && !isLowEnd) {
+              const bgLedObjectsActive = bgLedObjects.slice(0, Math.ceil(bgLedObjects.length * 0.5));
+              bgLedObjectsActive.forEach(l => {
+                const blink = Math.sin(time * l.rate + l.seed);
+                l.mesh.material = blink > 0.15 ? l.baseMat : ledMatDim;
+              });
+            }
           }
         }
 
@@ -6391,7 +6400,7 @@
         });
 
         // Dust particle drift
-        if (!prefersReducedMotion && !isMobileScreen && !isLowEnd) {
+        if (sceneActive && !prefersReducedMotion && !isMobileScreen && !isLowEnd) {
             const positions = dustPoints.geometry.attributes.position.array;
             for (let i = 0; i < positions.length; i += 3) {
               positions[i + 1] += Math.sin(time + i) * 0.0006;
@@ -6399,12 +6408,13 @@
             }
             dustPoints.geometry.attributes.position.needsUpdate = true;
           }
-          if (!isMobileScreen && !isLowEnd) {
+          if (sceneActive && !isMobileScreen && !isLowEnd) {
             rackGroup.rotation.y = Math.sin(time * 0.2) * 0.015;
           }
 
-        // Raycasting update for HUD Tooltip & Pointer Cursor (Desktop only)
-        if (!isMobileScreen && !isLowEnd) {
+        // Raycasting update for HUD Tooltip & Pointer Cursor (Desktop only,
+        // hero on-screen — interactive units are only visible there)
+        if (sceneActive && !isMobileScreen && !isLowEnd) {
           raycaster.setFromCamera(mouseVec, camera);
           const hits = raycaster.intersectObjects(interactiveUnits, true);
           if (hits.length > 0 && tooltipEl) {
