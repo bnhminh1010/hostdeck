@@ -94,6 +94,7 @@
     html {
       scroll-behavior: smooth;
       scroll-padding-top: 80px;
+      overflow-x: clip;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -999,6 +1000,9 @@
        ═══════════════════════════════════════════════════════════════════════ */
     .rack-screen-3d-wrapper {
       box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 1280px;
       height: 794px;
       background: #05070a;
