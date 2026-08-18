@@ -3131,6 +3131,7 @@
     <section id="ch-01" class="chapter" data-chapter="01">
       <span id="features" class="anchor-target"></span>
       <span class="chapter-num-bg" aria-hidden="true">01</span>
+      <div class="chapter-inner">
         <div class="sec-head">
           <span class="k"><b>01</b> — MONITOR</span>
           <span class="sec-rule"></span>
@@ -3763,7 +3764,7 @@
       });
       renderer.setSize(window.innerWidth, window.innerHeight);
       const isMobileInit = window.innerWidth < 768;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileInit ? 1.35 : 2.0));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileInit ? 1.75 : 2.0));
       renderer.setClearColor(0x05070a, 1);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
@@ -6558,7 +6559,7 @@
 
       function applyResponsiveLayout() {
         const isMobile = window.innerWidth < 768;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.35 : 2.0));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.75 : 2.0));
 
         if (isMobile) {
           rackGroup.scale.set(0.88, 0.88, 0.88);
