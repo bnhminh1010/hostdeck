@@ -894,7 +894,7 @@ kbd { display: inline-flex; min-width: 22px; min-height: 22px; align-items: cent
 @media (max-width: 899px) {
   :root { --terminal-height: 240px; }
   .app-shell { grid-template-columns: minmax(0, 1fr); margin-top: 34px; }
-  .dashboard-grid { grid-column: 1; grid-row: 1; padding: 10px 10px calc(var(--terminal-height) + 10px); }
+  .dashboard-grid { grid-column: 1; grid-row: 1; padding: 10px calc(var(--terminal-height) + 10px); }
   .dashboard-workspace { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .column-left, .column-center, .column-right { grid-column: 1; }
   .history-panel .panel-header { align-items: flex-start; flex-direction: column; }
