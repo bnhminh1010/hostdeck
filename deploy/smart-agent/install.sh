@@ -23,8 +23,7 @@ trap cleanup EXIT
 
 command -v systemctl >/dev/null || { echo "systemd is required" >&2; exit 1; }
 command -v smartctl >/dev/null || {
-  echo "smartmontools is required; install smartctl before enabling the helper." >&2
-  exit 1
+  echo "Warning: smartctl not found in PATH. The main installer should have installed smartmontools; continuing anyway." >&2
 }
 
 if [[ -n "${SMART_AGENT_BINARY:-}" ]]; then

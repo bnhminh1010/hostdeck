@@ -155,7 +155,7 @@ if command -v podman >/dev/null 2>&1; then
 fi
 
 install_packages() {
-  local packages=(curl ca-certificates tar coreutils systemd podman podman-compose)
+  local packages=(curl ca-certificates tar coreutils systemd podman podman-compose smartmontools)
   case "$package_manager" in
     apt)
       command -v sudo >/dev/null 2>&1 || die "sudo is required to install missing APT packages"
@@ -168,11 +168,10 @@ install_packages() {
       ;;
     pacman)
       command -v sudo >/dev/null 2>&1 || die "sudo is required to install missing Pacman packages"
-      sudo pacman -Sy --needed --noconfirm curl ca-certificates tar coreutils systemd podman podman-compose
+      sudo pacman -Sy --needed --noconfirm curl ca-certificates tar coreutils systemd podman podman-compose smartmontools
       ;;
     *)
       die "unsupported Linux distribution ($os_id); install ${missing_commands[*]} manually"
-      ;;
   esac
 }
 
@@ -276,6 +275,9 @@ if ((skip_host_agent == 0)); then
   info "Installing host-agent user service..."
   (cd "$install_dir" && ./deploy/host-agent/install.sh)
 fi
+
+info "Installing smart-agent user service..."
+(cd "$install_dir" && ./deploy/smart-agent/install.sh)
 
 compose() {
   (cd "$install_dir" && "${compose_cmd[@]}" --file compose.yml "$@")
