@@ -6234,8 +6234,9 @@
       let lastTime = performance.now();
       let isTabVisible = true;
       let animationFrameCounter = 0;
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // prefersReducedMotion is declared once at the top of this IIFE (line ~3708)
       let isHeroVisible = true;
+      let hasRenderedFirstFrame = false;
 
       // IntersectionObserver to pause when hero off-screen
       const heroObserver = new IntersectionObserver((entries) => {
@@ -6244,10 +6245,15 @@
       heroObserver.observe(document.getElementById('scene-canvas') || document.body);
 
       function renderLoop(now) {
-        if (!isTabVisible || !isHeroVisible || prefersReducedMotion) {
-        requestAnimationFrame(renderLoop);
-        return;
-      }
+        const firstFrame = !hasRenderedFirstFrame;
+        hasRenderedFirstFrame = true;
+        // First frame ALWAYS renders so the datacenter scene paints;
+        // subsequent frames pause only when the tab is hidden, the hero is
+        // off-screen, or the user prefers reduced motion (static scene kept).
+        if (!firstFrame && (!isTabVisible || !isHeroVisible || prefersReducedMotion)) {
+          requestAnimationFrame(renderLoop);
+          return;
+        }
       requestAnimationFrame(renderLoop);
 
         animationFrameCounter++;
@@ -6384,7 +6390,6 @@
           if (!isMobileScreen && !isLowEnd) {
             rackGroup.rotation.y = Math.sin(time * 0.2) * 0.015;
           }
-        }
 
         // Raycasting update for HUD Tooltip & Pointer Cursor (Desktop only)
         if (!isMobileScreen && !isLowEnd) {
