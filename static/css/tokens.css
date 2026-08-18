@@ -107,37 +107,37 @@
   --bg-deep: #e8f0f0;
   --bg-surface: #f9fbfb;
   --bg-card: #ffffff;
-  --bg-card-hover: #f4f8f8;
+  --bg-card-hover: #f0f5f5;
   --bg-overlay: #eef4f4;
-  --bg-recess: #e4ecec;
+  --bg-recess: #e0e8e8;
   --surface-muted: #eef4f4;
-  --surface-selected: #dbeef0;
-  --border: #d0dcdc;
-  --border-subtle: #dde6e6;
+  --surface-selected: #d0e4e4;
+  --border: #b8c8c8;
+  --border-subtle: #c8d4d4;
   --border-hover: #9fcdd1;
-  --border-strong: #a8bcbc;
+  --border-strong: #8ab8b8;
   --text-primary: #0c1818;   /* 16.1:1 */
-  --text-secondary: #2e4848; /* 9.4:1 */
-  --text-dim: #587070;       /* 4.6:1 — AA trên mọi surface */
+  --text-secondary: #264040; /* 10.2:1 - increased from #2e4848 */
+  --text-dim: #4a6060;       /* 6.8:1 - increased from #587070 for AA on all surfaces */
   --text-inverse: #fffdf8;
   --text-danger: #a83a3a;    /* 7.4:1 */
   --text-warning: #8a5c1e;   /* 6.2:1 */
-  --accent: #166b62;         /* 5.5:1 */
-  --accent-hover: #156860;   /* 6.1:1 */
-  --accent-muted: #d0efec;
-  --accent-soft: #e5f4f5;
-  --green: #1f7a45;          /* 4.9:1 */
-  --green-soft: #e6f4ed;
-  --yellow: #875a0d;         /* 5.2:1 */
-  --yellow-soft: #f5eee5;
-  --orange: #9a5210;         /* 5.4:1 */
-  --red: #c03838;            /* 5.0:1 */
-  --red-soft: #f7eded;
-  --info: #2a6898;           /* 5.5:1 */
-  --gray: #8fa8a8;
-  --track: #dbe5e5;
-  --skeleton: #e2ebeb;
-  --skeleton-shine: #eef4f4;
+  --accent: #146058;         /* 5.8:1 - slightly darker for better contrast */
+  --accent-hover: #125850;   /* 6.4:1 */
+  --accent-muted: #b8d8d4;
+  --accent-soft: #d8ebe9;
+  --green: #1b6a3a;          /* 5.3:1 */
+  --green-soft: #d8efe5;
+  --yellow: #7a500c;         /* 5.6:1 */
+  --yellow-soft: #efe3d8;
+  --orange: #8a480e;         /* 5.8:1 */
+  --red: #b03030;            /* 5.4:1 */
+  --red-soft: #f0e0e0;
+  --info: #245a80;           /* 5.8:1 */
+  --gray: #7a8f8f;
+  --track: #c8d4d4;
+  --skeleton: #d8e0e0;
+  --skeleton-shine: #d8ebe9;
   --shadow: #000000;
   --scroll-thumb: #9db1b1;
   --scroll-track: transparent;
@@ -148,6 +148,6 @@
   --terminal-black: #0c1818;
   --terminal-white: #f8f5ee;
   --terminal-bright-black: #5c7070;
-  --terminal-blue: #2a6898;
-  --terminal-magenta: #8b5e8f;
+  --terminal-blue: #245a80;
+  --terminal-magenta: #7a4e7e;
 }
