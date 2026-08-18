@@ -157,6 +157,11 @@ func (c Config) Validate() error {
 	if c.BackupStatusFile != "" && !filepath.IsAbs(c.BackupStatusFile) {
 		return fmt.Errorf("BACKUP_STATUS_FILE must be an absolute path")
 	}
+	for _, mount := range c.HomelabMountPoints {
+		if !filepath.IsAbs(mount) {
+			return fmt.Errorf("HOMELAB_MOUNT_POINTS entries must be absolute paths, got %q", mount)
+		}
+	}
 	if c.LogsBackend != logs.BackendDisabled && c.LogsBackend != logs.BackendLoki {
 		return fmt.Errorf("LOGS_BACKEND must be disabled or loki")
 	}

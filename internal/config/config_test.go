@@ -163,3 +163,21 @@ func TestLoadFromRequiresCompleteWebhookConfiguration(t *testing.T) {
 		}
 	}
 }
+
+func TestLoadFromMountPoints(t *testing.T) {
+	// Valid absolute mount points: accepted, deduplicated, order preserved.
+	values := map[string]string{"HOMELAB_MOUNT_POINTS": "/, /data, /data, /boot"}
+	cfg, err := LoadFrom(func(key string) string { return values[key] })
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cfg.HomelabMountPoints) != 3 || cfg.HomelabMountPoints[0] != "/" || cfg.HomelabMountPoints[1] != "/data" || cfg.HomelabMountPoints[2] != "/boot" {
+		t.Fatalf("unexpected mount points: %v", cfg.HomelabMountPoints)
+	}
+
+	// Relative mount point must be rejected.
+	bad := map[string]string{"HOMELAB_MOUNT_POINTS": "/, data"}
+	if _, err := LoadFrom(func(key string) string { return bad[key] }); err == nil {
+		t.Fatal("expected invalid relative mount point to be rejected")
+	}
+}
