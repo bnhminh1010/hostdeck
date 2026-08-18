@@ -998,6 +998,22 @@
     /* ═══════════════════════════════════════════════════════════════════════
        3D INTERACTIVE RACK SCREEN & BOOTLOADER (CSS3D)
        ═══════════════════════════════════════════════════════════════════════ */
+    /* Rack screen layer container (Kage-style): a fixed full-viewport
+       overflow:hidden wrapper. CSS3DRenderer forces the rack screen element
+       to position:absolute (needed for its 3D transform), which would
+       otherwise inflate document scrollWidth to 1280px — triggering Chrome
+       Android's scale-to-fit (whole page renders as a shrunken desktop
+       site). Clipping at the layer boundary keeps the wide 3D content out
+       of the document's scrollWidth at every viewport size, while the
+       screen itself still renders normally inside. */
+    .rack-screen-3d-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .rack-screen-3d-wrapper {
       box-sizing: border-box;
       position: fixed;
@@ -2476,18 +2492,6 @@
         display: none;
       }
 
-      /* Mobile: the CSS3D rack screen wrapper (1280x794) is NOT rendered on
-         mobile (CSS3DRenderer is skipped for perf), so take it out of layout
-         entirely. position:fixed alone is not enough — a fixed element wider
-         than the viewport still inflates document scrollWidth to 1280px,
-         which triggers Chrome Android's scale-to-fit (auto-fit) and makes
-         the whole page render as a shrunken desktop site. display:none
-         removes it from layout: scrollWidth collapses back to the viewport
-         and the mobile layout applies on first load. Desktop keeps it. */
-      .rack-screen-3d-wrapper {
-        display: none !important;
-      }
-
       /* Compact, High-Tech Floating Glass Header for Mobile */
       .nav {
         top: 10px;
@@ -3704,7 +3708,8 @@
   <div id="rack-tooltip" class="rack-tooltip" style="display:none;"></div>
 
   <!-- 3D Physical Rack Screen DOM Container (Attached to 3D Scene via CSS3D) -->
-  <div id="rack-screen-3d-wrapper" class="rack-screen-3d-wrapper">
+  <div class="rack-screen-3d-layer" id="rack-screen-3d-layer">
+    <div id="rack-screen-3d-wrapper" class="rack-screen-3d-wrapper">
     <!-- Bootloader Screen -->
     <div id="screen-bootloader" class="screen-bootloader">
       <div class="boot-header">
@@ -3731,6 +3736,7 @@
 
     <!-- The Interactive Live Dashboard iFrame -->
     <iframe id="rack-screen-iframe" class="rack-screen-iframe" src="app/?demo=1" title="HostDeck 3D Live Console"></iframe>
+    </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════════════
