@@ -2628,6 +2628,22 @@
         margin-bottom: 6px;
       }
 
+      /* Mobile: let the chapter tag wrap instead of clipping off the right
+         edge (white-space: nowrap was overflowing the 360px card). Kage-style:
+         keep the eyebrow readable at any width — wrap, don't truncate. */
+      .sec-head {
+        display: flex;
+        min-width: 0;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 6px 12px;
+      }
+      .sec-tag {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        min-width: 0;
+      }
+
       .hero-cta {
         flex-direction: row;
         align-items: center;
@@ -2674,6 +2690,7 @@
 
 
       .hud-action-panel {
+        min-width: 0;
         padding: 6px 8px;
         gap: 5px;
       }
@@ -2693,6 +2710,8 @@
 
       .hud-shortcuts {
         display: flex;
+        min-width: 0;
+        max-width: 100%;
         overflow-x: auto;
         flex-wrap: nowrap;
         gap: 4px;
@@ -6110,7 +6129,11 @@
           });
         }
 
-        const isCh2 = Math.abs(RIG.prog - 2) < 0.48;
+        // Mobile fallback only engages right at CH.02 (tighter window than
+        // desktop: mobile has no 3D scene to pre-roll toward, so showing the
+        // demo screen near CH.01 overlaps the previous chapter's card).
+        const ch2Window = window.innerWidth < 768 ? 0.28 : 0.48;
+        const isCh2 = Math.abs(RIG.prog - 2) < ch2Window;
         if (isCh2) {
           if (cachedScreenWrapperEl) cachedScreenWrapperEl.classList.add('is-active-3d');
           if (kvmScreenMesh) kvmScreenMesh.visible = false;
