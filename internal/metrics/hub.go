@@ -51,20 +51,31 @@ func (f BackupSourceFunc) Backups(ctx context.Context) ([]model.BackupStatus, er
 	return f(ctx)
 }
 
+type ProxmoxSource interface {
+	ProxmoxNodes(context.Context) ([]model.ProxmoxNode, error)
+}
+
+type ProxmoxSourceFunc func(context.Context) ([]model.ProxmoxNode, error)
+
+func (f ProxmoxSourceFunc) ProxmoxNodes(ctx context.Context) ([]model.ProxmoxNode, error) {
+	return f(ctx)
+}
+
 type Sources struct {
 	Host       HostCollector
 	Services   ServiceSource
 	Containers ContainerSource
 	Backups    BackupSource
 	Alerts     AlertSource
+	Proxmox    ProxmoxSource
 }
 
 // Hub samples providers once per interval and fans the same immutable snapshot
 // out to every subscriber. A failed provider keeps its last valid component.
 type Hub struct {
-	sources  Sources
-	interval time.Duration
-	now      func() time.Time
+	sources     Sources
+	interval    time.Duration
+	now         func() time.Time
 
 	mu          sync.RWMutex
 	latest      model.SnapshotEnvelope
@@ -81,7 +92,9 @@ func NewHub(sources Sources, interval time.Duration) *Hub {
 		interval = 2 * time.Second
 	}
 	return &Hub{
-		sources: sources, interval: interval, now: time.Now,
+		sources:     sources,
+		interval:    interval,
+		now:         time.Now,
 		subscribers: make(map[uint64]chan model.SnapshotEnvelope),
 	}
 }
@@ -196,6 +209,23 @@ func (h *Hub) CollectOnce(ctx context.Context) (model.SnapshotEnvelope, error) {
 			resultMu.Unlock()
 		}()
 	}
+	if h.sources.Proxmox != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			value, err := h.sources.Proxmox.ProxmoxNodes(ctx)
+			if err != nil {
+				recordError("proxmox", err)
+				return
+			}
+			resultMu.Lock()
+			if len(value) > 20 {
+				truncatedSources["proxmox"] = struct{}{}
+			}
+			data.ProxmoxNodes = capSlice(value, 20)
+			resultMu.Unlock()
+		}()
+	}
 	wg.Wait()
 	// Alerts may be derived from the container collection (for example restart
 	// loops). Read them after the concurrent collectors finish so a snapshot
@@ -217,7 +247,7 @@ func (h *Hub) CollectOnce(ctx context.Context) (model.SnapshotEnvelope, error) {
 	for _, item := range errorsOut {
 		staleSources = append(staleSources, item.source)
 		data.Alerts = append(data.Alerts, model.Alert{
-			ID: "collector-" + item.source, Level: "error", Source: item.source,
+			ID:        "collector-" + item.source, Level: "error", Source: item.source,
 			Message: fmt.Sprintf("Unable to collect %s data", item.source), OccurredAt: now,
 		})
 	}

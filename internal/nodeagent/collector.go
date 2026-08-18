@@ -25,6 +25,7 @@ type LocalCollector struct {
 	host       metrics.HostCollector
 	containers ContainerCollector
 	backups    metrics.BackupSource
+	proxmox    metrics.ProxmoxSource
 	cores      int
 	now        func() time.Time
 
@@ -34,6 +35,10 @@ type LocalCollector struct {
 }
 
 func NewLocalCollector(host metrics.HostCollector, containerCollector *containers.Collector, backupSources ...metrics.BackupSource) (*LocalCollector, error) {
+	return NewLocalCollectorWithProxmox(host, containerCollector, nil, backupSources...)
+}
+
+func NewLocalCollectorWithProxmox(host metrics.HostCollector, containerCollector *containers.Collector, proxmox metrics.ProxmoxSource, backupSources ...metrics.BackupSource) (*LocalCollector, error) {
 	if host == nil || containerCollector == nil {
 		return nil, fmt.Errorf("node agent: host and container collectors are required")
 	}
@@ -41,7 +46,7 @@ func NewLocalCollector(host metrics.HostCollector, containerCollector *container
 	if len(backupSources) > 0 {
 		backups = backupSources[0]
 	}
-	return &LocalCollector{host: host, containers: containerCollector, backups: backups, cores: runtime.NumCPU(), now: time.Now}, nil
+	return &LocalCollector{host: host, containers: containerCollector, proxmox: proxmox, backups: backups, cores: runtime.NumCPU(), now: time.Now}, nil
 }
 
 // Collect keeps the last valid component when either /proc or Podman is
@@ -86,6 +91,16 @@ func (collector *LocalCollector) Collect(ctx context.Context) (model.SnapshotEnv
 		} else {
 			data.Backups = backupItems
 			data.Alerts = append(data.Alerts, healthchecks.BackupAlerts(backupItems, now)...)
+		}
+	}
+	if collector.proxmox != nil {
+		proxmoxNodes, proxmoxErr := collector.proxmox.ProxmoxNodes(ctx)
+		if proxmoxErr != nil {
+			collectionErrors = append(collectionErrors, fmt.Errorf("proxmox metrics: %w", proxmoxErr))
+			staleSources = append(staleSources, "proxmox")
+			data.Alerts = append(data.Alerts, collectionAlert("proxmox", now))
+		} else {
+			data.ProxmoxNodes = proxmoxNodes
 		}
 	}
 	if data.Disks == nil {

@@ -47,6 +47,10 @@ type Config struct {
 	BackupStatusFile       string
 	LogsBackend            string
 	LokiURL                string
+	ProxmoxURL             string
+	ProxmoxToken           string
+	ProxmoxPollInterval    time.Duration
+	ProxmoxInsecureSkipVerify bool
 }
 
 func Load() (Config, error) {
@@ -85,6 +89,10 @@ func LoadFrom(getenv func(string) string) (Config, error) {
 		BackupStatusFile:       strings.TrimSpace(getenv("BACKUP_STATUS_FILE")),
 		LogsBackend:            strings.ToLower(strings.TrimSpace(valueOr(getenv("LOGS_BACKEND"), logs.BackendDisabled))),
 		LokiURL:                strings.TrimSpace(getenv("LOKI_URL")),
+		ProxmoxURL:             strings.TrimSpace(getenv("PROXMOX_URL")),
+		ProxmoxToken:           strings.TrimSpace(getenv("PROXMOX_TOKEN")),
+		ProxmoxPollInterval:    30 * time.Second,
+		ProxmoxInsecureSkipVerify: true,
 	}
 
 	var err error
@@ -119,6 +127,17 @@ func LoadFrom(getenv func(string) string) (Config, error) {
 		cfg.HistoryQuotaBytes, err = strconv.ParseInt(value, 10, 64)
 		if err != nil || cfg.HistoryQuotaBytes < 64<<20 || cfg.HistoryQuotaBytes > 16<<30 {
 			return Config{}, fmt.Errorf("HISTORY_QUOTA_BYTES must be between 67108864 and 17179869184")
+		}
+	}
+	if cfg.ProxmoxURL != "" {
+		if cfg.ProxmoxPollInterval, err = duration(getenv("PROXMOX_POLL_INTERVAL"), cfg.ProxmoxPollInterval); err != nil {
+			return Config{}, fmt.Errorf("PROXMOX_POLL_INTERVAL: %w", err)
+		}
+		if value := strings.TrimSpace(getenv("PROXMOX_INSECURE_SKIP_VERIFY")); value != "" {
+			cfg.ProxmoxInsecureSkipVerify, err = strconv.ParseBool(value)
+			if err != nil {
+				return Config{}, fmt.Errorf("PROXMOX_INSECURE_SKIP_VERIFY: %w", err)
+			}
 		}
 	}
 
@@ -169,6 +188,15 @@ func (c Config) Validate() error {
 		endpoint, err := url.Parse(c.LokiURL)
 		if err != nil || endpoint.Scheme == "" || endpoint.Host == "" || (endpoint.Scheme != "http" && endpoint.Scheme != "https") {
 			return fmt.Errorf("LOKI_URL must be an absolute HTTP or HTTPS URL when LOGS_BACKEND is loki")
+		}
+	}
+	if c.ProxmoxURL != "" {
+		endpoint, err := url.Parse(c.ProxmoxURL)
+		if err != nil || endpoint.Scheme == "" || endpoint.Host == "" || (endpoint.Scheme != "http" && endpoint.Scheme != "https") {
+			return fmt.Errorf("PROXMOX_URL must be an absolute HTTP or HTTPS URL")
+		}
+		if c.ProxmoxToken == "" {
+			return fmt.Errorf("PROXMOX_TOKEN is required when PROXMOX_URL is set")
 		}
 	}
 	if (c.NTFYURL == "") != (c.NTFYTopic == "") {

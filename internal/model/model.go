@@ -150,6 +150,62 @@ type BackupStatus struct {
 	Message               string    `json:"message,omitempty"`
 }
 
+// ProxmoxGuestAgent represents guest agent information from QEMU guest agent
+type ProxmoxGuestAgent struct {
+	Hostname    string   `json:"hostname,omitempty"`
+	FQDN        string   `json:"fqdn,omitempty"`
+	IPAddresses []string `json:"ipAddresses,omitempty"`
+	OSName      string   `json:"osName,omitempty"`
+	OSVersion   string   `json:"osVersion,omitempty"`
+	Kernel      string   `json:"kernel,omitempty"`
+}
+
+// ProxmoxStorage represents a Proxmox storage entry
+type ProxmoxStorage struct {
+	Name           string  `json:"name"`
+	Type           string  `json:"type"`
+	Content        string  `json:"content"`
+	Enabled        int     `json:"enabled"`
+	Active         int     `json:"active"`
+	Shared         int     `json:"shared"`
+	TotalBytes     uint64  `json:"totalBytes"`
+	UsedBytes      uint64  `json:"usedBytes"`
+	AvailBytes     uint64  `json:"availBytes"`
+	UsedFraction   float64 `json:"usedFraction"`
+	Format         string  `json:"format,omitempty"`
+}
+
+// ProxmoxGuest represents a VM or LXC container from Proxmox
+type ProxmoxGuest struct {
+	VMID           int                 `json:"vmid"`
+	Type           string              `json:"type"` // "qemu" or "lxc"
+	Name           string              `json:"name"`
+	Status         string              `json:"status"` // "running", "stopped", etc.
+	CPU            float64             `json:"cpu"`
+	MaxCPU         int                 `json:"maxCpu"`
+	MemoryBytes    uint64              `json:"memoryBytes"`
+	MaxMemoryBytes uint64              `json:"maxMemoryBytes"`
+	DiskBytes      uint64              `json:"diskBytes"`
+	MaxDiskBytes   uint64              `json:"maxDiskBytes"`
+	NetInBytes     uint64              `json:"netInBytes"`
+	NetOutBytes    uint64              `json:"netOutBytes"`
+	UptimeSeconds  uint64              `json:"uptimeSeconds"`
+	Tags           string              `json:"tags,omitempty"`
+	Agent          *ProxmoxGuestAgent  `json:"agent,omitempty"`
+	Node           string              `json:"node"`
+}
+
+// ProxmoxNode represents a Proxmox VE node (treated as a "node" in UI)
+type ProxmoxNode struct {
+	Name     string            `json:"name"`
+	Version  string            `json:"version"`
+	Status   string            `json:"status"` // "online", "offline"
+	CPU      float64           `json:"cpu"`
+	Memory   MemoryStats       `json:"memory"`
+	Storage  []ProxmoxStorage  `json:"storage"`
+	Guests   []ProxmoxGuest    `json:"guests"`
+}
+
 type SnapshotData struct {
 	System     SystemStats    `json:"system"`
 	Disks      []DiskStats    `json:"disks"`
@@ -157,6 +213,7 @@ type SnapshotData struct {
 	Services   []Service      `json:"services"`
 	Containers []Container    `json:"containers"`
 	Backups    []BackupStatus `json:"backups,omitempty"`
+	ProxmoxNodes []ProxmoxNode `json:"proxmoxNodes,omitempty"`
 	Alerts     []Alert        `json:"alerts"`
 }
 

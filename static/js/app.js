@@ -660,6 +660,19 @@ function updateOverview() {
     partial: snapshotPartial,
     connection: connectionState,
   });
+  
+  // When connection is offline, show UNAVAILABLE instead of 0/0
+  if (connectionState !== "online") {
+    setMetricText(elements["overview-services"], "UNAVAILABLE");
+    setMetricText(elements["overview-services-detail"], "Waiting for connection");
+    setMetricText(elements["overview-containers"], "UNAVAILABLE");
+    setMetricText(elements["overview-containers-detail"], "Waiting for connection");
+    setMetricText(elements["overview-attention-total"], "UNAVAILABLE");
+    setMetricText(elements["overview-attention-detail"], "Connection required");
+    document.getElementById("overview-attention-kpi")?.setAttribute("aria-label", "Open active alerts");
+    return;
+  }
+  
   const monitoredServices = Math.max(0, services.total - services.unknown);
   setMetricText(
     elements["overview-services"],

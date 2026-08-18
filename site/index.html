@@ -602,6 +602,7 @@
       color: var(--bone-dim);
       max-width: 600px;
       margin-bottom: var(--space-lg);
+      font-family: var(--font-body);
     }
 
     /* ═══════════════════════════════════════════════════════════════════════
@@ -813,6 +814,7 @@
       color: var(--bone-dim);
       max-width: 580px;
       margin-bottom: var(--space-xl);
+      font-family: var(--font-body);
     }
 
     .hero-cta {
@@ -1428,9 +1430,9 @@
     }
 
     .fs-monitor-badge {
-      background: rgba(56, 189, 248, 0.14);
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(201, 162, 74, 0.14);
+      color: #c9a24a;
+      border: 1px solid rgba(201, 162, 74, 0.3);
       padding: 2px 7px;
       border-radius: 4px;
       font-size: 9.5px;
@@ -1447,19 +1449,19 @@
     .fs-btn-tab {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: #38bdf8;
+      color: #c9a24a;
       text-decoration: none;
       padding: 4px 11px;
       border-radius: 5px;
-      border: 1px solid rgba(56, 189, 248, 0.35);
+      border: 1px solid rgba(201, 162, 74, 0.35);
       background: rgba(56, 189, 248, 0.06);
       transition: background-color, color, border-color 0.2s ease;
     }
 
     .fs-btn-tab:hover {
-      background: rgba(56, 189, 248, 0.2);
-      color: #fff;
-      border-color: #38bdf8;
+      background: rgba(201, 162, 74, 0.18);
+      color: #dabd6a;
+      border-color: rgba(201, 162, 74, 0.5);
     }
 
     .fs-btn-close {
@@ -1494,6 +1496,19 @@
       height: 100%;
       border: none;
       display: block;
+    }
+
+    /* Mobile: ensure iframe scales correctly inside CSS3D and fullscreen modal */
+    @media (max-width: 768px) {
+      .rack-screen-iframe {
+        width: 100%;
+        height: 100%;
+      }
+      .fs-modal-body {
+        height: 68vh;
+        min-height: 360px;
+        max-height: 78vh;
+      }
     }
 
     /* Bottom Chin with Laser Engraved Branding & Status LED */
@@ -1926,7 +1941,7 @@
     }
 
     .cmd-prompt {
-      color: #38bdf8;
+      color: #c9a24a;
       font-weight: 700;
       margin-right: 4px;
     }
@@ -2512,23 +2527,23 @@
         display: none;
       }
 
-      /* Top 38vh open for 3D Rack Showcase on Mobile! */
+      /* Mobile: chapters flow naturally, no forced 100vh per section.
+         Hero keeps 3D rack visible; other chapters stack with comfortable spacing. */
       .chapter {
+        min-height: auto;
+        display: block;
+        padding: var(--space-xl) var(--space-md) var(--space-lg);
+        pointer-events: auto;
+      }
+
+      /* Hero chapter: reserve space for 3D rack background (38vh) */
+      #ch-00.chapter {
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
-        padding: 38vh 12px 24px;
+        padding: 38vh var(--space-md) var(--space-lg);
         box-sizing: border-box;
-      }
-
-      /* Ultra-Compact Glassmorphic Mobile Layout (MengTo/kage style) */
-      .chapter {
-        min-height: 100vh;
-        justify-content: flex-end;
-        align-items: center;
-        padding: 0 12px 18px 12px;
-        pointer-events: none;
       }
 
       /* Chapter cards centered — override the desktop #ch-02 offset
@@ -2551,9 +2566,6 @@
         margin: 0 auto;
         width: 100%;
         max-width: 360px;
-        /* No max-height clamp: content must fully fit so users don't have
-           to scroll inside the card. The chapter keeps min-height:100vh
-           with the 3D background visible above the card. */
         max-height: none;
         overflow-y: visible;
         scrollbar-width: none;
@@ -2588,10 +2600,6 @@
         font-size: 12px;
         line-height: 1.42;
         margin-bottom: 10px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
       }
 
       .chapter h2 {
@@ -2857,16 +2865,32 @@
         gap: 8px;
         width: 100%;
         margin: 8px auto;
+        flex-wrap: wrap;
       }
       .install-marquee-viewport {
         height: 26px;
+        flex: 1 1 100%;
+        order: 2;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        mask-image: none;
+        -webkit-mask-image: none;
+        white-space: nowrap;
+      }
+      .install-marquee-track {
+        animation: none;
+        flex-wrap: nowrap;
+        gap: 16px;
       }
       .cmd-text {
         font-size: 11px;
+        white-space: nowrap;
       }
       .copy-btn {
         padding: 4px 9px;
         font-size: 10.5px;
+        order: 1;
+        flex-shrink: 0;
       }
 
       /* Deep-dive sections on Mobile */
@@ -4321,7 +4345,7 @@
         ptCtx.strokeStyle = 'rgba(255,255,255,0.07)';
         ptCtx.strokeRect(20, 168, 472, 220);
 
-        ptCtx.fillStyle = '#38bdf8';
+        ptCtx.fillStyle = '#c9a24a';
         ptCtx.font = 'bold 13px monospace';
         ptCtx.fillText('## ARCHITECTURE', 36, 196);
 
@@ -4347,7 +4371,7 @@
         });
 
         // Quickstart
-        ptCtx.fillStyle = '#38bdf8';
+        ptCtx.fillStyle = '#c9a24a';
         ptCtx.font = 'bold 13px monospace';
         ptCtx.fillText('## QUICK START', 20, 420);
 
@@ -4359,7 +4383,7 @@
         ptCtx.fillText('$ hostdeck start --tailscale', 34, 494);
 
         // Core Features
-        ptCtx.fillStyle = '#38bdf8';
+        ptCtx.fillStyle = '#c9a24a';
         ptCtx.font = 'bold 13px monospace';
         ptCtx.fillText('## CORE FEATURES', 20, 546);
 
@@ -5360,7 +5384,7 @@
         rsc.font = 'bold 36px monospace';
         rsc.fillText('HOSTDECK // PRIMARY HOMELAB SUITE 01', 90, 68);
 
-        rsc.fillStyle = '#38bdf8';
+        rsc.fillStyle = '#c9a24a';
         rsc.font = 'bold 20px monospace';
         rsc.fillText('TAILSCALE MESH  ·  5 ROOTLESS NODES  ·  TIER-3 REDUNDANCY', 40, 140);
 
@@ -6483,7 +6507,7 @@
               const title = objData.title || objData.name;
               const info = objData.desc || objData.info || '';
               const isCurved = !!objData.isDeskCurvedScreen;
-              tooltipEl.innerHTML = `<strong style="${isCurved ? 'color:#38bdf8;' : ''}">${title}</strong><br><span style="color:#aab4ad;font-size:11px;">${info}</span>`;
+              tooltipEl.innerHTML = `<strong style="${isCurved ? 'color:#c9a24a;' : ''}">${title}</strong><br><span style="color:#aab4ad;font-size:11px;">${info}</span>`;
               tooltipEl.style.display = 'block';
               tooltipEl.style.opacity = '1';
               document.body.style.cursor = 'pointer';

@@ -20,6 +20,7 @@ import (
 	"github.com/bnhminh1010/homelab-dashboard/internal/model"
 	"github.com/bnhminh1010/homelab-dashboard/internal/nodes"
 	"github.com/bnhminh1010/homelab-dashboard/internal/podman"
+	"github.com/bnhminh1010/homelab-dashboard/internal/proxmox"
 	"github.com/bnhminh1010/homelab-dashboard/internal/smartagent"
 	"github.com/gorilla/websocket"
 )
@@ -74,7 +75,32 @@ func Run(ctx context.Context, options RunOptions) error {
 	if err != nil {
 		return fmt.Errorf("node agent: configure backup status source: %w", err)
 	}
-	collector, err := NewLocalCollector(hostCollector, containers.New(podmanClient), backupSource)
+
+	var proxmoxSource metrics.ProxmoxSource
+	proxmoxURL := os.Getenv("PROXMOX_URL")
+	proxmoxToken := os.Getenv("PROXMOX_TOKEN")
+	if proxmoxURL != "" && proxmoxToken != "" {
+		insecureSkipVerify := true
+		if v := os.Getenv("PROXMOX_INSECURE_SKIP_VERIFY"); v != "" {
+			insecureSkipVerify = v == "true" || v == "1"
+		}
+		pollInterval := 30 * time.Second
+		if v := os.Getenv("PROXMOX_POLL_INTERVAL"); v != "" {
+			if d, err := time.ParseDuration(v); err == nil {
+				pollInterval = d
+			}
+		}
+		client, err := proxmox.NewClient(proxmoxURL, proxmoxToken, insecureSkipVerify)
+		if err != nil {
+			slog.Warn("node agent: failed to create Proxmox client", "error", err)
+		} else {
+			proxmoxCollector := proxmox.NewCollector(client, pollInterval)
+			proxmoxSource = proxmox.ProxmoxSourceFunc(proxmoxCollector)
+			slog.Info("node agent: Proxmox collector enabled", "url", proxmoxURL, "pollInterval", pollInterval)
+		}
+	}
+
+	collector, err := NewLocalCollectorWithProxmox(hostCollector, containers.New(podmanClient), proxmoxSource, backupSource)
 	if err != nil {
 		return err
 	}

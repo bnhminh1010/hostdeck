@@ -47,17 +47,20 @@
   /* Semantic status colors */
   --green: #4dbb6d;         /* up — 7.92:1 */
   --green-soft: rgba(77, 187, 109, 0.12);
-  --yellow: #d7ad45;        /* warning — 9.12:1 */
+  --yellow: #d7ad45;        /* warning/gold — 9.12:1 */
   --yellow-soft: rgba(215, 173, 69, 0.12);
+  --gold: #c9a24a;          /* Kage gold — measurement, signal, progress */
+  --gold-soft: rgba(201, 162, 74, 0.12);
   --orange: #ff5a3c;        /* caution — ember */
   --red: #e5432c;           /* danger — vermilion */
   --red-soft: rgba(229, 67, 44, 0.12);
-  --info: #6a9ec2;          /* 6.67:1 */
+  --info: #6a9ec2;          /* 6.67:1 — DEPRECATED: use --gold for signals, --green for success */
 
   /* Luminous Glows */
   --glow-accent: 0 0 16px rgba(229, 67, 44, 0.18);
   --glow-emerald: 0 0 12px rgba(77, 187, 109, 0.2);
   --glow-amber: 0 0 12px rgba(215, 173, 69, 0.2);
+  --glow-gold: 0 0 12px rgba(201, 162, 74, 0.2);
 
   /* UI elements */
   --gray: #3a4540;
