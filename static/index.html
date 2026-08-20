@@ -164,7 +164,7 @@
           <div id="overview-attention-list" class="overview-action-list" aria-label="Items requiring attention"></div>
           <div id="overview-attention-empty" class="overview-empty-state">
             <span class="status-dot" aria-hidden="true"></span>
-            <span>No incidents need action.<span class="empty-hint">Learn how each workspace works via ? in the header.</span></span>
+            <span>No incidents need action.<span class="empty-hint"><a class="btn btn-ghost btn-small" href="/alerts">Configure alerts</a> <a class="text-button" href="?">Learn more</a></span></span>
           </div>
         </section>
 
@@ -198,7 +198,7 @@
             </div>
           </header>
           <div id="overview-recent-changes-list" class="overview-action-list" aria-label="Recent operational changes"></div>
-          <div id="overview-recent-changes-empty" class="overview-empty-state">No recorded operational changes in the last 24 hours.</div>
+          <div id="overview-recent-changes-empty" class="overview-empty-state">No recorded operational changes in the last 24 hours.<span class="empty-hint"><a class="btn btn-ghost btn-small" href="/history">View history</a> <a class="text-button" href="#history">Learn more</a></span></div>
           <footer class="overview-trend-footer mono">
             <span id="overview-recent-changes-node">NODE · LOCAL</span>
             <span id="overview-recent-changes-status" role="status" aria-live="polite" aria-atomic="true">24H · WAITING</span>
@@ -275,36 +275,36 @@
             </div>
           </header>
           <div id="overview-service-pulse-list" class="overview-action-list"></div>
-          <div id="overview-service-pulse-empty" class="overview-empty-state">No services have a configured health probe.<span class="empty-hint">Use + ADD SERVICE in the panel header to register an endpoint.</span></div>
+          <div id="overview-service-pulse-empty" class="overview-empty-state">No services have a configured health probe.<span class="empty-hint">Use <a class="btn btn-primary btn-small" href="/services/add">+ ADD SERVICE</a> in the panel header to register an endpoint.</span></div>
         </section>
 
         <section id="overview-quick-launchpad" class="panel overview-widget overview-content-widget overview-quick-launchpad" data-widget-size="full" data-overview-widget="overview-quick-launchpad" aria-labelledby="overview-quick-launchpad-title" hidden>
           <header class="panel-header compact"><div><span class="panel-context mono">SHORTCUTS</span><h2 id="overview-quick-launchpad-title">Quick Launchpad</h2></div><div class="panel-actions"><span id="overview-launchpad-count" class="count-badge mono">0</span></div></header>
           <div id="overview-launchpad-list" class="launchpad-list" aria-label="Saved dashboard bookmarks"></div>
-          <div id="overview-launchpad-empty" class="overview-empty-state">No launchpad links configured.</div>
+          <div id="overview-launchpad-empty" class="overview-empty-state">No launchpad links configured.<span class="empty-hint"><a class="btn btn-ghost btn-small" href="/dashboards">Add shortcut</a> <a class="text-button" href="/dashboards/customize">Manage links</a></span></div>
         </section>
 
         <section id="overview-service-groups" class="panel overview-widget overview-content-widget overview-service-groups" data-widget-size="medium" data-overview-widget="overview-service-groups" aria-labelledby="overview-service-groups-title" hidden>
           <header class="panel-header compact"><div><span class="panel-context mono">INVENTORY</span><h2 id="overview-service-groups-title">Service Groups</h2></div><span id="overview-service-groups-count" class="count-badge mono">0</span></header>
           <div id="overview-service-groups-list" class="service-groups-list"></div>
-          <div id="overview-service-groups-empty" class="overview-empty-state">No service groups available.</div>
+          <div id="overview-service-groups-empty" class="overview-empty-state">No service groups available.<span class="empty-hint"><a class="btn btn-ghost btn-small" href="/service-groups/create">Create group</a> <a class="text-button" href="/service-groups/browse">Browse groups</a></span></div>
         </section>
 
         <section id="overview-top-containers" class="panel overview-widget overview-content-widget overview-top-containers" data-widget-size="medium" data-overview-widget="overview-top-containers" aria-labelledby="overview-top-containers-title" hidden>
           <header class="panel-header compact"><div><span class="panel-context mono">RUNTIME</span><h2 id="overview-top-containers-title">Top Containers</h2></div><div id="overview-top-containers-sort" class="segmented-control" role="group" aria-label="Container ranking"><button type="button" data-container-rank="cpu" aria-pressed="true">CPU</button><button type="button" data-container-rank="ram" aria-pressed="false">RAM</button><button type="button" data-container-rank="issues" aria-pressed="false">ISSUES</button></div></header>
           <div id="overview-top-containers-list" class="top-containers-list"></div>
-          <div id="overview-top-containers-empty" class="overview-empty-state">No containers reported.<span class="empty-hint">The node agent on the host reports them automatically; check that it is running.</span></div>
+          <div id="overview-top-containers-empty" class="overview-empty-state">No containers reported.<span class="empty-hint">The node agent on the host reports them automatically. <a class="btn btn-ghost btn-small" href="/containers/refresh">Refresh now</a> or <a class="text-button" href="/docs/containers">learn how</a>.</span></div>
         </section>
 
         <section id="overview-storage-pools" class="panel overview-widget overview-content-widget overview-storage-pools" data-widget-size="small" data-overview-widget="overview-storage-pools" aria-labelledby="overview-storage-pools-title" hidden>
           <header class="panel-header compact"><div><span class="panel-context mono">CAPACITY</span><h2 id="overview-storage-pools-title">Storage Pools</h2></div><span id="overview-storage-smart-status" class="panel-context mono" role="status" aria-live="polite">SMART UNAVAILABLE</span></header>
           <div id="overview-storage-pools-list" class="storage-pools-list"></div>
-          <div id="overview-storage-pools-empty" class="overview-empty-state">No disk data in the latest snapshot.</div>
+          <div id="overview-storage-pools-empty" class="overview-empty-state">No disk data in the latest snapshot.<span class="empty-hint"><a class="btn btn-ghost btn-small" href="/settings/node-agent">Configure node agent</a> <a class="text-button" href="/docs/storage">Learn more</a></span></div>
         </section>
 
         <section id="overview-operator-notes" class="panel overview-widget overview-content-widget overview-operator-notes" data-widget-size="small" data-overview-widget="overview-operator-notes" aria-labelledby="overview-operator-notes-title" hidden>
           <header class="panel-header compact"><div><span class="panel-context mono">HANDOFF</span><h2 id="overview-operator-notes-title">Operator Notes</h2></div><span id="overview-note-status" class="panel-context mono" role="status" aria-live="polite">NOT LOADED</span></header>
-          <label class="operator-note-field"><span class="visually-hidden">Shared operator note</span><textarea id="overview-operator-note-input" maxlength="4096" rows="5" placeholder="No note recorded."></textarea></label>
+          <label class="operator-note-field"><span class="visually-hidden">Shared operator note</span><textarea id="overview-operator-note-input" maxlength="4096" rows="5" placeholder="No note recorded."></textarea> <a class="text-button" href="#notes-guideline">Guidelines</a></span></label>
           <footer class="overview-trend-footer mono"><span id="overview-note-updated">SHARED NOTE</span><span id="overview-note-permission">READ ONLY</span></footer>
         </section>
       </div>
